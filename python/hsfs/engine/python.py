@@ -206,7 +206,6 @@ class Engine:
         hive_config: Optional[Dict[str, Any]] = None,
         arrow_flight_config: Optional[Dict[str, Any]] = None,
     ) -> Union[pd.DataFrame, pl.DataFrame]:
-
         self._validate_dataframe_type(dataframe_type)
         if isinstance(sql_query, dict) and "query_string" in sql_query:
             result_df = util.run_with_loading_animation(
@@ -510,7 +509,12 @@ class Engine:
             sql_query, feature_store, online_conn, "default", read_options or {}
         ).head(n)
 
-    def read_vector_db(self, feature_group: "hsfs.feature_group.FeatureGroup", n: int =None, dataframe_type: str="default") -> Union[pd.DataFrame, pl.DataFrame, np.ndarray, List[List[Any]]]:
+    def read_vector_db(
+        self,
+        feature_group: "hsfs.feature_group.FeatureGroup",
+        n: int = None,
+        dataframe_type: str = "default",
+    ) -> Union[pd.DataFrame, pl.DataFrame, np.ndarray, List[List[Any]]]:
         dataframe_type = dataframe_type.lower()
         self._validate_dataframe_type(dataframe_type)
 
@@ -1439,8 +1443,11 @@ class Engine:
         elif not isinstance(
             feature_group, ExternalFeatureGroup
         ) and self._start_offline_materialization(offline_write_options):
-            if (not offline_write_options.get("skip_offsets", False)
-                and self._job_api.last_execution(feature_group.materialization_job)): # always skip offsets if executing job for the first time
+            if not offline_write_options.get(
+                "skip_offsets", False
+            ) and self._job_api.last_execution(
+                feature_group.materialization_job
+            ):  # always skip offsets if executing job for the first time
                 # don't provide the current offsets (read from where the job last left off)
                 initial_check_point = ""
             # provide the initial_check_point as it will reduce the read amplification of materialization job

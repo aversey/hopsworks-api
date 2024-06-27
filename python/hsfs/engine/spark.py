@@ -152,7 +152,14 @@ class Engine:
             sql_query, feature_store, online_conn, "default", read_options
         ).show(n)
 
-    def read_vector_db(self, feature_group: fg_mod.FeatureGroup, n: int =None, dataframe_type: str="default") -> Union[pd.DataFrame, np.ndarray, List[List[Any]], TypeVar("pyspark.sql.DataFrame")]:
+    def read_vector_db(
+        self,
+        feature_group: fg_mod.FeatureGroup,
+        n: int = None,
+        dataframe_type: str = "default",
+    ) -> Union[
+        pd.DataFrame, np.ndarray, List[List[Any]], TypeVar("pyspark.sql.DataFrame")
+    ]:
         results = VectorDbClient.read_feature_group(feature_group, n)
         feature_names = [f.name for f in feature_group.features]
         dataframe_type = dataframe_type.lower()

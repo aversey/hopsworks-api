@@ -13,15 +13,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from unittest import TestCase, mock
-from contextlib import contextmanager
-import hopsworks
 import getpass
-import os
-import uuid
-import tempfile
 import importlib
+import os
 import shutil
+import tempfile
+import uuid
+from contextlib import contextmanager
+from unittest import TestCase, mock
+
+import hopsworks
 from hopsworks.client import exceptions
 from hopsworks.project import Project
 
@@ -63,7 +64,6 @@ class TestLogin(TestCase):
         hopsworks.logout()
 
     def _check_api_key_existence(self):
-
         path = hopsworks._get_cached_api_key_path()
 
         api_key_name = ".hw_api_key"

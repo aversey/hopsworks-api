@@ -14,9 +14,9 @@
 #   limitations under the License.
 #
 
-import humps
 import os
 
+import humps
 from hopsworks import command, util
 from hopsworks.core import environment_api, library_api
 from hopsworks.engine import environment_engine

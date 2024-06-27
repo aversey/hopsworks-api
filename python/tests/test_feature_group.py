@@ -145,7 +145,7 @@ class TestFeatureGroup:
         assert fg._feature_store_id == 67
         assert fg.description == ""
         assert fg.partition_key == []
-        assert fg.primary_key == ['intt']
+        assert fg.primary_key == ["intt"]
         assert fg.hudi_precombine_key is None
         assert fg._feature_store_name is None
         assert fg.created is None
@@ -322,7 +322,7 @@ class TestFeatureGroup:
                 version=1,
                 description="fg_description",
                 event_time=["event_date"],
-                features=features
+                features=features,
             )
         with pytest.raises(FeatureStoreException):
             util.verify_attribute_key_names(new_fg, False)

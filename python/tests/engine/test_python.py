@@ -3763,7 +3763,7 @@ class TestPython:
             args="defaults tests_offsets",
             await_termination=False,
         )
-    
+
     def test_materialization_kafka_skip_offsets(self, mocker):
         # Arrange
         mocker.patch("hsfs.engine.python.Engine._get_kafka_config", return_value={})
@@ -3805,7 +3805,10 @@ class TestPython:
         python_engine._write_dataframe_kafka(
             feature_group=fg,
             dataframe=df,
-            offline_write_options={"start_offline_materialization": True, "skip_offsets": True},
+            offline_write_options={
+                "start_offline_materialization": True,
+                "skip_offsets": True,
+            },
         )
 
         # Assert

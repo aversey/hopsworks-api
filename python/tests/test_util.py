@@ -181,9 +181,13 @@ class TestUtil:
         input_example_dataframe_list,
     ):
         # Act
-        json = hsml.util._handle_dataframe_input(input_example_dataframe_pandas_dataframe)
+        json = hsml.util._handle_dataframe_input(
+            input_example_dataframe_pandas_dataframe
+        )
         with pytest.raises(ValueError) as e_info:
-            hsml.util._handle_dataframe_input(input_example_dataframe_pandas_dataframe_empty)
+            hsml.util._handle_dataframe_input(
+                input_example_dataframe_pandas_dataframe_empty
+            )
 
         # Assert
         assert isinstance(json, list)
@@ -199,7 +203,9 @@ class TestUtil:
         # Act
         json = hsml.util._handle_dataframe_input(input_example_dataframe_pandas_series)
         with pytest.raises(ValueError) as e_info:
-            hsml.util._handle_dataframe_input(input_example_dataframe_pandas_series_empty)
+            hsml.util._handle_dataframe_input(
+                input_example_dataframe_pandas_series_empty
+            )
 
         # Assert
         assert isinstance(json, list)
@@ -731,7 +737,9 @@ class TestUtil:
         assert db_type == "HIVEDB"
 
     def test_get_dataset_type_DATASET(self):
-        db_type = hsfs.util.get_dataset_type("/Projects/temp/Resources/kafka__tstore.jks")
+        db_type = hsfs.util.get_dataset_type(
+            "/Projects/temp/Resources/kafka__tstore.jks"
+        )
         assert db_type == "DATASET"
 
     def test_get_dataset_type_DATASET_with_dfs(self):

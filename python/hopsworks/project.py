@@ -103,7 +103,9 @@ class Project:
         """Timestamp when the project was created"""
         return self._created
 
-    def get_feature_store(self, name: str = None, engine: str = None) -> feature_store.FeatureStore:
+    def get_feature_store(
+        self, name: str = None, engine: str = None
+    ) -> feature_store.FeatureStore:
         """Connect to Project's Feature Store.
 
         Defaulting to the project name of default feature store. To get a
@@ -142,7 +144,9 @@ class Project:
                 engine=engine,
             ).get_feature_store(name)
         else:
-            return connection(engine=engine).get_feature_store(name)  # If internal client
+            return connection(engine=engine).get_feature_store(
+                name
+            )  # If internal client
 
     def get_model_registry(self):
         """Connect to Project's Model Registry API.
