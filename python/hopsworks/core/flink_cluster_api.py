@@ -18,8 +18,8 @@ import json
 import os
 
 from hopsworks import client, flink_cluster, job, util
+from hopsworks.client.exceptions import RestAPIError
 from hopsworks.core import job_api
-from python.hopsworks.client.exceptions import RestAPIError
 
 
 class FlinkClusterApi:
