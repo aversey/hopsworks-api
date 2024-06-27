@@ -3,16 +3,16 @@
 
 - Fork and clone the repository
 
-- Create a new Python environment with your favourite environment manager, e.g. virtualenv or conda
+- Create a new Python environment with your favourite environment manager (e.g. virtualenv or conda) and Python 3.9 (newer versions will return a library conflict in `auto_doc.py`)
 
 - Install repository in editable mode with development dependencies:
 
     ```bash
     cd python
-    pip install -e ".[dev]"
+    pip install -e ".[python,dev]"
     ```
 
-- Install [pre-commit](https://pre-commit.com/) and then activate its hooks. pre-commit is a framework for managing and maintaining multi-language pre-commit hooks. The library uses pre-commit to ensure code-style and code formatting through [ruff](https://docs.astral.sh/ruff/). Run the following commands from the `python` directory:
+- Install [pre-commit](https://pre-commit.com/) and then activate its hooks. pre-commit is a framework for managing and maintaining multi-language pre-commit hooks. The Feature Store uses pre-commit to ensure code-style and code formatting through [ruff](https://docs.astral.sh/ruff/). Run the following commands from the `python` directory:
 
   ```bash
   cd python
@@ -62,8 +62,8 @@ We follow a few best practices for writing the Python documentation:
 
 
 2. Hopsworks entity engine methods (e.g. ExecutionEngine etc.) only require a single line docstring.
-3. Private REST Api implementations (e.g. GitRemoteApi etc.) should be fully documented with docstrings without defaults.
-4. Public Api such as metadata objects and public REST Api implementations should be fully documented with defaults.
+3. Private REST API implementations (e.g. GitRemoteApi etc.) should be fully documented with docstrings without defaults.
+4. Public API such as metadata objects and public REST API implementations should be fully documented with defaults.
 
 #### Setup and Build Documentation
 
@@ -81,7 +81,7 @@ We use `mkdocs` together with `mike` ([for versioning](https://github.com/jimpor
 2. Install HOPSWORKS with `docs` extras:
 
     ```bash
-    pip install -e .[dev,docs]
+    pip install -e .[python,dev,docs]
     ```
 
 3. To build the docs, first run the auto doc script:
@@ -119,8 +119,7 @@ On docs.hopsworks.ai we implement the following versioning scheme:
 
 ###### Build Instructions
 
-4. For this you can either checkout and make a local copy of the `upstream/gh-pages` branch, where
-`mike` maintains the current state of docs.hopsworks.ai, or just build documentation for the branch you are updating:
+4. For this you can either checkout and make a local copy of the `upstream/gh-pages` branch, where `mike` maintains the current state of docs.hopsworks.ai, or just build documentation for the branch you are updating:
 
     Building *one* branch:
 
