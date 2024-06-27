@@ -1,5 +1,5 @@
 #
-#   Copyright 2022 Hopsworks AB
+#   Copyright 2024 Hopsworks AB
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,17 +14,20 @@
 #   limitations under the License.
 #
 
-
-from hsfs import tag
+import humps
+from hsml import tag
 
 
 class TestTag:
+    # from response json
+
     def test_from_response_json(self, backend_fixtures):
         # Arrange
         json = backend_fixtures["tag"]["get"]["response"]
+        json_camelized = humps.camelize(json)
 
         # Act
-        t_list = tag.Tag.from_response_json(json)
+        t_list = tag.Tag.from_response_json(json_camelized)
 
         # Assert
         assert len(t_list) == 1
@@ -35,9 +38,25 @@ class TestTag:
     def test_from_response_json_empty(self, backend_fixtures):
         # Arrange
         json = backend_fixtures["tag"]["get_empty"]["response"]
+        json_camelized = humps.camelize(json)
 
         # Act
-        t_list = tag.Tag.from_response_json(json)
+        t_list = tag.Tag.from_response_json(json_camelized)
 
         # Assert
         assert len(t_list) == 0
+
+    # constructor
+
+    def test_constructor(self, backend_fixtures):
+        # Arrange
+        json = backend_fixtures["tag"]["get"]["response"]["items"][0]
+        tag_name = json.pop("name")
+        tag_value = json.pop("value")
+
+        # Act
+        t = tag.Tag(name=tag_name, value=tag_value, **json)
+
+        # Assert
+        assert t.name == "test_name"
+        assert t.value == "test_value"

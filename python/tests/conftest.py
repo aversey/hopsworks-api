@@ -1,5 +1,5 @@
 #
-#   Copyright 2022 Hopsworks AB
+#   Copyright 2024 Hopsworks AB
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import sys
 pytest_plugins = [
     "tests.fixtures.backend_fixtures",
     "tests.fixtures.dataframe_fixtures",
+    "tests.fixtures.model_fixtures",
 ]
 
 os.environ["PYSPARK_PYTHON"] = sys.executable

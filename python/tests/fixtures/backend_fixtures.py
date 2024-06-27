@@ -63,6 +63,14 @@ FIXTURES = [
     "serving_keys",
     "rondb_server",
     "spine_group",
+    "model",
+    "resources",
+    "transformer",
+    "predictor",
+    "kafka_topic",
+    "inference_logger",
+    "inference_batcher",
+    "inference_endpoint",
 ]
 
 backend_fixtures_json = {}
