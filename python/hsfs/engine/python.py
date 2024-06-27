@@ -30,11 +30,24 @@ import warnings
 from datetime import datetime, timezone
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Union,
+)
+
+
+if TYPE_CHECKING:
+    import great_expectations
 
 import avro
 import boto3
-import great_expectations as ge
 import hsfs
 import numpy as np
 import pandas as pd
@@ -70,7 +83,9 @@ from hsfs.core import (
     transformation_function_engine,
     variable_api,
 )
+from hsfs.core.constants import HAS_GREAT_EXPECTATIONS
 from hsfs.core.vector_db_client import VectorDbClient
+from hsfs.decorators import uses_great_expectations
 from hsfs.feature_group import ExternalFeatureGroup, FeatureGroup
 from hsfs.training_dataset import TrainingDataset
 from hsfs.training_dataset_split import TrainingDatasetSplit
@@ -92,6 +107,9 @@ try:
     HAS_FAST = True
 except ImportError:
     pass
+
+if HAS_GREAT_EXPECTATIONS:
+    import great_expectations
 
 # Decimal types are currently not supported
 _INT_TYPES = [pa.uint8(), pa.uint16(), pa.int8(), pa.int16(), pa.int32()]
@@ -690,12 +708,13 @@ class Engine:
             "Deequ data validation is only available with Spark Engine. Use validate_with_great_expectations"
         )
 
+    @uses_great_expectations
     def validate_with_great_expectations(
         self,
         dataframe: Union[pl.DataFrame, pd.DataFrame],
-        expectation_suite: ge.core.ExpectationSuite,
+        expectation_suite: great_expectations.core.ExpectationSuite,
         ge_validate_kwargs: Optional[Dict[Any, Any]] = None,
-    ) -> ge.core.ExpectationSuiteValidationResult:
+    ) -> great_expectations.core.ExpectationSuiteValidationResult:
         # This conversion might cause a bottleneck in performance when using polars with greater expectations.
         # This patch is done becuase currently great_expecatations does not support polars, would need to be made proper when support added.
         if isinstance(dataframe, pl.DataFrame) or isinstance(
@@ -709,7 +728,7 @@ class Engine:
             dataframe = dataframe.to_pandas()
         if ge_validate_kwargs is None:
             ge_validate_kwargs = {}
-        report = ge.from_pandas(
+        report = great_expectations.from_pandas(
             dataframe, expectation_suite=expectation_suite
         ).validate(**ge_validate_kwargs)
         return report

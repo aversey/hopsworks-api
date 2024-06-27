@@ -56,7 +56,6 @@ dependencies = [
     "avro==1.11.3", # has to be
     # "sqlalchemy",
     # "PyMySQL[rsa]",
-    "great_expectations==0.18.12", # has to be
     # "tzlocal",
     # "fsspec",
     "retrying",                      # has to be
@@ -91,8 +90,8 @@ python = [
     "fastavro>=1.4.11,<=1.8.4",
     "tqdm",
 ]
-# development extras:
-dev = [
+great-expectations = ["great_expectations==0.18.12"]
+dev-no-opt = [
     "pytest==7.4.4",
     "pytest-mock==3.12.0",
     "ruff",
@@ -109,6 +108,8 @@ dev-pandas1 = [
     "pandas<=1.5.3",
     "sqlalchemy<=1.4.48",
 ]
+dev = ["hopsworks[dev-no-opt]", "hopsworks[great-expectations]"]
+
 
 [build-system]
 requires = ["setuptools", "wheel"]
