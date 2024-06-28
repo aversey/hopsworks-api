@@ -14,22 +14,32 @@
 #   limitations under the License.
 #
 
+import importlib
 import os
 import re
 import sys
 import warnings
+from typing import Optional
 
 from hopsworks import client, version
 from hopsworks.core import project_api, secret_api, variable_api
 from hopsworks.decorators import connected, not_connected
+from hsfs import engine, feature_store, usage, util
+from hsfs.core import (
+    feature_store_api,
+    hosts_api,
+    services_api,
+)
+from hsfs.core.opensearch import OpenSearchClientSingleton
+from hsml.core import model_api, model_registry_api, model_serving_api
 from requests.exceptions import ConnectionError
 
 
 HOPSWORKS_PORT_DEFAULT = 443
 HOSTNAME_VERIFICATION_DEFAULT = True
 CERT_FOLDER_DEFAULT = "/tmp"
-PROJECT_ID = "HOPSWORKS_PROJECT_ID"
-PROJECT_NAME = "HOPSWORKS_PROJECT_NAME"
+SECRETS_STORE_DEFAULT = "parameterstore"
+AWS_DEFAULT_REGION = "default"
 
 
 class Connection:
@@ -57,34 +67,52 @@ class Connection:
         ```python hl_lines="6"
             import hopsworks
             conn = hopsworks.connection(
-                'my_instance',                      # DNS of your Hopsworks instance
+                'my_instance',                      # Hostname of your Hopsworks instance
                 443,                                # Port to reach your Hopsworks instance, defaults to 443
+                'my_project',                       # Name of your Hopsworks Feature Store project
                 api_key_file='hopsworks.key',       # The file containing the API key generated above
-                hostname_verification=True)         # Disable for self-signed certificates
+                hostname_verification=True,         # Disable for self-signed certificates
             )
-            project = conn.get_project("my_project")
         ```
 
     Clients in external clusters need to connect to the Hopsworks using an
     API key. The API key is generated inside the Hopsworks platform, and requires at
-    least the "project" scope to be able to access a project.
+    least the "project" scope to be able to access a project at all; plus the "featurestore" scope
+    to be able to access a feature store; or "modelregistry", "dataset.create", "dataset.view",
+    "dataset.delete", "serving" and "kafka" scopes to be able to access a model registry and its model serving.
     For more information, see the [integration guides](../setup.md).
 
     # Arguments
-        host: The hostname of the Hopsworks instance, defaults to `None`.
+        host: The hostname of the Hopsworks instance in the form of `[UUID].cloud.hopsworks.ai`,
+            defaults to `None`. Do **not** use the url including `https://` when connecting
+            programatically.
         port: The port on which the Hopsworks instance can be reached,
             defaults to `443`.
-        project: The name of the project to connect to. If this is set connection.get_project() will return
-        the set project. If not set connection.get_project("my_project") should be used.
+        project: The name of the project to connect to. When running on Hopsworks, this
+            defaults to the project from where the client is run from.
+            Defaults to `None`.
+        engine: Which engine to use, `"spark"`, `"python"` or `"training"`. Defaults to `None`,
+            which initializes the engine to Spark if the environment provides Spark, for
+            example on Hopsworks and Databricks, or falls back on Hive in Python if Spark is not
+            available, e.g. on local Python environments or AWS SageMaker. This option
+            allows you to override this behaviour. `"training"` engine is useful when only
+            feature store metadata is needed, for example training dataset location and label
+            information when Hopsworks training experiment is conducted.
+        region_name: The name of the AWS region in which the required secrets are
+            stored, defaults to `"default"`.
+        secrets_store: The secrets storage to be used, either `"secretsmanager"`,
+            `"parameterstore"` or `"local"`, defaults to `"parameterstore"`.
         hostname_verification: Whether or not to verify Hopsworks’ certificate, defaults
             to `True`.
         trust_store_path: Path on the file system containing the Hopsworks certificates,
             defaults to `None`.
         cert_folder: The directory to store retrieved HopsFS certificates, defaults to
             `"/tmp"`. Only required to produce messages to Kafka broker from external environment.
-        api_key_file: Path to a file containing the API Key.
-        api_key_value: API Key as string, if provided, however, this should be used with care,
-        especially if the used notebook or job script is accessible by multiple parties. Defaults to `None`.
+        api_key_file: Path to a file containing the API Key, if provided,
+            `secrets_store` will be ignored, defaults to `None`.
+        api_key_value: API Key as string, if provided, `secrets_store` will be ignored`,
+            however, this should be used with care, especially if the used notebook or
+            job script is accessible by multiple parties. Defaults to `None`.
 
     # Returns
         `Connection`. Connection handle to perform operations on a
@@ -93,9 +121,12 @@ class Connection:
 
     def __init__(
         self,
-        host: str = None,
+        host: Optional[str] = None,
         port: int = HOPSWORKS_PORT_DEFAULT,
-        project: str = None,
+        project: Optional[str] = None,
+        engine: Optional[str] = None,
+        region_name: str = AWS_DEFAULT_REGION,
+        secrets_store: str = SECRETS_STORE_DEFAULT,
         hostname_verification: bool = HOSTNAME_VERIFICATION_DEFAULT,
         trust_store_path: str = None,
         cert_folder: str = CERT_FOLDER_DEFAULT,
@@ -105,12 +136,18 @@ class Connection:
         self._host = host
         self._port = port
         self._project = project
+        self._engine = engine
+        self._region_name = region_name
+        self._secrets_store = secrets_store
         self._hostname_verification = hostname_verification
         self._trust_store_path = trust_store_path
         self._cert_folder = cert_folder
         self._api_key_file = api_key_file
         self._api_key_value = api_key_value
         self._connected = False
+        self._model_api = model_api.ModelApi()
+        self._model_registry_api = model_registry_api.ModelRegistryApi()
+        self._model_serving_api = model_serving_api.ModelServingApi()
 
         self.connect()
 
@@ -221,6 +258,72 @@ class Connection:
         )
         client.set_python_version(python_version)
 
+    @connected
+    def get_model_registry(self, project: str = None):
+        """Get a reference to a model registry to perform operations on, defaulting to the project's default model registry.
+        Shared model registries can be retrieved by passing the `project` argument.
+
+        # Arguments
+            project: The name of the project that owns the shared model registry,
+            the model registry must be shared with the project the connection was established for, defaults to `None`.
+        # Returns
+            `ModelRegistry`. A model registry handle object to perform operations on.
+        """
+        return self._model_registry_api.get(project)
+
+    @connected
+    def get_model_serving(self):
+        """Get a reference to model serving to perform operations on. Model serving operates on top of a model registry, defaulting to the project's default model registry.
+
+        !!! example
+            ```python
+
+            import hopsworks
+
+            project = hopsworks.login()
+
+            ms = project.get_model_serving()
+            ```
+
+        # Returns
+            `ModelServing`. A model serving handle object to perform operations on.
+        """
+        return self._model_serving_api.get()
+
+    @usage.method_logger
+    @connected
+    def get_feature_store(
+        self, name: Optional[str] = None
+    ) -> feature_store.FeatureStore:
+        """Get a reference to a feature store to perform operations on.
+
+        Defaulting to the project name of default feature store. To get a
+        Shared feature stores, the project name of the feature store is required.
+
+        !!! example "How to get feature store instance"
+
+            ```python
+            import hsfs
+            conn = hsfs.connection()
+            fs = conn.get_feature_store()
+
+            # or
+
+            import hopsworks
+            project = hopsworks.login()
+            fs = project.get_feature_store()
+            ```
+
+        # Arguments
+            name: The name of the feature store, defaults to `None`.
+
+        # Returns
+            `FeatureStore`. A feature store handle object to perform operations on.
+        """
+        if not name:
+            name = client.get_instance()._project_name
+        return self._feature_store_api.get(util.append_feature_store_suffix(name))
+
     @not_connected
     def connect(self):
         """Instantiate the connection.
@@ -243,6 +346,28 @@ class Connection:
         client.stop()
         self._connected = True
         try:
+            # determine engine, needed to init client
+            if (self._engine is not None and self._engine.lower() == "spark") or (
+                self._engine is None and importlib.util.find_spec("pyspark")
+            ):
+                self._engine = "spark"
+            elif (
+                self._engine is not None and self._engine.lower() in ["hive", "python"]
+            ) or (self._engine is None and not importlib.util.find_spec("pyspark")):
+                self._engine = "python"
+            elif self._engine is not None and self._engine.lower() == "training":
+                self._engine = "training"
+            elif (
+                self._engine is not None
+                and self._engine.lower() == "spark-no-metastore"
+            ):
+                self._engine = "spark-no-metastore"
+            else:
+                raise ConnectionError(
+                    "Engine you are trying to initialize is unknown. "
+                    "Supported engines are `'spark'`, `'python'` and `'training'`."
+                )
+
             # init client
             if client.base.Client.REST_ENDPOINT not in os.environ:
                 client.init(
@@ -250,6 +375,9 @@ class Connection:
                     self._host,
                     self._port,
                     self._project,
+                    self._engine,
+                    self._region_name,
+                    self._secrets_store,
                     self._hostname_verification,
                     self._trust_store_path,
                     self._cert_folder,
@@ -259,9 +387,20 @@ class Connection:
             else:
                 client.init("hopsworks")
 
+            # init engine
+            engine.init(self._engine)
+
             self._project_api = project_api.ProjectApi()
             self._secret_api = secret_api.SecretsApi()
             self._variable_api = variable_api.VariableApi()
+            self._feature_store_api = feature_store_api.FeatureStoreApi()
+            self._hosts_api = hosts_api.HostsApi()
+            self._services_api = services_api.ServicesApi()
+            usage.init_usage(
+                self._host, variable_api.VariableApi().get_version("hopsworks")
+            )
+            self._model_api = model_api.ModelApi()
+            self._model_serving_api.load_default_configuration()  # istio client, default resources,...
         except (TypeError, ConnectionError):
             self._connected = False
             raise
@@ -280,15 +419,26 @@ class Connection:
         external environments such as AWS SageMaker.
 
         Usage is recommended but optional.
+
+        !!! example
+            ```python
+            import hopsworks
+            conn = hopsworks.connection()
+            conn.close()
+            ```
         """
         from hsfs import client as hsfs_client
         from hsfs import engine as hsfs_engine
         from hsml import client as hsml_client
 
+        OpenSearchClientSingleton().close()
+
         try:
             hsfs_client.stop()
         except:  # noqa: E722
             pass
+
+        self._feature_store_api = None
 
         try:
             hsfs_engine.stop()
@@ -300,6 +450,8 @@ class Connection:
         except:  # noqa: E722
             pass
 
+        self._model_api = None
+
         client.stop()
         self._connected = False
 
@@ -308,9 +460,12 @@ class Connection:
     @classmethod
     def connection(
         cls,
-        host: str = None,
+        host: Optional[str] = None,
         port: int = HOPSWORKS_PORT_DEFAULT,
-        project: str = None,
+        project: Optional[str] = None,
+        engine: Optional[str] = None,
+        region_name: str = AWS_DEFAULT_REGION,
+        secrets_store: str = SECRETS_STORE_DEFAULT,
         hostname_verification: bool = HOSTNAME_VERIFICATION_DEFAULT,
         trust_store_path: str = None,
         cert_folder: str = CERT_FOLDER_DEFAULT,
@@ -322,6 +477,9 @@ class Connection:
             host,
             port,
             project,
+            engine,
+            region_name,
+            secrets_store,
             hostname_verification,
             trust_store_path,
             cert_folder,
@@ -355,6 +513,19 @@ class Connection:
     @not_connected
     def project(self, project):
         self._project = project
+
+    @property
+    def region_name(self) -> str:
+        return self._region_name
+
+    @region_name.setter
+    @not_connected
+    def region_name(self, region_name: str) -> None:
+        self._region_name = region_name
+
+    @property
+    def secrets_store(self) -> str:
+        return self._secrets_store
 
     @property
     def hostname_verification(self):

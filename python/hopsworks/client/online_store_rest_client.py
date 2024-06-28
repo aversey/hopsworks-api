@@ -13,6 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+
 from __future__ import annotations
 
 import logging
@@ -22,9 +23,9 @@ from warnings import warn
 import requests
 import requests.adapters
 from furl import furl
-from hsfs import client
-from hsfs.client.exceptions import FeatureStoreException
-from hsfs.core import variable_api
+from hopsworks import client
+from hopsworks.client.exceptions import FeatureStoreException
+from hopsworks.core import variable_api
 
 
 _logger = logging.getLogger(__name__)

@@ -13,39 +13,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from __future__ import annotations
 
-import requests
-
-
-class BearerAuth(requests.auth.AuthBase):
-    """Class to encapsulate a Bearer token."""
-
-    def __init__(self, token: str) -> None:
-        self._token = token.strip()
-
-    def __call__(self, r: requests.Request) -> requests.Request:
-        r.headers["Authorization"] = "Bearer " + self._token
-        return r
+from hopsworks.client.auth import ApiKeyAuth, BearerAuth, OnlineStoreKeyAuth
 
 
-class ApiKeyAuth(requests.auth.AuthBase):
-    """Class to encapsulate an API key."""
-
-    def __init__(self, token: str) -> None:
-        self._token = token.strip()
-
-    def __call__(self, r: requests.Request) -> requests.Request:
-        r.headers["Authorization"] = "ApiKey " + self._token
-        return r
-
-
-class OnlineStoreKeyAuth(requests.auth.AuthBase):
-    """Class to encapsulate an API key."""
-
-    def __init__(self, token):
-        self._token = token.strip()
-
-    def __call__(self, r):
-        r.headers["X-API-KEY"] = self._token
-        return r
+__all__ = [ApiKeyAuth, BearerAuth, OnlineStoreKeyAuth]

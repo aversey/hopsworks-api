@@ -1,5 +1,5 @@
 #
-#   Copyright 2021 Logical Clocks AB
+#   Copyright 2024 Hopsworks AB
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,7 +14,15 @@
 #   limitations under the License.
 #
 
-from hopsworks.version import __version__
+from hopsworks.client.online_store_rest_client import (
+    OnlineStoreRestClientSingleton,
+    get_instance,
+    init_or_reset_online_store_rest_client,
+)
 
 
-__all__ = [__version__]
+__all__ = [
+    OnlineStoreRestClientSingleton,
+    get_instance,
+    init_or_reset_online_store_rest_client,
+]
