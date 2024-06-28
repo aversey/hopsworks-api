@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-import hsfs
+import hopsworks
 import pytest
 from furl import furl
 from hsfs.client import auth, exceptions, online_store_rest_client
@@ -50,7 +50,7 @@ class TestOnlineStoreRestClient:
         def client_get_instance():
             return MockExternalClient()
 
-        monkeypatch.setattr(hsfs.client, "get_instance", client_get_instance)
+        monkeypatch.setattr(hopsworks.client, "get_instance", client_get_instance)
         variable_api_mock = mocker.patch(
             "hsfs.core.variable_api.VariableApi.get_loadbalancer_external_domain",
             return_value="app.hopsworks.ai",
@@ -86,7 +86,7 @@ class TestOnlineStoreRestClient:
         def client_get_instance():
             return MockInternalClient()
 
-        monkeypatch.setattr(hsfs.client, "get_instance", client_get_instance)
+        monkeypatch.setattr(hopsworks.client, "get_instance", client_get_instance)
         variable_api_mock = mocker.patch(
             "hsfs.core.variable_api.VariableApi.get_service_discovery_domain",
             return_value="consul",
