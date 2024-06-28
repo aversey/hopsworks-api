@@ -44,36 +44,14 @@ dependencies = [
     "pyjks",
     "mock",
     "tqdm",
-    ####################### from hsfs:
-    # "pyhumps==1.6.1",
-    # "requests",
-    # "furl",
-    # "boto3",
-    "pandas<2.2.0", # has to be
-    # "numpy<2",
-    # "pyjks",
-    # "mock",
-    "avro==1.11.3", # has to be
-    # "sqlalchemy",
-    # "PyMySQL[rsa]",
-    # "tzlocal",
-    # "fsspec",
-    "retrying",                      # has to be
-    "hopsworks_aiomysql[sa]==0.2.1", # has to be
-    "polars>=0.20.18,<=0.21.0",      # has to be
-    "opensearch-py>=1.1.0,<=2.4.2",  # has to be
-    ####################### from hsml:
-    # "pyhumps==1.6.1",
-    # "requests",
-    # "furl",
-    # "boto3",
-    # "pandas",
-    # "numpy",
-    # "pyjks",
-    # "mock",
-    # "tqdm",
-    "grpcio>=1.49.1,<2.0.0",   # ^1.49.1 # has to be
-    "protobuf>=3.19.0,<4.0.0", # ^3.19.0 # has to be
+    "pandas<2.2.0",
+    "avro==1.11.3",
+    "retrying",
+    "hopsworks_aiomysql[sa]==0.2.1",
+    "polars>=0.20.18,<=0.21.0",
+    "opensearch-py>=1.1.0,<=2.4.2",
+    "grpcio>=1.49.1,<2.0.0",         # ^1.49.1
+    "protobuf>=3.19.0,<4.0.0",       # ^3.19.0
 ]
 
 [project.optional-dependencies]
@@ -108,7 +86,31 @@ dev-pandas1 = [
     "pandas<=1.5.3",
     "sqlalchemy<=1.4.48",
 ]
-dev = ["hopsworks[dev-no-opt]", "hopsworks[great-expectations]"]
+miscellaneous = [
+    # from hsfs:
+    "pyhumps==1.6.1",
+    "requests",
+    "furl",
+    "boto3",
+    "numpy<2",
+    "pyjks",
+    "mock",
+    "sqlalchemy",
+    "PyMySQL[rsa]",
+    "tzlocal",
+    "fsspec",
+    # from hsml:
+    "pyhumps==1.6.1",
+    "requests",
+    "furl",
+    "boto3",
+    "pandas",
+    "numpy",
+    "pyjks",
+    "mock",
+    "tqdm",
+]
+dev = ["hopsworks[dev-no-opt,great-expectations,python,miscellaneous]"]
 
 
 [build-system]
@@ -117,7 +119,16 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 exclude = ["tests*"]
-include = ["../README.md", "../LICENSE", "hopsworks", "hopsworks.*", "hsfs", "hsfs.*", "hsml", "hsml.*"]
+include = [
+    "../README.md",
+    "../LICENSE",
+    "hopsworks",
+    "hopsworks.*",
+    "hsfs",
+    "hsfs.*",
+    "hsml",
+    "hsml.*",
+]
 
 [tool.setuptools.dynamic]
 version = { attr = "hopsworks.version.__version__" }
