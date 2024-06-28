@@ -2978,6 +2978,7 @@ class TestPython:
 
     def test_write_training_dataset_query_td(self, mocker, backend_fixtures):
         # Arrange
+        mocker.patch("hsfs.client.get_instance")
         mocker.patch("hsfs.engine.get_type")
         mocker.patch("hsfs.core.training_dataset_job_conf.TrainingDatasetJobConf")
         mock_job = mocker.patch("hsfs.core.job.Job")
@@ -3022,6 +3023,7 @@ class TestPython:
 
     def test_write_training_dataset_query_fv(self, mocker, backend_fixtures):
         # Arrange
+        mocker.patch("hsfs.client.get_instance")
         mocker.patch("hsfs.engine.get_type")
         mocker.patch("hsfs.core.training_dataset_job_conf.TrainingDatasetJobConf")
         mock_job = mocker.patch("hsfs.core.job.Job")
@@ -3073,6 +3075,7 @@ class TestPython:
 
     def test_create_hive_connection(self, mocker):
         # Arrange
+        mocker.patch("hopsworks.client.get_instance")
         mocker.patch("hsfs.client.get_instance")
         mock_pyhive_conn = mocker.patch("pyhive.hive.Connection")
 
