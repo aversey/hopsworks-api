@@ -38,30 +38,30 @@ def to_np_dtype(dtype):
 
 
 def from_np_dtype(np_dtype):
-    if np_dtype == bool:
+    if np_dtype is bool:
         return "BOOL"
-    elif np_dtype == np.int8:
+    elif np_dtype is np.int8:
         return "INT8"
-    elif np_dtype == np.int16:
+    elif np_dtype is np.int16:
         return "INT16"
-    elif np_dtype == np.int32:
+    elif np_dtype is np.int32:
         return "INT32"
-    elif np_dtype == np.int64:
+    elif np_dtype is np.int64:
         return "INT64"
-    elif np_dtype == np.uint8:
+    elif np_dtype is np.uint8:
         return "UINT8"
-    elif np_dtype == np.uint16:
+    elif np_dtype is np.uint16:
         return "UINT16"
-    elif np_dtype == np.uint32:
+    elif np_dtype is np.uint32:
         return "UINT32"
-    elif np_dtype == np.uint64:
+    elif np_dtype is np.uint64:
         return "UINT64"
-    elif np_dtype == np.float16:
+    elif np_dtype is np.float16:
         return "FP16"
-    elif np_dtype == np.float32:
+    elif np_dtype is np.float32:
         return "FP32"
-    elif np_dtype == np.float64:
+    elif np_dtype is np.float64:
         return "FP64"
-    elif np_dtype == np.object_ or np_dtype.type == np.bytes_:
+    elif np_dtype is np.object_ or np_dtype.type is np.bytes_:
         return "BYTES"
     return None

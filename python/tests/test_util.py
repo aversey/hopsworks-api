@@ -597,7 +597,7 @@ class TestUtil:
         assert b == ["2", "2", "2"]
         assert get_obj_from_json.call_count == 3
         assert get_obj_from_json.call_args[1]["obj"] == "2"
-        assert get_obj_from_json.call_args[1]["cls"] == str
+        assert get_obj_from_json.call_args[1]["cls"] is str
 
     def test_get_obj_from_json_cls(self, mocker):
         # Arrange
