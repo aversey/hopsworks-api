@@ -20,8 +20,8 @@ import textwrap
 from pathlib import Path
 
 import requests
-from hsml.client import auth, exceptions
-from hsml.client.istio import base as istio
+from hopsworks.client import auth, exceptions
+from hopsworks.client.istio import base as istio
 
 
 try:

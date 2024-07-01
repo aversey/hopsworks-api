@@ -1,5 +1,5 @@
 #
-#   Copyright 2022 Logical Clocks AB
+#   Copyright 2024 Hopsworks AB
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
 #   limitations under the License.
 #
 
-from hopsworks.client.base import Client
+
+from hopsworks.client.istio.grpc.errors import InvalidInput
 
 
-__all__ = [Client]
+__all__ = [InvalidInput]

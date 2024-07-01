@@ -97,8 +97,10 @@ class TestLogin(TestCase):
         assert in_tmp is False
 
         with input({"hidden": os.environ["APP_API_KEY"]}):
-            project = hopsworks.login()
-            self.assertTrue(isinstance(project, Project))
+            with mock.patch("importlib.util.find_spec") as fs:
+                fs.return_value = False  # use python engine
+                project = hopsworks.login()
+                self.assertTrue(isinstance(project, Project))
 
         path, in_cwd, in_home, in_tmp = self._check_api_key_existence()
 
@@ -113,9 +115,12 @@ class TestLogin(TestCase):
         assert in_cwd is False
         assert in_home is True and not os.path.exists(path)
         assert in_tmp is False
+
         # Should create API key in home by default
-        project = hopsworks.login(api_key_value=os.environ["APP_API_KEY"])
-        self.assertTrue(isinstance(project, Project))
+        with mock.patch("importlib.util.find_spec") as fs:
+            fs.return_value = False  # use python engine
+            project = hopsworks.login(api_key_value=os.environ["APP_API_KEY"])
+            self.assertTrue(isinstance(project, Project))
 
         self.api_key_path, in_cwd, in_home, in_tmp = self._check_api_key_existence()
 
@@ -134,7 +139,9 @@ class TestLogin(TestCase):
 
         with self.assertRaises(exceptions.RestAPIError):
             with input({"hidden": "incorrect_api_key"}):
-                hopsworks.login()
+                with mock.patch("importlib.util.find_spec") as fs:
+                    fs.return_value = False  # use python engine
+                    hopsworks.login()
 
     def test_login_fallback_to_tmp(self):
         # Should fall back to storing api key in tmp folder if home is not write and executable for user
@@ -148,8 +155,10 @@ class TestLogin(TestCase):
 
         # Should use API key in tmp folder
         with input({"hidden": os.environ["APP_API_KEY"]}):
-            project = hopsworks.login()
-            self.assertTrue(isinstance(project, Project))
+            with mock.patch("importlib.util.find_spec") as fs:
+                fs.return_value = False  # use python engine
+                project = hopsworks.login()
+                self.assertTrue(isinstance(project, Project))
 
         assert in_cwd is False
         assert in_home is False
@@ -168,8 +177,10 @@ class TestLogin(TestCase):
         assert in_home is False
         assert in_tmp is False
 
-        project = hopsworks.login()
-        self.assertTrue(isinstance(project, Project))
+        with mock.patch("importlib.util.find_spec") as fs:
+            fs.return_value = False  # use python engine
+            project = hopsworks.login()
+            self.assertTrue(isinstance(project, Project))
 
         path, in_cwd, in_home, in_tmp = self._check_api_key_existence()
 
@@ -193,8 +204,10 @@ class TestLogin(TestCase):
         assert in_home is True and os.path.exists(path)
         assert in_tmp is False
 
-        project = hopsworks.login()
-        self.assertTrue(isinstance(project, Project))
+        with mock.patch("importlib.util.find_spec") as fs:
+            fs.return_value = False  # use python engine
+            project = hopsworks.login()
+            self.assertTrue(isinstance(project, Project))
 
         path, in_cwd, in_home, in_tmp = self._check_api_key_existence()
 
@@ -213,8 +226,10 @@ class TestLogin(TestCase):
             assert in_home is True and not os.path.exists(path)
             assert in_tmp is False
 
-            project = hopsworks.login()
-            self.assertTrue(isinstance(project, Project))
+            with mock.patch("importlib.util.find_spec") as fs:
+                fs.return_value = False  # use python engine
+                project = hopsworks.login()
+                self.assertTrue(isinstance(project, Project))
 
             path, in_cwd, in_home, in_tmp = self._check_api_key_existence()
 
@@ -229,6 +244,8 @@ class TestLogin(TestCase):
     def test_login_newline_in_api_key(self):
         try:
             imaginaryApiKey = "ImaginaryApiKey\n"
-            hopsworks.login(api_key_value=imaginaryApiKey)
+            with mock.patch("importlib.util.find_spec") as fs:
+                fs.return_value = False  # use python engine
+                hopsworks.login(api_key_value=imaginaryApiKey)
         except Exception as e:
             self.assertNotIn(imaginaryApiKey.strip(), str(e))

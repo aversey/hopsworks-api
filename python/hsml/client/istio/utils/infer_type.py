@@ -1,5 +1,5 @@
 #
-#   Copyright 2022 Logical Clocks AB
+#   Copyright 2024 Hopsworks AB
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,7 +14,27 @@
 #   limitations under the License.
 #
 
-from hopsworks.client.base import Client
+from hopsworks.client.istio.utils.infer_type import (
+    GRPC_CONTENT_DATATYPE_MAPPINGS,
+    InferenceServerException,
+    InferInput,
+    InferOutput,
+    InferRequest,
+    InferResponse,
+    get_content,
+    raise_error,
+    serialize_byte_tensor,
+)
 
 
-__all__ = [Client]
+__all__ = [
+    GRPC_CONTENT_DATATYPE_MAPPINGS,
+    InferenceServerException,
+    InferInput,
+    InferOutput,
+    InferRequest,
+    InferResponse,
+    get_content,
+    raise_error,
+    serialize_byte_tensor,
+]

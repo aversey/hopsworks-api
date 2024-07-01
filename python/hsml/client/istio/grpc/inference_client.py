@@ -1,5 +1,5 @@
 #
-#   Copyright 2022 Logical Clocks AB
+#   Copyright 2024 Hopsworks AB
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,9 +12,9 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-#
+#ß
 
-from hopsworks.client.base import Client
+from hopsworks.client.istio.grpc.inference_client import GRPCInferenceServerClient
 
 
-__all__ = [Client]
+__all__ = [GRPCInferenceServerClient]

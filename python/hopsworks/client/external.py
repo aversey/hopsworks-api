@@ -110,7 +110,9 @@ class Client(base.Client):
         self._cert_key = None
         self._cert_folder_base = os.path.join(cert_folder, host)
 
-        if engine == "python":
+        if not project:
+            return
+        elif engine == "python":
             credentials = self._materialize_certs(cert_folder, host, project)
 
             self._write_pem_file(credentials["caChain"], self._get_ca_chain_path())
@@ -258,6 +260,10 @@ class Client(base.Client):
     def _close(self):
         """Closes a client and deletes certificates."""
         # TODO: check if the certificate cleanup may break users using hsfs python ingestion
+        if not self._project_name:
+            self._connected = False
+            return
+
         _logger.info("Closing external client and cleaning up certificates.")
         if self._cert_folder_base is None:
             _logger.debug("No certificates to clean up.")

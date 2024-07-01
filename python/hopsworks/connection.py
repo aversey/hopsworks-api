@@ -400,7 +400,8 @@ class Connection:
                 self._host, variable_api.VariableApi().get_version("hopsworks")
             )
             self._model_api = model_api.ModelApi()
-            self._model_serving_api.load_default_configuration()  # istio client, default resources,...
+            if self._project:
+                self._model_serving_api.load_default_configuration()  # istio client, default resources,...
         except (TypeError, ConnectionError):
             self._connected = False
             raise
@@ -431,7 +432,8 @@ class Connection:
         from hsfs import engine as hsfs_engine
         from hsml import client as hsml_client
 
-        OpenSearchClientSingleton().close()
+        if self._project:
+            OpenSearchClientSingleton().close()
 
         try:
             hsfs_client.stop()

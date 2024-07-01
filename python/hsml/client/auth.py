@@ -14,51 +14,17 @@
 #   limitations under the License.
 #
 
-import os
-
-import requests
-from hsml.client import exceptions
-
-
-class BearerAuth(requests.auth.AuthBase):
-    """Class to encapsulate a Bearer token."""
-
-    def __init__(self, token):
-        self._token = token
-
-    def __call__(self, r):
-        r.headers["Authorization"] = "Bearer " + self._token
-        return r
+from hopsworks.client.auth import (
+    ApiKeyAuth,
+    BearerAuth,
+    OnlineStoreKeyAuth,
+    get_api_key,
+)
 
 
-class ApiKeyAuth(requests.auth.AuthBase):
-    """Class to encapsulate an API key."""
-
-    def __init__(self, token):
-        self._token = token
-
-    def __call__(self, r):
-        r.headers["Authorization"] = "ApiKey " + self._token
-        return r
-
-
-def get_api_key(api_key_value, api_key_file):
-    if api_key_value is not None:
-        return api_key_value
-    elif api_key_file is not None:
-        file = None
-        if os.path.exists(api_key_file):
-            try:
-                file = open(api_key_file, mode="r")
-                return file.read()
-            finally:
-                file.close()
-        else:
-            raise IOError(
-                "Could not find api key file on path: {}".format(api_key_file)
-            )
-    else:
-        raise exceptions.ExternalClientError(
-            "Either api_key_file or api_key_value must be set when connecting to"
-            " hopsworks from an external environment."
-        )
+__all__ = [
+    ApiKeyAuth,
+    BearerAuth,
+    OnlineStoreKeyAuth,
+    get_api_key,
+]

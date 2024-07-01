@@ -14,7 +14,7 @@
 #   limitations under the License.
 #
 
-from hopsworks.client.base import Client
+from hopsworks.client.istio.base import Client
 
 
 __all__ = [Client]

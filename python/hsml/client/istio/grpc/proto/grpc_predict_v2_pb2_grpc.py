@@ -1,5 +1,5 @@
 #
-#   Copyright 2022 Logical Clocks AB
+#   Copyright 2024 Hopsworks AB
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,8 +13,19 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Client and server classes corresponding to protobuf-defined services."""
 
-from hopsworks.client.base import Client
+from hopsworks.client.istio.grpc.proto.grpc_predict_v2_pb2_grpc import (
+    GRPCInferenceService,
+    GRPCInferenceServiceServicer,
+    GRPCInferenceServiceStub,
+    add_GRPCInferenceServiceServicer_to_server,
+)
 
 
-__all__ = [Client]
+__all__ = [
+    GRPCInferenceService,
+    GRPCInferenceServiceServicer,
+    GRPCInferenceServiceStub,
+    add_GRPCInferenceServiceServicer_to_server,
+]

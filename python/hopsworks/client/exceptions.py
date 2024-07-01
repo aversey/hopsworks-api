@@ -99,6 +99,27 @@ class FeatureStoreException(Exception):
     """Generic feature store exception"""
 
 
+class ModelRegistryException(Exception):
+    """Generic model registry exception"""
+
+
+class ModelServingException(Exception):
+    """Generic model serving exception"""
+
+    ERROR_CODE_SERVING_NOT_FOUND = 240000
+    ERROR_CODE_ILLEGAL_ARGUMENT = 240001
+    ERROR_CODE_DUPLICATED_ENTRY = 240011
+
+    ERROR_CODE_DEPLOYMENT_NOT_RUNNING = 250001
+
+
+class InternalClientError(TypeError):
+    """Raised when internal client cannot be initialized due to missing arguments."""
+
+    def __init__(self, message):
+        super().__init__(message)
+
+
 class ExternalClientError(TypeError):
     """Raised when external client cannot be initialized due to missing arguments."""
 

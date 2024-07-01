@@ -1,5 +1,5 @@
 #
-#   Copyright 2022 Logical Clocks AB
+#   Copyright 2024 Hopsworks AB
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 #   limitations under the License.
 #
 
-from hopsworks.client.base import Client
+from hopsworks.client.istio.utils.numpy_codec import from_np_dtype, to_np_dtype
 
 
-__all__ = [Client]
+__all__ = [from_np_dtype, to_np_dtype]

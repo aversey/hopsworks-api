@@ -17,8 +17,8 @@
 import os
 from abc import abstractmethod
 
-from hsml.client import base
-from hsml.client.istio.grpc.inference_client import GRPCInferenceServerClient
+from hopsworks.client import base
+from hopsworks.client.istio.grpc.inference_client import GRPCInferenceServerClient
 
 
 class Client(base.Client):
