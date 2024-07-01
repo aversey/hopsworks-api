@@ -4,6 +4,7 @@ on: pull_request
 
 env:
   APP_API_KEY: ${{ secrets.APP_API_KEY }}
+  ENABLE_HOPSWORKS_USAGE: "false"
 
 jobs:
   lint_stylecheck:
@@ -76,8 +77,6 @@ jobs:
         run: python --version
 
       - name: Run Pytest suite
-        env:
-          ENABLE_HOPSWORKS_USAGE: "false"
         run: pytest python/tests
 
   unit_tests_ubuntu_pandas:
@@ -105,8 +104,6 @@ jobs:
         run: python --version
 
       - name: Run Pytest suite
-        env:
-          ENABLE_HOPSWORKS_USAGE: "false"
         run: pytest python/tests
 
   unit_tests_ubuntu_local:
@@ -134,8 +131,6 @@ jobs:
         run: python --version
 
       - name: Run Pytest suite
-        env:
-          ENABLE_HOPSWORKS_USAGE: "false"
         run: pytest python/tests
 
   unit_tests_ubuntu_typechecked:
@@ -158,7 +153,6 @@ jobs:
 
       - name: Run Pytest suite
         env:
-          ENABLE_HOPSWORKS_USAGE: "false"
           HOPSWORKS_RUN_WITH_TYPECHECK: "true"
         run: pytest python/tests
         continue-on-error: true
@@ -188,8 +182,6 @@ jobs:
         run: python --version
 
       - name: Run Pytest suite
-        env:
-          ENABLE_HOPSWORKS_USAGE: "false"
         run: pytest python/tests
 
   unit_tests_windows_local:
@@ -220,6 +212,4 @@ jobs:
         run: pip freeze
 
       - name: Run Pytest suite
-        env:
-          ENABLE_HOPSWORKS_USAGE: "false"
         run: pytest python/tests
