@@ -125,4 +125,4 @@ class EnvironmentApi:
             python_version,
         ]
         headers = {"content-type": "application/json"}
-        _client._send_request("DELETE", path_params, headers=headers),
+        (_client._send_request("DELETE", path_params, headers=headers),)

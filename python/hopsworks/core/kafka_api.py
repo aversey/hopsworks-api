@@ -14,10 +14,11 @@
 #   limitations under the License.
 #
 
-from hopsworks import client, kafka_topic, kafka_schema, constants
-from hopsworks.client.exceptions import KafkaException
 import json
 import socket
+
+from hopsworks import client, constants, kafka_schema, kafka_topic
+from hopsworks.client.exceptions import KafkaException
 from hopsworks.client.external import Client
 
 

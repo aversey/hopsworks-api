@@ -111,6 +111,22 @@ PAGES = {
         "git_provider_properties": keras_autodoc.get_properties(
             "hopsworks.git_provider.GitProvider"
         ),
+    },
+    "api/spine_group_api.md": {
+        "fg": ["hsfs.feature_group.SpineGroup"],
+        "fg_create": ["hsfs.feature_store.FeatureStore.get_or_create_spine_group"],
+        "fg_get": ["hsfs.feature_store.FeatureStore.get_or_create_spine_group"],
+        "fg_properties": keras_autodoc.get_properties(
+            "hsfs.feature_group.SpineGroup",
+            exclude=[
+                "expectation_suite",
+                "location",
+                "online_enabled",
+                "statistics",
+                "statistics_config",
+                "subject",
+            ],
+        ),
         "git_provider_methods": keras_autodoc.get_methods(
             "hopsworks.git_provider.GitProvider", exclude=["from_response_json", "json"]
         ),
@@ -131,6 +147,127 @@ PAGES = {
         "dataset_api_handle": ["hopsworks.project.Project.get_dataset_api"],
         "dataset_methods": keras_autodoc.get_methods(
             "hopsworks.core.dataset_api.DatasetApi"
+        ),
+    },
+    "api/feature_view_api.md": {
+        "fv": ["hsfs.feature_view.FeatureView"],
+        "fv_create": ["hsfs.feature_store.FeatureStore.create_feature_view"],
+        "fv_get": ["hsfs.feature_store.FeatureStore.get_feature_view"],
+        "fvs_get": ["hsfs.feature_store.FeatureStore.get_feature_views"],
+        "fv_properties": keras_autodoc.get_properties("hsfs.feature_view.FeatureView"),
+        "fv_methods": keras_autodoc.get_methods("hsfs.feature_view.FeatureView"),
+    },
+    "api/feature_api.md": {
+        "feature": ["hsfs.feature.Feature"],
+        "feature_properties": keras_autodoc.get_properties("hsfs.feature.Feature"),
+        "feature_methods": keras_autodoc.get_methods("hsfs.feature.Feature"),
+    },
+    "api/expectation_suite_api.md": {
+        "expectation_suite": ["hsfs.expectation_suite.ExpectationSuite"],
+        "expectation_suite_attach": [
+            "hsfs.feature_group.FeatureGroup.save_expectation_suite"
+        ],
+        "single_expectation_api": [
+            "hsfs.expectation_suite.ExpectationSuite.add_expectation",
+            "hsfs.expectation_suite.ExpectationSuite.replace_expectation",
+            "hsfs.expectation_suite.ExpectationSuite.remove_expectation",
+        ],
+        "expectation_suite_properties": keras_autodoc.get_properties(
+            "hsfs.expectation_suite.ExpectationSuite"
+        ),
+        "expectation_suite_methods": keras_autodoc.get_methods(
+            "hsfs.expectation_suite.ExpectationSuite"
+        ),
+    },
+    "api/feature_store_api.md": {
+        "fs": ["hsfs.feature_store.FeatureStore"],
+        "fs_get": ["hsfs.connection.Connection.get_feature_store"],
+        "fs_properties": keras_autodoc.get_properties(
+            "hsfs.feature_store.FeatureStore"
+        ),
+        "fs_methods": keras_autodoc.get_methods("hsfs.feature_store.FeatureStore"),
+    },
+    "api/feature_group_api.md": {
+        "fg": ["hsfs.feature_group.FeatureGroup"],
+        "fg_create": [
+            "hsfs.feature_store.FeatureStore.create_feature_group",
+            "hsfs.feature_store.FeatureStore.get_or_create_feature_group",
+        ],
+        "fg_get": ["hsfs.feature_store.FeatureStore.get_feature_group"],
+        "fg_properties": keras_autodoc.get_properties(
+            "hsfs.feature_group.FeatureGroup"
+        ),
+        "fg_methods": keras_autodoc.get_methods("hsfs.feature_group.FeatureGroup"),
+    },
+    "api/external_feature_group_api.md": {
+        "fg": ["hsfs.feature_group.ExternalFeatureGroup"],
+        "fg_create": ["hsfs.feature_store.FeatureStore.create_external_feature_group"],
+        "fg_get": ["hsfs.feature_store.FeatureStore.get_external_feature_group"],
+        "fg_properties": keras_autodoc.get_properties(
+            "hsfs.feature_group.ExternalFeatureGroup"
+        ),
+        "fg_methods": keras_autodoc.get_methods(
+            "hsfs.feature_group.ExternalFeatureGroup"
+        ),
+    },
+    "api/storage_connector_api.md": {
+        "sc_get": [
+            "hsfs.feature_store.FeatureStore.get_storage_connector",
+            "hsfs.feature_store.FeatureStore.get_online_storage_connector",
+        ],
+        "hopsfs_methods": keras_autodoc.get_methods(
+            "hsfs.storage_connector.HopsFSConnector", exclude=["from_response_json"]
+        ),
+        "hopsfs_properties": keras_autodoc.get_properties(
+            "hsfs.storage_connector.HopsFSConnector"
+        ),
+        "s3_methods": keras_autodoc.get_methods(
+            "hsfs.storage_connector.S3Connector", exclude=["from_response_json"]
+        ),
+        "s3_properties": keras_autodoc.get_properties(
+            "hsfs.storage_connector.S3Connector"
+        ),
+        "redshift_methods": keras_autodoc.get_methods(
+            "hsfs.storage_connector.RedshiftConnector", exclude=["from_response_json"]
+        ),
+        "redshift_properties": keras_autodoc.get_properties(
+            "hsfs.storage_connector.RedshiftConnector"
+        ),
+        "adls_methods": keras_autodoc.get_methods(
+            "hsfs.storage_connector.AdlsConnector", exclude=["from_response_json"]
+        ),
+        "adls_properties": keras_autodoc.get_properties(
+            "hsfs.storage_connector.AdlsConnector"
+        ),
+        "snowflake_methods": keras_autodoc.get_methods(
+            "hsfs.storage_connector.SnowflakeConnector", exclude=["from_response_json"]
+        ),
+        "snowflake_properties": keras_autodoc.get_properties(
+            "hsfs.storage_connector.SnowflakeConnector"
+        ),
+        "jdbc_methods": keras_autodoc.get_methods(
+            "hsfs.storage_connector.JdbcConnector", exclude=["from_response_json"]
+        ),
+        "jdbc_properties": keras_autodoc.get_properties(
+            "hsfs.storage_connector.JdbcConnector"
+        ),
+        "gcs_methods": keras_autodoc.get_methods(
+            "hsfs.storage_connector.GcsConnector", exclude=["from_response_json"]
+        ),
+        "gcs_properties": keras_autodoc.get_properties(
+            "hsfs.storage_connector.GcsConnector"
+        ),
+        "bigquery_methods": keras_autodoc.get_methods(
+            "hsfs.storage_connector.BigQueryConnector", exclude=["from_response_json"]
+        ),
+        "bigquery_properties": keras_autodoc.get_properties(
+            "hsfs.storage_connector.BigQueryConnector"
+        ),
+        "kafka_methods": keras_autodoc.get_methods(
+            "hsfs.storage_connector.KafkaConnector", exclude=["from_response_json"]
+        ),
+        "kafka_properties": keras_autodoc.get_properties(
+            "hsfs.storage_connector.KafkaConnector"
         ),
     },
     "api/kafka_topic.md": {
