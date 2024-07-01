@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import json
+from typing import TYPE_CHECKING
 
 import humps
 from hopsworks import client, constants, util
@@ -29,7 +30,10 @@ from hopsworks.core import (
     kafka_api,
     opensearch_api,
 )
-from hsfs import feature_store
+
+
+if TYPE_CHECKING:
+    from hsfs import feature_store
 
 
 class Project:

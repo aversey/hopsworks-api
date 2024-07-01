@@ -17,10 +17,7 @@
 import warnings
 
 from hsml import util, version
-from hsml.connection import Connection
 
-
-connection = Connection.connection
 
 __version__ = version.__version__
 
@@ -32,4 +29,4 @@ def ml_formatwarning(message, category, filename, lineno, line=None):
 warnings.formatwarning = ml_formatwarning
 warnings.simplefilter("always", util.VersionWarning)
 
-__all__ = ["connection"]
+__all__ = []

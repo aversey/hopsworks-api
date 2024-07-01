@@ -27,14 +27,9 @@ from hsfs import (  # noqa: E402,  Module level import not at top of file becaus
     util,
     version,
 )
-from hsfs.connection import (  # noqa: E402,  Module level import not at top of file because os.environ must be set before importing hsfs
-    Connection,
-)
 
 
 __version__ = version.__version__
-
-connection = Connection.connection
 
 
 def fs_formatwarning(message, category, filename, lineno, line=None):
@@ -56,4 +51,4 @@ def get_sdk_info():
     return usage.get_env()
 
 
-__all__ = ["connection", "disable_usage_logging", "get_sdk_info"]
+__all__ = ["disable_usage_logging", "get_sdk_info"]
