@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
 
 import humps
 from hopsworks import client, constants, util
@@ -30,10 +29,6 @@ from hopsworks.core import (
     kafka_api,
     opensearch_api,
 )
-
-
-if TYPE_CHECKING:
-    from hsfs import feature_store
 
 
 class Project:
@@ -107,7 +102,7 @@ class Project:
         """Timestamp when the project was created"""
         return self._created
 
-    def get_feature_store(self, name: str = None, engine: str = None) -> feature_store.FeatureStore:
+    def get_feature_store(self, name: str = None, engine: str = None):
         """Connect to Project's Feature Store.
 
         Defaulting to the project name of default feature store. To get a
