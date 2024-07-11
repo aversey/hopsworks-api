@@ -19,7 +19,6 @@ import json
 from typing import Mapping, Optional, Union
 
 import humps
-from hsfs import util
 
 
 class FeatureDescriptiveStatistics:
@@ -66,6 +65,7 @@ class FeatureDescriptiveStatistics:
         id: Optional[int] = None,
         **kwargs,
     ):
+        from hsfs import util
         self._id = id
         self._feature_type = feature_type
         self._feature_name = util.autofix_feature_name(feature_name)
@@ -201,6 +201,7 @@ class FeatureDescriptiveStatistics:
         return _dict
 
     def json(self) -> str:
+        from hsfs import util
         return json.dumps(self, cls=util.FeatureStoreEncoder)
 
     def __str__(self):
