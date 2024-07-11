@@ -21,14 +21,13 @@ import pandas as pd
 import polars as pl
 import pyarrow as pa
 import pytest
-from confluent_kafka.admin import PartitionMetadata, TopicMetadata
 from hsfs import (
+    engine,
     feature,
     feature_group,
     feature_view,
     storage_connector,
     training_dataset,
-    transformation_function,
     util,
 )
 from hsfs.client import exceptions
@@ -38,8 +37,12 @@ from hsfs.core import inode, job
 from hsfs.core.constants import HAS_GREAT_EXPECTATIONS
 from hsfs.engine import python
 from hsfs.expectation_suite import ExpectationSuite
+from hsfs.hopsworks_udf import udf
 from hsfs.training_dataset_feature import TrainingDatasetFeature
 from polars.testing import assert_frame_equal as polars_assert_frame_equal
+
+
+engine._engine_type = "python"
 
 
 class TestPython:
@@ -2412,7 +2415,7 @@ class TestPython:
         result_df, result_df_split = python_engine.split_labels(
             df=df, dataframe_type="polars", labels="col1"
         )
-        print(type(result_df_split))
+
         # Assert
         assert isinstance(result_df, pl.DataFrame) or isinstance(
             result_df, pl.dataframe.frame.DataFrame
@@ -2462,6 +2465,7 @@ class TestPython:
         mocker.patch(
             "hsfs.core.transformation_function_engine.TransformationFunctionEngine"
         )
+        mock_feature_view = mocker.patch("hsfs.feature_view.FeatureView")
 
         python_engine = python.Engine()
 
@@ -2489,7 +2493,7 @@ class TestPython:
         result = python_engine._prepare_transform_split_df(
             query_obj=q,
             training_dataset_obj=td,
-            feature_view_obj=None,
+            feature_view_obj=mock_feature_view,
             read_option=None,
             dataframe_type="default",
         )
@@ -2510,6 +2514,7 @@ class TestPython:
         mocker.patch(
             "hsfs.core.transformation_function_engine.TransformationFunctionEngine"
         )
+        mock_feature_view = mocker.patch("hsfs.feature_view.FeatureView")
 
         python_engine = python.Engine()
 
@@ -2555,7 +2560,7 @@ class TestPython:
         result = python_engine._prepare_transform_split_df(
             query_obj=q,
             training_dataset_obj=td,
-            feature_view_obj=None,
+            feature_view_obj=mock_feature_view,
             read_option=None,
             dataframe_type="default",
         )
@@ -2576,6 +2581,7 @@ class TestPython:
         mocker.patch(
             "hsfs.core.transformation_function_engine.TransformationFunctionEngine"
         )
+        mock_feature_view = mocker.patch("hsfs.feature_view.FeatureView")
 
         python_engine = python.Engine()
 
@@ -2620,7 +2626,7 @@ class TestPython:
         result = python_engine._prepare_transform_split_df(
             query_obj=q,
             training_dataset_obj=td,
-            feature_view_obj=None,
+            feature_view_obj=mock_feature_view,
             read_option=None,
             dataframe_type="default",
         )
@@ -2956,6 +2962,8 @@ class TestPython:
         mock_td_api.return_value.compute.return_value = mock_job
         mocker.patch("hsfs.util.get_job_url")
 
+        mocker.patch("hsfs.client.get_instance")
+
         python_engine = python.Engine()
 
         fg = feature_group.FeatureGroup.from_response_json(
@@ -3206,86 +3214,170 @@ class TestPython:
     def test_apply_transformation_function_pandas(self, mocker):
         # Arrange
         mocker.patch("hsfs.client.get_instance")
-
+        engine._engine_type = "python"
         python_engine = python.Engine()
 
-        def plus_one(a):
-            return a + 1
+        @udf(int)
+        def plus_one(col1):
+            return col1 + 1
 
-        tf = transformation_function.TransformationFunction(
-            99,
-            transformation_fn=plus_one,
-            builtin_source_code="",
-            output_type="int",
+        fg = feature_group.FeatureGroup(
+            name="test1",
+            version=1,
+            featurestore_id=99,
+            primary_key=[],
+            partition_key=[],
+            features=[feature.Feature("id"), feature.Feature("tf_name")],
+            id=11,
+            stream=False,
         )
 
-        transformation_fn_dict = dict()
-
-        transformation_fn_dict["tf_name"] = tf
-
-        td = training_dataset.TrainingDataset(
-            name="test",
-            version=1,
-            data_format="CSV",
+        fv = feature_view.FeatureView(
+            name="fv_name",
+            query=fg.select_all(),
             featurestore_id=99,
-            splits={},
-            id=10,
-            transformation_functions=transformation_fn_dict,
+            transformation_functions=[plus_one("tf_name")],
         )
 
         df = pd.DataFrame(data={"tf_name": [1, 2]})
 
         # Act
         result = python_engine._apply_transformation_function(
-            transformation_functions=td.transformation_functions, dataset=df
+            transformation_functions=fv.transformation_functions, dataset=df
         )
 
         # Assert
-        assert len(result["tf_name"]) == 2
-        assert result["tf_name"][0] == 2
-        assert result["tf_name"][1] == 3
+        assert len(result["plus_one_tf_name_"]) == 2
+        assert result["plus_one_tf_name_"][0] == 2
+        assert result["plus_one_tf_name_"][1] == 3
+
+    def test_apply_transformation_function_multiple_output(self, mocker):
+        # Arrange
+        mocker.patch("hsfs.client.get_instance")
+        engine._engine_type = "python"
+        python_engine = python.Engine()
+
+        @udf([int, int])
+        def plus_two(col1):
+            return pd.DataFrame({"new_col1": col1 + 1, "new_col2": col1 + 2})
+
+        fg = feature_group.FeatureGroup(
+            name="test1",
+            version=1,
+            featurestore_id=99,
+            primary_key=[],
+            partition_key=[],
+            features=[feature.Feature("id"), feature.Feature("tf_name")],
+            id=11,
+            stream=False,
+        )
+
+        fv = feature_view.FeatureView(
+            name="fv_name",
+            query=fg.select_all(),
+            featurestore_id=99,
+            transformation_functions=[plus_two],
+        )
+
+        df = pd.DataFrame(data={"col1": [1, 2], "col2": [10, 11]})
+
+        # Act
+        result = python_engine._apply_transformation_function(
+            transformation_functions=fv.transformation_functions, dataset=df
+        )
+
+        # Assert
+        assert all(result.columns == ["col2", "plus_two_col1_0", "plus_two_col1_1"])
+        assert len(result) == 2
+        assert result["plus_two_col1_0"][0] == 2
+        assert result["plus_two_col1_0"][1] == 3
+        assert result["plus_two_col1_1"][0] == 3
+        assert result["plus_two_col1_1"][1] == 4
+
+    def test_apply_transformation_function_multiple_input_output(self, mocker):
+        # Arrange
+        mocker.patch("hsfs.client.get_instance")
+
+        engine._engine_type = "python"
+        python_engine = python.Engine()
+
+        @udf([int, int])
+        def plus_two(col1, col2):
+            return pd.DataFrame({"new_col1": col1 + 1, "new_col2": col2 + 2})
+
+        fg = feature_group.FeatureGroup(
+            name="test1",
+            version=1,
+            featurestore_id=99,
+            primary_key=[],
+            partition_key=[],
+            features=[feature.Feature("id"), feature.Feature("tf_name")],
+            id=11,
+            stream=False,
+        )
+
+        fv = feature_view.FeatureView(
+            name="fv_name",
+            query=fg.select_all(),
+            featurestore_id=99,
+            transformation_functions=[plus_two],
+        )
+
+        df = pd.DataFrame(data={"col1": [1, 2], "col2": [10, 11]})
+
+        # Act
+        result = python_engine._apply_transformation_function(
+            transformation_functions=fv.transformation_functions, dataset=df
+        )
+
+        # Assert
+        assert all(result.columns == ["plus_two_col1_col2_0", "plus_two_col1_col2_1"])
+        assert len(result) == 2
+        assert result["plus_two_col1_col2_0"][0] == 2
+        assert result["plus_two_col1_col2_0"][1] == 3
+        assert result["plus_two_col1_col2_1"][0] == 12
+        assert result["plus_two_col1_col2_1"][1] == 13
 
     def test_apply_transformation_function_polars(self, mocker):
         # Arrange
         mocker.patch("hsfs.client.get_instance")
 
+        engine._engine_type = "python"
         python_engine = python.Engine()
 
-        def plus_one(a):
-            return a + 1
+        @udf(int)
+        def plus_one(col1):
+            return col1 + 1
 
-        tf = transformation_function.TransformationFunction(
-            99,
-            transformation_fn=plus_one,
-            builtin_source_code="",
-            output_type="int",
+        fg = feature_group.FeatureGroup(
+            name="test1",
+            version=1,
+            featurestore_id=99,
+            primary_key=[],
+            partition_key=[],
+            features=[feature.Feature("id"), feature.Feature("tf_name")],
+            id=11,
+            stream=False,
         )
 
-        transformation_fn_dict = dict()
-
-        transformation_fn_dict["tf_name"] = tf
-
-        td = training_dataset.TrainingDataset(
-            name="test",
-            version=1,
-            data_format="CSV",
+        fv = feature_view.FeatureView(
+            name="fv_name",
+            query=fg.select_all(),
             featurestore_id=99,
-            splits={},
-            id=10,
-            transformation_functions=transformation_fn_dict,
+            transformation_functions=[plus_one("tf_name")],
         )
 
         df = pl.DataFrame(data={"tf_name": [1, 2]})
 
         # Act
         result = python_engine._apply_transformation_function(
-            transformation_functions=td.transformation_functions, dataset=df
+            transformation_functions=fv.transformation_functions, dataset=df
         )
 
         # Assert
-        assert len(result["tf_name"]) == 2
-        assert result["tf_name"][0] == 2
-        assert result["tf_name"][1] == 3
+        assert len(result["plus_one_tf_name_"]) == 2
+        assert result["plus_one_tf_name_"][0] == 2
+        assert result["plus_one_tf_name_"][1] == 3
 
     def test_get_unique_values(self):
         # Arrange
@@ -3304,350 +3396,26 @@ class TestPython:
         assert 2 in result
         assert 3 in result
 
-    def test_kafka_produce(self, mocker):
-        # Arrange
-        mocker.patch("hsfs.client.get_instance")
-
-        python_engine = python.Engine()
-
-        producer = mocker.Mock()
-
-        fg = feature_group.FeatureGroup(
-            name="test",
-            version=1,
-            featurestore_id=99,
-            primary_key=[],
-            partition_key=[],
-            id=10,
-            stream=False,
-        )
-        fg.feature_store = mocker.Mock()
-
-        # Act
-        python_engine._kafka_produce(
-            producer=producer,
-            feature_group=fg,
-            key=None,
-            encoded_row=None,
-            acked=None,
-            offline_write_options={},
-        )
-
-        # Assert
-        assert producer.produce.call_count == 1
-        assert producer.poll.call_count == 1
-
-    def test_kafka_produce_buffer_error(self, mocker):
-        # Arrange
-        mocker.patch("hsfs.client.get_instance")
-        mock_print = mocker.patch("builtins.print")
-
-        python_engine = python.Engine()
-
-        producer = mocker.Mock()
-        producer.produce.side_effect = [BufferError("test_error"), None]
-
-        fg = feature_group.FeatureGroup(
-            name="test",
-            version=1,
-            featurestore_id=99,
-            primary_key=[],
-            partition_key=[],
-            id=10,
-            stream=False,
-        )
-        fg.feature_store = mocker.Mock()
-
-        # Act
-        python_engine._kafka_produce(
-            producer=producer,
-            feature_group=fg,
-            key=None,
-            encoded_row=None,
-            acked=None,
-            offline_write_options={"debug_kafka": True},
-        )
-
-        # Assert
-        assert producer.produce.call_count == 2
-        assert producer.poll.call_count == 2
-        assert mock_print.call_count == 1
-        assert mock_print.call_args[0][0] == "Caught: test_error"
-
-    def test_encode_complex_features(self):
-        # Arrange
-        python_engine = python.Engine()
-
-        def test_utf(value, bytes_io):
-            bytes_io.write(bytes(value, "utf-8"))
-
-        # Act
-        result = python_engine._encode_complex_features(
-            feature_writers={"one": test_utf, "two": test_utf},
-            row={"one": "1", "two": "2"},
-        )
-
-        # Assert
-        assert len(result) == 2
-        assert result == {"one": b"1", "two": b"2"}
-
-    def test_get_encoder_func(self, mocker):
-        # Arrange
-        mock_json_loads = mocker.patch("json.loads")
-        mock_avro_schema_parse = mocker.patch("avro.schema.parse")
-
-        python_engine = python.Engine()
-        python.HAS_FAST = False
-
-        # Act
-        result = python_engine._get_encoder_func(
-            writer_schema='{"type" : "record",'
-            '"namespace" : "Tutorialspoint",'
-            '"name" : "Employee",'
-            '"fields" : [{ "name" : "Name" , "type" : "string" },'
-            '{ "name" : "Age" , "type" : "int" }]}'
-        )
-
-        # Assert
-        assert result is not None
-        assert mock_json_loads.call_count == 0
-        assert mock_avro_schema_parse.call_count == 1
-
-    def test_get_encoder_func_fast(self, mocker):
-        # Arrange
-        mock_json_loads = mocker.patch(
-            "json.loads",
-            return_value={
-                "type": "record",
-                "namespace": "Tutorialspoint",
-                "name": "Employee",
-                "fields": [
-                    {"name": "Name", "type": "string"},
-                    {"name": "Age", "type": "int"},
-                ],
-            },
-        )
-        mock_avro_schema_parse = mocker.patch("avro.schema.parse")
-
-        python_engine = python.Engine()
-        python.HAS_FAST = True
-
-        # Act
-        result = python_engine._get_encoder_func(
-            writer_schema='{"type" : "record",'
-            '"namespace" : "Tutorialspoint",'
-            '"name" : "Employee",'
-            '"fields" : [{ "name" : "Name" , "type" : "string" },'
-            '{ "name" : "Age" , "type" : "int" }]}'
-        )
-
-        # Assert
-        assert result is not None
-        assert mock_json_loads.call_count == 1
-        assert mock_avro_schema_parse.call_count == 0
-
-    def test_get_kafka_config(self, mocker, backend_fixtures):
-        # Arrange
-        mocker.patch("hsfs.engine.get_instance")
-        mock_storage_connector_api = mocker.patch(
-            "hsfs.core.storage_connector_api.StorageConnectorApi"
-        )
-
-        json = backend_fixtures["storage_connector"]["get_kafka"]["response"]
-        sc = storage_connector.StorageConnector.from_response_json(json)
-        mock_storage_connector_api.return_value.get_kafka_connector.return_value = sc
-
-        mocker.patch("hsfs.engine.python.isinstance", return_value=True)
-
-        mock_client = mocker.patch("hsfs.client.get_instance")
-        mock_client.return_value._write_pem.return_value = (
-            "test_ssl_ca_location",
-            "test_ssl_certificate_location",
-            "test_ssl_key_location",
-        )
-
-        python_engine = python.Engine()
-
-        # Act
-        result = python_engine._get_kafka_config(
-            1,
-            write_options={
-                "kafka_producer_config": {"test_name_1": "test_value_1"},
-            },
-        )
-
-        # Assert
-        assert (
-            mock_storage_connector_api.return_value.get_kafka_connector.call_args[0][1]
-            is False
-        )
-        assert result == {
-            "bootstrap.servers": "test_bootstrap_servers",
-            "security.protocol": "test_security_protocol",
-            "ssl.endpoint.identification.algorithm": "test_ssl_endpoint_identification_algorithm",
-            "ssl.ca.location": "test_ssl_ca_location",
-            "ssl.certificate.location": "test_ssl_certificate_location",
-            "ssl.key.location": "test_ssl_key_location",
-            "test_name_1": "test_value_1",
-        }
-
-    def test_get_kafka_config_external_client(self, mocker, backend_fixtures):
-        # Arrange
-        mocker.patch("hsfs.engine.get_instance")
-        mock_storage_connector_api = mocker.patch(
-            "hsfs.core.storage_connector_api.StorageConnectorApi"
-        )
-
-        json = backend_fixtures["storage_connector"]["get_kafka"]["response"]
-        sc = storage_connector.StorageConnector.from_response_json(json)
-        mock_storage_connector_api.return_value.get_kafka_connector.return_value = sc
-
-        mocker.patch("hsfs.engine.python.isinstance", return_value=False)
-
-        mock_client = mocker.patch("hsfs.client.get_instance")
-        mock_client.return_value._write_pem.return_value = (
-            "test_ssl_ca_location",
-            "test_ssl_certificate_location",
-            "test_ssl_key_location",
-        )
-
-        python_engine = python.Engine()
-
-        # Act
-        result = python_engine._get_kafka_config(
-            1,
-            write_options={
-                "kafka_producer_config": {"test_name_1": "test_value_1"},
-            },
-        )
-
-        # Assert
-        assert (
-            mock_storage_connector_api.return_value.get_kafka_connector.call_args[0][1]
-            is True
-        )
-        assert result == {
-            "bootstrap.servers": "test_bootstrap_servers",
-            "security.protocol": "test_security_protocol",
-            "ssl.endpoint.identification.algorithm": "test_ssl_endpoint_identification_algorithm",
-            "ssl.ca.location": "test_ssl_ca_location",
-            "ssl.certificate.location": "test_ssl_certificate_location",
-            "ssl.key.location": "test_ssl_key_location",
-            "test_name_1": "test_value_1",
-        }
-
-    def test_get_kafka_config_internal_kafka(self, mocker, backend_fixtures):
-        # Arrange
-        mocker.patch("hsfs.engine.get_instance")
-        mock_storage_connector_api = mocker.patch(
-            "hsfs.core.storage_connector_api.StorageConnectorApi"
-        )
-
-        json = backend_fixtures["storage_connector"]["get_kafka"]["response"]
-        sc = storage_connector.StorageConnector.from_response_json(json)
-        mock_storage_connector_api.return_value.get_kafka_connector.return_value = sc
-
-        mocker.patch("hsfs.engine.python.isinstance", return_value=True)
-
-        mock_client = mocker.patch("hsfs.client.get_instance")
-        mock_client.return_value._write_pem.return_value = (
-            "test_ssl_ca_location",
-            "test_ssl_certificate_location",
-            "test_ssl_key_location",
-        )
-
-        python_engine = python.Engine()
-
-        # Act
-        result = python_engine._get_kafka_config(
-            1,
-            write_options={
-                "kafka_producer_config": {"test_name_1": "test_value_1"},
-                "internal_kafka": True,
-            },
-        )
-
-        # Assert
-        assert (
-            mock_storage_connector_api.return_value.get_kafka_connector.call_args[0][1]
-            is False
-        )
-        assert result == {
-            "bootstrap.servers": "test_bootstrap_servers",
-            "security.protocol": "test_security_protocol",
-            "ssl.endpoint.identification.algorithm": "test_ssl_endpoint_identification_algorithm",
-            "ssl.ca.location": "test_ssl_ca_location",
-            "ssl.certificate.location": "test_ssl_certificate_location",
-            "ssl.key.location": "test_ssl_key_location",
-            "test_name_1": "test_value_1",
-        }
-
-    def test_get_kafka_config_external_client_internal_kafka(
-        self, mocker, backend_fixtures
-    ):
-        # Arrange
-        mocker.patch("hsfs.engine.get_instance")
-        mock_storage_connector_api = mocker.patch(
-            "hsfs.core.storage_connector_api.StorageConnectorApi"
-        )
-
-        json = backend_fixtures["storage_connector"]["get_kafka"]["response"]
-        sc = storage_connector.StorageConnector.from_response_json(json)
-        mock_storage_connector_api.return_value.get_kafka_connector.return_value = sc
-
-        mocker.patch("hsfs.engine.python.isinstance", return_value=False)
-
-        mock_client = mocker.patch("hsfs.client.get_instance")
-        mock_client.return_value._write_pem.return_value = (
-            "test_ssl_ca_location",
-            "test_ssl_certificate_location",
-            "test_ssl_key_location",
-        )
-
-        python_engine = python.Engine()
-
-        # Act
-        result = python_engine._get_kafka_config(
-            1,
-            write_options={
-                "kafka_producer_config": {"test_name_1": "test_value_1"},
-                "internal_kafka": True,
-            },
-        )
-
-        # Assert
-        assert (
-            mock_storage_connector_api.return_value.get_kafka_connector.call_args[0][1]
-            is False
-        )
-        assert result == {
-            "bootstrap.servers": "test_bootstrap_servers",
-            "security.protocol": "test_security_protocol",
-            "ssl.endpoint.identification.algorithm": "test_ssl_endpoint_identification_algorithm",
-            "ssl.ca.location": "test_ssl_ca_location",
-            "ssl.certificate.location": "test_ssl_certificate_location",
-            "ssl.key.location": "test_ssl_key_location",
-            "test_name_1": "test_value_1",
-        }
-
     def test_materialization_kafka(self, mocker):
         # Arrange
-        mocker.patch("hsfs.engine.python.Engine._get_kafka_config", return_value={})
+        mocker.patch("hsfs.core.kafka_engine.get_kafka_config", return_value={})
         mocker.patch("hsfs.feature_group.FeatureGroup._get_encoded_avro_schema")
-        mocker.patch("hsfs.engine.python.Engine._get_encoder_func")
-        mocker.patch("hsfs.engine.python.Engine._encode_complex_features")
+        mocker.patch("hsfs.core.kafka_engine.get_encoder_func")
+        mocker.patch("hsfs.core.kafka_engine.encode_complex_features")
         mock_python_engine_kafka_produce = mocker.patch(
-            "hsfs.engine.python.Engine._kafka_produce"
+            "hsfs.core.kafka_engine.kafka_produce"
         )
         mocker.patch("hsfs.util.get_job_url")
         mocker.patch(
-            "hsfs.engine.python.Engine._kafka_get_offsets",
+            "hsfs.core.kafka_engine.kafka_get_offsets",
             return_value=" tests_offsets",
         )
         mocker.patch(
             "hsfs.core.job_api.JobApi.last_execution",
             return_value=["", ""],
         )
+
+        mocker.patch("hsfs.client.get_instance")
 
         python_engine = python.Engine()
 
@@ -3687,22 +3455,24 @@ class TestPython:
 
     def test_materialization_kafka_first_job_execution(self, mocker):
         # Arrange
-        mocker.patch("hsfs.engine.python.Engine._get_kafka_config", return_value={})
+        mocker.patch("hsfs.core.kafka_engine.get_kafka_config", return_value={})
         mocker.patch("hsfs.feature_group.FeatureGroup._get_encoded_avro_schema")
-        mocker.patch("hsfs.engine.python.Engine._get_encoder_func")
-        mocker.patch("hsfs.engine.python.Engine._encode_complex_features")
+        mocker.patch("hsfs.core.kafka_engine.get_encoder_func")
+        mocker.patch("hsfs.core.kafka_engine.encode_complex_features")
         mock_python_engine_kafka_produce = mocker.patch(
-            "hsfs.engine.python.Engine._kafka_produce"
+            "hsfs.core.kafka_engine.kafka_produce"
         )
         mocker.patch("hsfs.util.get_job_url")
         mocker.patch(
-            "hsfs.engine.python.Engine._kafka_get_offsets",
+            "hsfs.core.kafka_engine.kafka_get_offsets",
             return_value=" tests_offsets",
         )
         mocker.patch(
             "hsfs.core.job_api.JobApi.last_execution",
             return_value=[],
         )
+
+        mocker.patch("hsfs.client.get_instance")
 
         python_engine = python.Engine()
 
@@ -3742,18 +3512,20 @@ class TestPython:
 
     def test_materialization_kafka_skip_offsets(self, mocker):
         # Arrange
-        mocker.patch("hsfs.engine.python.Engine._get_kafka_config", return_value={})
+        mocker.patch("hsfs.core.kafka_engine.get_kafka_config", return_value={})
         mocker.patch("hsfs.feature_group.FeatureGroup._get_encoded_avro_schema")
-        mocker.patch("hsfs.engine.python.Engine._get_encoder_func")
-        mocker.patch("hsfs.engine.python.Engine._encode_complex_features")
+        mocker.patch("hsfs.core.kafka_engine.get_encoder_func")
+        mocker.patch("hsfs.core.kafka_engine.encode_complex_features")
         mock_python_engine_kafka_produce = mocker.patch(
-            "hsfs.engine.python.Engine._kafka_produce"
+            "hsfs.core.kafka_engine.kafka_produce"
         )
         mocker.patch("hsfs.util.get_job_url")
         mocker.patch(
-            "hsfs.engine.python.Engine._kafka_get_offsets",
+            "hsfs.core.kafka_engine.kafka_get_offsets",
             return_value=" tests_offsets",
         )
+
+        mocker.patch("hsfs.client.get_instance")
 
         python_engine = python.Engine()
 
@@ -3796,18 +3568,20 @@ class TestPython:
 
     def test_materialization_kafka_topic_doesnt_exist(self, mocker):
         # Arrange
-        mocker.patch("hsfs.engine.python.Engine._get_kafka_config", return_value={})
+        mocker.patch("hsfs.core.kafka_engine.get_kafka_config", return_value={})
         mocker.patch("hsfs.feature_group.FeatureGroup._get_encoded_avro_schema")
-        mocker.patch("hsfs.engine.python.Engine._get_encoder_func")
-        mocker.patch("hsfs.engine.python.Engine._encode_complex_features")
+        mocker.patch("hsfs.core.kafka_engine.get_encoder_func")
+        mocker.patch("hsfs.core.kafka_engine.encode_complex_features")
         mock_python_engine_kafka_produce = mocker.patch(
-            "hsfs.engine.python.Engine._kafka_produce"
+            "hsfs.core.kafka_engine.kafka_produce"
         )
         mocker.patch("hsfs.util.get_job_url")
         mocker.patch(
-            "hsfs.engine.python.Engine._kafka_get_offsets",
+            "hsfs.core.kafka_engine.kafka_get_offsets",
             side_effect=["", " tests_offsets"],
         )
+
+        mocker.patch("hsfs.client.get_instance")
 
         python_engine = python.Engine()
 
@@ -3844,134 +3618,6 @@ class TestPython:
             args="defaults tests_offsets",
             await_termination=False,
         )
-
-    def test_kafka_get_offsets_high(self, mocker):
-        # Arrange
-        topic_name = "test_topic"
-        partition_metadata = PartitionMetadata()
-        partition_metadata.id = 0
-        topic_metadata = TopicMetadata()
-        topic_metadata.partitions = {partition_metadata.id: partition_metadata}
-        topic_mock = mocker.MagicMock()
-
-        # return no topics and one commit, so it should start the job with the extra arg
-        topic_mock.topics = {topic_name: topic_metadata}
-
-        consumer = mocker.MagicMock()
-        consumer.list_topics = mocker.MagicMock(return_value=topic_mock)
-        consumer.get_watermark_offsets = mocker.MagicMock(return_value=(0, 11))
-        mocker.patch(
-            "hsfs.engine.python.Engine._init_kafka_consumer",
-            return_value=consumer,
-        )
-
-        python_engine = python.Engine()
-
-        fg = feature_group.FeatureGroup(
-            name="test",
-            version=1,
-            featurestore_id=99,
-            primary_key=[],
-            partition_key=[],
-            id=10,
-            stream=False,
-            time_travel_format="HUDI",
-        )
-        fg._online_topic_name = topic_name
-
-        # Act
-        result = python_engine._kafka_get_offsets(
-            feature_group=fg,
-            offline_write_options={},
-            high=True,
-        )
-
-        # Assert
-        assert result == f" -initialCheckPointString {topic_name},0:11"
-
-    def test_kafka_get_offsets_low(self, mocker):
-        # Arrange
-        topic_name = "test_topic"
-        partition_metadata = PartitionMetadata()
-        partition_metadata.id = 0
-        topic_metadata = TopicMetadata()
-        topic_metadata.partitions = {partition_metadata.id: partition_metadata}
-        topic_mock = mocker.MagicMock()
-
-        # return no topics and one commit, so it should start the job with the extra arg
-        topic_mock.topics = {topic_name: topic_metadata}
-
-        consumer = mocker.MagicMock()
-        consumer.list_topics = mocker.MagicMock(return_value=topic_mock)
-        consumer.get_watermark_offsets = mocker.MagicMock(return_value=(0, 11))
-        mocker.patch(
-            "hsfs.engine.python.Engine._init_kafka_consumer",
-            return_value=consumer,
-        )
-
-        python_engine = python.Engine()
-
-        fg = feature_group.FeatureGroup(
-            name="test",
-            version=1,
-            featurestore_id=99,
-            primary_key=[],
-            partition_key=[],
-            id=10,
-            stream=False,
-            time_travel_format="HUDI",
-        )
-        fg._online_topic_name = topic_name
-
-        # Act
-        result = python_engine._kafka_get_offsets(
-            feature_group=fg,
-            offline_write_options={},
-            high=False,
-        )
-
-        # Assert
-        assert result == f" -initialCheckPointString {topic_name},0:0"
-
-    def test_kafka_get_offsets_no_topic(self, mocker):
-        # Arrange
-        topic_name = "test_topic"
-        topic_mock = mocker.MagicMock()
-
-        # return no topics and one commit, so it should start the job with the extra arg
-        topic_mock.topics = {}
-
-        consumer = mocker.MagicMock()
-        consumer.list_topics = mocker.MagicMock(return_value=topic_mock)
-        consumer.get_watermark_offsets = mocker.MagicMock(return_value=(0, 11))
-        mocker.patch(
-            "hsfs.engine.python.Engine._init_kafka_consumer",
-            return_value=consumer,
-        )
-
-        python_engine = python.Engine()
-
-        fg = feature_group.FeatureGroup(
-            name="test",
-            version=1,
-            featurestore_id=99,
-            primary_key=[],
-            partition_key=[],
-            id=10,
-            stream=False,
-            time_travel_format="HUDI",
-        )
-        fg._online_topic_name = topic_name
-
-        # Act
-        result = python_engine._kafka_get_offsets(
-            feature_group=fg,
-            offline_write_options={},
-            high=True,
-        )
-
-        # Assert
-        assert result == ""
 
     def test_test(self, mocker):
         fg = feature_group.FeatureGroup(
