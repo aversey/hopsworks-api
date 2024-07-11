@@ -16,11 +16,13 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 import humps
-from hsfs import feature_group as fg_mod
-from hsfs import util
+
+
+if TYPE_CHECKING:
+    from hsfs import feature_group as fg_mod
 
 
 class ServingKey:
@@ -84,6 +86,8 @@ class ServingKey:
         }
 
     def __repr__(self) -> str:
+        from hsfs import util
+
         return json.dumps(self, cls=util.FeatureStoreEncoder)
 
     @property
