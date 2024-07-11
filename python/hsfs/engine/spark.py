@@ -23,16 +23,18 @@ import re
 import shutil
 import warnings
 from datetime import date, datetime, timezone
-from typing import TYPE_CHECKING, Any, List, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, TypeVar, Union
 
 
 if TYPE_CHECKING:
     import great_expectations
+    from pyspark.rdd import RDD
+    from pyspark.sql import DataFrame
 
-import avro
 import numpy as np
 import pandas as pd
 import tzlocal
+from hsfs.constructor import query
 
 # in case importing in %%local
 from hsfs.core.vector_db_client import VectorDbClient
@@ -80,19 +82,26 @@ try:
 except ImportError:
     pass
 
-from hsfs import client, feature, training_dataset_feature, util
+
+from hsfs import (
+    client,
+    feature,
+    feature_view,
+    training_dataset,
+    training_dataset_feature,
+    transformation_function,
+    util,
+)
 from hsfs import feature_group as fg_mod
-from hsfs.client import hopsworks
 from hsfs.client.exceptions import FeatureStoreException
-from hsfs.constructor import query
 from hsfs.core import (
     dataset_api,
     delta_engine,
     hudi_engine,
-    storage_connector_api,
+    kafka_engine,
     transformation_function_engine,
 )
-from hsfs.core.constants import HAS_GREAT_EXPECTATIONS
+from hsfs.core.constants import HAS_AVRO, HAS_GREAT_EXPECTATIONS
 from hsfs.decorators import uses_great_expectations
 from hsfs.storage_connector import StorageConnector
 from hsfs.training_dataset_split import TrainingDatasetSplit
@@ -100,6 +109,9 @@ from hsfs.training_dataset_split import TrainingDatasetSplit
 
 if HAS_GREAT_EXPECTATIONS:
     import great_expectations
+
+if HAS_AVRO:
+    import avro
 
 
 class Engine:
@@ -123,7 +135,6 @@ class Engine:
         if importlib.util.find_spec("pydoop"):
             # If we are on Databricks don't setup Pydoop as it's not available and cannot be easily installed.
             util.setup_pydoop()
-        self._storage_connector_api = storage_connector_api.StorageConnectorApi()
         self._dataset_api = dataset_api.DatasetApi()
 
     def sql(
@@ -382,17 +393,17 @@ class Engine:
 
     def save_stream_dataframe(
         self,
-        feature_group,
+        feature_group: Union[fg_mod.FeatureGroup, fg_mod.ExternalFeatureGroup],
         dataframe,
         query_name,
         output_mode,
-        await_termination,
+        await_termination: bool,
         timeout,
-        checkpoint_dir,
-        write_options,
+        checkpoint_dir: Optional[str],
+        write_options: Optional[Dict[str, Any]],
     ):
-        write_options = self._get_kafka_config(
-            feature_group.feature_store_id, write_options
+        write_options = kafka_engine.get_kafka_config(
+            feature_group.feature_store_id, write_options, engine="spark"
         )
         serialized_df = self._online_fg_to_avro(
             feature_group, self._encode_complex_features(feature_group, dataframe)
@@ -485,8 +496,8 @@ class Engine:
             ).saveAsTable(feature_group._get_table_name())
 
     def _save_online_dataframe(self, feature_group, dataframe, write_options):
-        write_options = self._get_kafka_config(
-            feature_group.feature_store_id, write_options
+        write_options = kafka_engine.get_kafka_config(
+            feature_group.feature_store_id, write_options, engine="spark"
         )
 
         serialized_df = self._online_fg_to_avro(
@@ -511,7 +522,11 @@ class Engine:
             "topic", feature_group._online_topic_name
         ).save()
 
-    def _encode_complex_features(self, feature_group, dataframe):
+    def _encode_complex_features(
+        self,
+        feature_group: Union[fg_mod.FeatureGroup, fg_mod.ExternalFeatureGroup],
+        dataframe: Union[RDD, DataFrame],
+    ):
         """Encodes all complex type features to binary using their avro type as schema."""
         return dataframe.select(
             [
@@ -524,7 +539,11 @@ class Engine:
             ]
         )
 
-    def _online_fg_to_avro(self, feature_group, dataframe):
+    def _online_fg_to_avro(
+        self,
+        feature_group: Union[fg_mod.FeatureGroup, fg_mod.ExternalFeatureGroup],
+        dataframe: Union[DataFrame, RDD],
+    ):
         """Packs all features into named struct to be serialized to single avro/binary
         column. And packs primary key into arry to be serialized for partitioning.
         """
@@ -553,12 +572,26 @@ class Engine:
 
     def get_training_data(
         self,
-        training_dataset,
-        feature_view_obj,
-        query_obj,
-        read_options,
-        dataframe_type,
+        training_dataset: training_dataset.TrainingDataset,
+        feature_view_obj: feature_view.FeatureView,
+        query_obj: query.Query,
+        read_options: Dict[str, Any],
+        dataframe_type: str,
+        training_dataset_version: int = None,
     ):
+        """
+        Function that creates or retrieves already created the training dataset.
+
+        # Arguments
+            training_dataset_obj `TrainingDataset`: The training dataset metadata object.
+            feature_view_obj `FeatureView`: The feature view object for the which the training data is being created.
+            query_obj `Query`: The query object that contains the query used to create the feature view.
+            read_options `Dict[str, Any]`: Dictionary that can be used to specify extra parameters for reading data.
+            dataframe_type `str`: The type of dataframe returned.
+            training_dataset_version `int`: Version of training data to be retrieved.
+        # Raises
+            `ValueError`: If the training dataset statistics could not be retrieved.
+        """
         return self.write_training_dataset(
             training_dataset,
             query_obj,
@@ -567,6 +600,7 @@ class Engine:
             read_options=read_options,
             to_df=True,
             feature_view_obj=feature_view_obj,
+            training_dataset_version=training_dataset_version,
         )
 
     def split_labels(self, df, labels, dataframe_type):
@@ -589,14 +623,30 @@ class Engine:
 
     def write_training_dataset(
         self,
-        training_dataset,
-        query_obj,
-        user_write_options,
-        save_mode,
-        read_options=None,
-        feature_view_obj=None,
-        to_df=False,
+        training_dataset: training_dataset.TrainingDataset,
+        query_obj: query.Query,
+        user_write_options: Dict[str, Any],
+        save_mode: str,
+        read_options: Dict[str, Any] = None,
+        feature_view_obj: feature_view.FeatureView = None,
+        to_df: bool = False,
+        training_dataset_version: Optional[int] = None,
     ):
+        """
+        Function that creates or retrieves already created the training dataset.
+
+        # Arguments
+            training_dataset `TrainingDataset`: The training dataset metadata object.
+            query_obj `Query`: The query object that contains the query used to create the feature view.
+            user_write_options `Dict[str, Any]`: Dictionary that can be used to specify extra parameters for writing data using spark.
+            save_mode `str`: Spark save mode to be used while writing data.
+            read_options `Dict[str, Any]`: Dictionary that can be used to specify extra parameters for reading data.
+            feature_view_obj `FeatureView`: The feature view object for the which the training data is being created.
+            to_df `bool`: Return dataframe instead of writing the data.
+            training_dataset_version `Optional[int]`: Version of training data to be retrieved.
+        # Raises
+            `ValueError`: If the training dataset statistics could not be retrieved.
+        """
         write_options = self.write_options(
             training_dataset.data_format, user_write_options
         )
@@ -611,14 +661,20 @@ class Engine:
             else:
                 raise ValueError("Dataset should be a query.")
 
-            transformation_function_engine.TransformationFunctionEngine.populate_builtin_transformation_functions(
+            # if training_dataset_version is None:
+            transformation_function_engine.TransformationFunctionEngine.compute_and_set_feature_statistics(
                 training_dataset, feature_view_obj, dataset
             )
+            # else:
+            #    transformation_function_engine.TransformationFunctionEngine.get_and_set_feature_statistics(
+            #        training_dataset, feature_view_obj, training_dataset_version
+            #    )
+
             if training_dataset.coalesce:
                 dataset = dataset.coalesce(1)
             path = training_dataset.location + "/" + training_dataset.name
             return self._write_training_dataset_single(
-                training_dataset.transformation_functions,
+                feature_view_obj.transformation_functions,
                 dataset,
                 training_dataset.storage_connector,
                 training_dataset.data_format,
@@ -637,11 +693,22 @@ class Engine:
 
                 split_dataset[key] = split_dataset[key].cache()
 
-            transformation_function_engine.TransformationFunctionEngine.populate_builtin_transformation_functions(
-                training_dataset, feature_view_obj, split_dataset
-            )
+            if training_dataset_version is None:
+                transformation_function_engine.TransformationFunctionEngine.compute_and_set_feature_statistics(
+                    training_dataset, feature_view_obj, split_dataset
+                )
+            else:
+                transformation_function_engine.TransformationFunctionEngine.get_and_set_feature_statistics(
+                    training_dataset, feature_view_obj, training_dataset_version
+                )
+
             return self._write_training_dataset_splits(
-                training_dataset, split_dataset, write_options, save_mode, to_df=to_df
+                training_dataset,
+                split_dataset,
+                write_options,
+                save_mode,
+                to_df=to_df,
+                transformation_functions=feature_view_obj.transformation_functions,
             )
 
     def _split_df(self, query_obj, training_dataset, read_options=None):
@@ -793,11 +860,14 @@ class Engine:
         write_options,
         save_mode,
         to_df=False,
+        transformation_functions: List[
+            transformation_function.TransformationFunction
+        ] = None,
     ):
         for split_name, feature_dataframe in feature_dataframes.items():
             split_path = training_dataset.location + "/" + str(split_name)
             feature_dataframes[split_name] = self._write_training_dataset_single(
-                training_dataset.transformation_functions,
+                transformation_functions,
                 feature_dataframe,
                 training_dataset.storage_connector,
                 training_dataset.data_format,
@@ -976,7 +1046,7 @@ class Engine:
     @uses_great_expectations
     def validate_with_great_expectations(
         self,
-        dataframe: TypeVar("pyspark.sql.DataFrame"),  # noqa: F821
+        dataframe: DataFrame,  # noqa: F821
         expectation_suite: great_expectations.core.ExpectationSuite,  # noqa: F821
         ge_validate_kwargs: Optional[dict],
     ):
@@ -1180,67 +1250,68 @@ class Engine:
             "spark.databricks.delta.schema.autoMerge.enabled", "true"
         ).save(feature_group.location)
 
-    def _apply_transformation_function(self, transformation_functions, dataset):
-        # generate transformation function expressions
-        transformed_feature_names = []
-        transformation_fn_expressions = []
-        for (
-            feature_name,
-            transformation_fn,
-        ) in transformation_functions.items():
-            fn_registration_name = (
-                transformation_fn.name
-                + "_"
-                + str(transformation_fn.version)
-                + "_"
-                + feature_name
+    def _apply_transformation_function(
+        self,
+        transformation_functions: List[transformation_function.TransformationFunction],
+        dataset: DataFrame,
+    ):
+        """
+        Apply transformation function to the dataframe.
+
+        # Arguments
+            transformation_functions `List[TransformationFunction]` : List of transformation functions.
+            dataset `Union[DataFrame]`: A spark dataframe.
+        # Returns
+            `DataFrame`: A spark dataframe with the transformed data.
+        # Raises
+            `FeatureStoreException`: If any of the features mentioned in the transformation function is not present in the Feature View.
+        """
+        transformed_features = set()
+        transformations = []
+        transformation_features = []
+        output_col_names = []
+        explode_name = []
+        for tf in transformation_functions:
+            hopsworks_udf = tf.hopsworks_udf
+            missing_features = set(hopsworks_udf.transformation_features) - set(
+                dataset.columns
             )
 
-            def timezone_decorator(func, trans_fn=transformation_fn):
-                if trans_fn.output_type != "TIMESTAMP":
-                    return func
-
-                current_timezone = tzlocal.get_localzone()
-
-                def decorated_func(x):
-                    result = func(x)
-                    if isinstance(result, datetime):
-                        if result.tzinfo is None:
-                            # if timestamp is timezone unaware, make sure it's localized to the system's timezone.
-                            # otherwise, spark will implicitly convert it to the system's timezone.
-                            return result.replace(tzinfo=current_timezone)
-                        else:
-                            # convert to utc, then localize to system's timezone
-                            return result.astimezone(timezone.utc).replace(
-                                tzinfo=current_timezone
-                            )
-                    return result
-
-                return decorated_func
-
-            self._spark_session.udf.register(
-                fn_registration_name,
-                timezone_decorator(transformation_fn.transformation_fn),
-                transformation_fn.output_type,
-            )
-            transformation_fn_expressions.append(
-                "{fn_name:}({name:}) AS {name:}".format(
-                    fn_name=fn_registration_name, name=feature_name
+            if missing_features:
+                raise FeatureStoreException(
+                    f"Features {missing_features} specified in the transformation function '{hopsworks_udf.function_name}' are not present in the feature view. Please specify the feature required correctly."
                 )
-            )
-            transformed_feature_names.append(feature_name)
 
-        # generate non transformation expressions
-        no_transformation_expr = [
-            "{name:} AS {name:}".format(name=col_name)
-            for col_name in dataset.columns
-            if col_name not in transformed_feature_names
-        ]
+            transformed_features.update(tf.hopsworks_udf.transformation_features)
 
-        # generate entire expression and execute it
-        transformation_fn_expressions.extend(no_transformation_expr)
-        transformed_dataset = dataset.selectExpr(*transformation_fn_expressions)
-        return transformed_dataset.select(*dataset.columns)
+            pandas_udf = hopsworks_udf.get_udf()
+            output_col_name = hopsworks_udf.output_column_names[0]
+
+            transformations.append(pandas_udf)
+            output_col_names.append(output_col_name)
+            transformation_features.append(hopsworks_udf.transformation_features)
+
+            if len(hopsworks_udf.return_types) > 1:
+                explode_name.append(f"{output_col_name}.*")
+            else:
+                explode_name.append(output_col_name)
+
+        untransformed_columns = []  # Untransformed column maintained as a list since order is imported while selecting features.
+        for column in dataset.columns:
+            if column not in transformed_features:
+                untransformed_columns.append(column)
+        # Applying transformations
+        transformed_dataset = dataset.select(
+            *untransformed_columns,
+            *[
+                fun(*feature).alias(output_col_name)
+                for fun, feature, output_col_name in zip(
+                    transformations, transformation_features, output_col_names
+                )
+            ],
+        ).select(*untransformed_columns, *explode_name)
+
+        return transformed_dataset
 
     def _setup_gcp_hadoop_conf(self, storage_connector, path):
         PROPERTY_ENCRYPTION_KEY = "fs.gs.encryption.key"
@@ -1387,24 +1458,6 @@ class Engine:
         for _feat in pyspark_schema:
             df = df.withColumn(_feat, col(_feat).cast(pyspark_schema[_feat]))
         return df
-
-    def _get_kafka_config(
-        self, feature_store_id: int, write_options: dict = None
-    ) -> dict:
-        if write_options is None:
-            write_options = {}
-        external = not (
-            isinstance(client.get_instance(), hopsworks.Client)
-            or write_options.get("internal_kafka", False)
-        )
-
-        storage_connector = self._storage_connector_api.get_kafka_connector(
-            feature_store_id, external
-        )
-
-        config = storage_connector.spark_options()
-        config.update(write_options)
-        return config
 
     @staticmethod
     def is_connector_type_supported(type):
