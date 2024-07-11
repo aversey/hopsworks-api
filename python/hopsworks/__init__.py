@@ -23,7 +23,7 @@ import tempfile
 import warnings
 from pathlib import Path
 
-from hopsworks import client, constants, project, version
+from hopsworks import client, constants, hopsworks_udf, project, version
 from hopsworks.client.exceptions import ProjectException, RestAPIError
 from hopsworks.connection import Connection
 from hopsworks.core import project_api, secret_api
@@ -47,7 +47,7 @@ _connected_project = None
 _secrets_api = None
 _project_api = None
 
-udf = hsfs.hopsworks_udf.udf
+udf = hopsworks_udf.udf
 
 
 def hw_formatwarning(message, category, filename, lineno, line=None):

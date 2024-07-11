@@ -24,11 +24,7 @@ from datetime import date, datetime, time
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import humps
-from hsfs import engine, util
-from hsfs.client.exceptions import FeatureStoreException
-from hsfs.core.feature_descriptive_statistics import FeatureDescriptiveStatistics
-from hsfs.decorators import typechecked
-from hsfs.transformation_statistics import TransformationStatistics
+from hopsworks.decorators import typechecked
 
 
 def udf(return_type: Union[List[type], type]) -> "HopsworksUdf":
@@ -110,6 +106,9 @@ class HopsworksUdf:
         statistics_features (List[str]) : List of feature names that requires statistics.
     """
 
+    from hsfs.core.feature_descriptive_statistics import FeatureDescriptiveStatistics
+    from hsfs.transformation_statistics import TransformationStatistics
+
     # Mapping for converting python types to spark types - required for creating pandas UDF's.
     PYTHON_SPARK_TYPE_MAPPING = {
         str: "string",
@@ -128,6 +127,8 @@ class HopsworksUdf:
         name: Optional[str] = None,
         transformation_features: Optional[List[TransformationFeature]] = None,
     ):
+        from hsfs.transformation_statistics import TransformationStatistics
+
         self._return_types: List[str] = HopsworksUdf._validate_and_convert_output_types(
             return_types
         )
@@ -169,6 +170,8 @@ class HopsworksUdf:
         # Raises
             `hsfs.client.exceptions.FeatureStoreException` : If the any of the output type is invalid
         """
+        from hsfs.client.exceptions import FeatureStoreException
+
         convert_output_types = []
         output_types = (
             output_types if isinstance(output_types, List) else [output_types]
@@ -299,6 +302,8 @@ class HopsworksUdf:
         # Returns
             `List[TransformationFeature]`: List of TransformationFeature that provide a mapping from feature names to corresponding statistics parameters if any is present.
         """
+        from hsfs.client.exceptions import FeatureStoreException
+
         arg_list = []
         statistics = None
         signature = inspect.signature(function).parameters
@@ -468,6 +473,7 @@ def renaming_wrapper(*args):
         # Raises
             `FeatureStoreException: If the provided number of features do not match the number of arguments in the defined UDF or if the provided feature names are not strings.
         """
+        from hsfs.client.exceptions import FeatureStoreException
 
         if len(features) != len(self.transformation_features):
             raise FeatureStoreException(
@@ -519,6 +525,7 @@ def renaming_wrapper(*args):
         # Returns
             `Callable`: Pandas UDF in the spark engine otherwise returns a python function for the UDF.
         """
+        from hsfs import engine
 
         if engine.get_type() in ["hive", "python", "training"] or force_python_udf:
             return self.hopsworksUdf_wrapper()
@@ -554,6 +561,7 @@ def renaming_wrapper(*args):
         # Returns
             `str`: Json serialized object.
         """
+        from hsfs import util
         return json.dumps(self, cls=util.FeatureStoreEncoder)
 
     @classmethod
@@ -696,6 +704,8 @@ def renaming_wrapper(*args):
     def transformation_statistics(
         self, statistics: List[FeatureDescriptiveStatistics]
     ) -> None:
+        from hsfs.transformation_statistics import TransformationStatistics
+
         self._statistics = TransformationStatistics(*self._statistics_argument_names)
         for stat in statistics:
             if stat.feature_name in self._statistics_argument_mapping.keys():
@@ -705,6 +715,8 @@ def renaming_wrapper(*args):
 
     @output_column_names.setter
     def output_column_names(self, output_col_names: Union[str, List[str]]) -> None:
+        from hsfs.client.exceptions import FeatureStoreException
+
         if not isinstance(output_col_names, List):
             output_col_names = [output_col_names]
         if len(output_col_names) != len(self.return_types):
