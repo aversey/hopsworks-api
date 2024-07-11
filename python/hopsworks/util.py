@@ -17,10 +17,6 @@
 from json import JSONEncoder
 from urllib.parse import urljoin, urlparse
 
-from hopsworks import client
-from hopsworks.client.exceptions import JobException
-from hopsworks.git_file_status import GitFileStatus
-
 
 class Encoder(JSONEncoder):
     def default(self, obj):
@@ -39,6 +35,7 @@ def convert_to_abs(path, current_proj_name):
 
 
 def validate_job_conf(config, project_name):
+    from hopsworks.client.exceptions import JobException
     # User is required to set the appPath programmatically after getting the configuration
     if (
         config["type"] != "dockerJobConfiguration"
@@ -60,6 +57,7 @@ def validate_job_conf(config, project_name):
 
 
 def convert_git_status_to_files(files):
+    from hopsworks.git_file_status import GitFileStatus
     # Convert GitFileStatus to list of file paths
     if isinstance(files[0], GitFileStatus):
         tmp_files = []
@@ -77,6 +75,7 @@ def get_hostname_replaced_url(sub_path: str):
     :param sub_path: url sub-path after base url
     :return: href url
     """
+    from hopsworks import client
     href = urljoin(client.get_instance()._base_url, sub_path)
     url_parsed = client.get_instance().replace_public_host(urlparse(href))
     return url_parsed.geturl()
