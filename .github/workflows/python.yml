@@ -45,8 +45,8 @@ jobs:
           ALL_CHANGED_FILES: ${{ steps.get-changed-files.outputs.all_changed_files }}
         run: ruff format $ALL_CHANGED_FILES
 
-  unit_tests_ubuntu_utc:
-    name: Unit Testing (Ubuntu)
+  unit_tests:
+    name: Unit Tests
     needs: lint_stylecheck
     runs-on: ubuntu-latest
     strategy:
@@ -75,8 +75,8 @@ jobs:
       - name: Run Pytest suite
         run: pytest python/tests
 
-  unit_tests_ubuntu_no_opt:
-    name: Unit Testing (Ubuntu) (No Optional Dependencies)
+  unit_tests_no_opt:
+    name: Unit Tests (No Optional Dependencies)
     needs: lint_stylecheck
     runs-on: ubuntu-latest
 
@@ -99,8 +99,8 @@ jobs:
       - name: Run Pytest suite
         run: pytest python/tests
 
-  unit_tests_ubuntu_pandas:
-    name: Unit Testing (Ubuntu) (Pandas 1.x)
+  unit_tests_pandas1:
+    name: Unit Tests (Pandas 1.x)
     needs: lint_stylecheck
     runs-on: ubuntu-latest
 
@@ -126,8 +126,8 @@ jobs:
       - name: Run Pytest suite
         run: pytest python/tests
 
-  unit_tests_ubuntu_local:
-    name: Unit Testing (Ubuntu) (Local TZ)
+  unit_tests_local_tz:
+    name: Unit Tests (Local TZ)
     needs: lint_stylecheck
     runs-on: ubuntu-latest
 
@@ -153,8 +153,8 @@ jobs:
       - name: Run Pytest suite
         run: pytest python/tests
 
-  unit_tests_ubuntu_typechecked:
-    name: Typechecked Unit Testing (Ubuntu)
+  unit_tests_typechecked:
+    name: Unit Tests (Typechecked)
     needs: lint_stylecheck
     runs-on: ubuntu-latest
 
@@ -177,8 +177,8 @@ jobs:
         run: pytest python/tests
         continue-on-error: true
 
-  unit_tests_windows_utc:
-    name: Unit Testing (Windows)
+  unit_tests_windows:
+    name: Unit Tests (Windows)
     needs: lint_stylecheck
     runs-on: windows-latest
 
@@ -204,8 +204,8 @@ jobs:
       - name: Run Pytest suite
         run: pytest python/tests
 
-  unit_tests_windows_local:
-    name: Unit Testing (Windows) (Local TZ)
+  unit_tests_windows_local_tz:
+    name: Unit Tests (Windows) (Local TZ)
     needs: lint_stylecheck
     runs-on: windows-latest
 
