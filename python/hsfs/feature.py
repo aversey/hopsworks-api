@@ -17,13 +17,16 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-import hsfs
 import humps
 from hsfs import util
 from hsfs.constructor import filter
 from hsfs.decorators import typechecked
+
+
+if TYPE_CHECKING:
+    import hsfs
 
 
 @typechecked
@@ -49,9 +52,9 @@ class Feature:
         feature_group_id: Optional[int] = None,
         feature_group: Optional[
             Union[
-                "hsfs.feature_group.FeatureGroup",
-                "hsfs.feature_group.ExternalFeatureGroup",
-                "hsfs.feature_group.SpineGroup",
+                hsfs.feature_group.FeatureGroup,
+                hsfs.feature_group.ExternalFeatureGroup,
+                hsfs.feature_group.SpineGroup,
             ]
         ] = None,
         **kwargs,
@@ -216,41 +219,41 @@ class Feature:
         else:
             return value
 
-    def __lt__(self, other: Any) -> "filter.Filter":
+    def __lt__(self, other: Any) -> filter.Filter:
         return filter.Filter(self, filter.Filter.LT,
                              self._get_filter_value(other))
 
-    def __le__(self, other: Any) -> "filter.Filter":
+    def __le__(self, other: Any) -> filter.Filter:
         return filter.Filter(self, filter.Filter.LE,
                              self._get_filter_value(other))
 
-    def __eq__(self, other: Any) -> "filter.Filter":
+    def __eq__(self, other: Any) -> filter.Filter:
         return filter.Filter(self, filter.Filter.EQ,
                              self._get_filter_value(other))
 
-    def __ne__(self, other: Any) -> "filter.Filter":
+    def __ne__(self, other: Any) -> filter.Filter:
         return filter.Filter(self, filter.Filter.NE,
                              self._get_filter_value(other))
 
-    def __ge__(self, other: Any) -> "filter.Filter":
+    def __ge__(self, other: Any) -> filter.Filter:
         return filter.Filter(self, filter.Filter.GE,
                              self._get_filter_value(other))
 
-    def __gt__(self, other: Any) -> "filter.Filter":
+    def __gt__(self, other: Any) -> filter.Filter:
         return filter.Filter(self, filter.Filter.GT,
                              self._get_filter_value(other))
 
-    def contains(self, other: Union[str, List[Any]]) -> "filter.Filter":
+    def contains(self, other: Union[str, List[Any]]) -> filter.Filter:
         """
         !!! warning "Deprecated"
             `contains` method is deprecated. Use `isin` instead.
         """
         return self.isin(other)
 
-    def isin(self, other: Union[str, List[Any]]) -> "filter.Filter":
+    def isin(self, other: Union[str, List[Any]]) -> filter.Filter:
         return filter.Filter(self, filter.Filter.IN, json.dumps(other))
 
-    def like(self, other: Any) -> "filter.Filter":
+    def like(self, other: Any) -> filter.Filter:
         return filter.Filter(self, filter.Filter.LK, other)
 
     def __str__(self) -> str:

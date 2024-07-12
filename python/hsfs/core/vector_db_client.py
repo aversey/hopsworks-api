@@ -17,14 +17,17 @@ from __future__ import annotations
 
 import base64
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 import hsfs
 from hsfs.client.exceptions import FeatureStoreException, VectorDatabaseException
 from hsfs.constructor.filter import Filter, Logic
 from hsfs.constructor.join import Join
 from hsfs.core.opensearch import OpenSearchClientSingleton
-from hsfs.feature import Feature
+
+
+if TYPE_CHECKING:
+    from hsfs.feature import Feature
 
 
 class VectorDbClient:
