@@ -19,11 +19,14 @@ import base64
 import logging
 import os
 import re
+import textwrap
 import warnings
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Any, Dict, List, Optional, TypeVar, Union
 
 import humps
+import jks
 import numpy as np
 import pandas as pd
 import polars as pl
@@ -1171,6 +1174,56 @@ class KafkaConnector(StorageConnector):
 
         return config
 
+    @classmethod
+    def _convert_jks_to_ca_chain(cls, ks, ts):
+        """
+        Converts JKS keystore and truststore file into ca chain PEM to be compatible with Python libraries
+        """
+        ca_chain = ""
+        for store in [ks, ts]:
+            for _, c in store.certs.items():
+                ca_chain += cls._bytes_to_pem_str(c.cert, "CERTIFICATE")
+        return ca_chain
+
+    @classmethod
+    def _convert_jks_to_client_cert(cls, ks):
+        """
+        Converts JKS keystore file into client cert PEM to be compatible with Python libraries
+        """
+        client_cert = ""
+        for _, pk in ks.private_keys.items():
+            for c in pk.cert_chain:
+                client_cert += cls._bytes_to_pem_str(c[1], "CERTIFICATE")
+        return client_cert
+
+    @classmethod
+    def _convert_jks_to_client_key(cls, ks):
+        """
+        Converts JKS keystore file into client key PEM to be compatible with Python libraries
+        """
+        client_key = ""
+        for _, pk in ks.private_keys.items():
+            client_key += cls._bytes_to_pem_str(pk.pkey_pkcs8, "PRIVATE KEY")
+        return client_key
+
+    @staticmethod
+    def _bytes_to_pem_str(der_bytes, pem_type):
+        """
+        Utility function for creating PEM files
+
+        Args:
+            der_bytes: DER encoded bytes
+            pem_type: type of PEM, e.g Certificate, Private key, or RSA private key
+
+        Returns:
+            PEM String for a DER-encoded certificate or private key
+        """
+        pem_str = f"-----BEGIN {pem_type}-----\n"
+        lines = textwrap.wrap(base64.b64encode(der_bytes).decode("ascii"), 64)
+        pem_str += "\n".join(lines) + "\n"
+        pem_str += f"-----END {pem_type}-----\n"
+        return pem_str
+
     def confluent_options(self) -> Dict[str, Any]:
         """Return prepared options to be passed to confluent_kafka, based on the provided apache spark configuration.
         Right now only producer values with Importance >= medium are implemented.
@@ -1189,21 +1242,34 @@ class KafkaConnector(StorageConnector):
                 ]
                 and not self._pem_files_created
             ):
-                (
-                    ca_chain_path,
-                    client_cert_path,
-                    client_key_path,
-                ) = client.get_instance()._write_pem(
-                    kafka_options["ssl.keystore.location"],
+                _client = client.get()
+                project = ""  # todo
+
+                ks = jks.KeyStore.load(
+                    Path(kafka_options["ssl.keystore.location"]),
                     kafka_options["ssl.keystore.password"],
-                    kafka_options["ssl.truststore.location"],
-                    kafka_options["ssl.truststore.password"],
-                    f"kafka_sc_{client.get_instance()._project_id}_{self._id}",
+                    try_decrypt_keys=True,
                 )
-                self._pem_files_created = True
+                ts = jks.KeyStore.load(
+                    Path(kafka_options["ssl.truststore.location"]),
+                    kafka_options["ssl.truststore.password"],
+                    try_decrypt_keys=True,
+                )
+                prefix = f"kafka_sc_{self._id}"
+
+                ca_chain_path = _client.client_cert_path(project, prefix)
+                ca_chain_path.write_text(self._convert_jks_to_ca_chain(ks, ts))
                 config["ssl.ca.location"] = ca_chain_path
+
+                client_cert_path = _client.client_cert_path(project, prefix)
+                client_cert_path.write_text(self._convert_jks_to_client_cert(ks))
                 config["ssl.certificate.location"] = client_cert_path
+
+                client_key_path = _client.client_cert_path(project, prefix)
+                client_key_path.write_text(self._convert_jks_to_client_key(ks))
                 config["ssl.key.location"] = client_key_path
+
+                self._pem_files_created = True
             elif key == "sasl.jaas.config":
                 groups = re.search(
                     "(.+?) .*username=[\"'](.+?)[\"'] .*password=[\"'](.+?)[\"']",

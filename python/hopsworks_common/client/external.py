@@ -18,9 +18,8 @@ from __future__ import annotations
 
 import base64
 import logging
-import os
+from pathlib import Path
 
-import requests
 from hopsworks_common.client import auth, base, exceptions
 from hopsworks_common.client.exceptions import FeatureStoreException
 
@@ -70,7 +69,6 @@ class Client(base.Client):
         self._auth = auth.ApiKeyAuth(api_key)
 
         _logger.debug("Setting up requests session")
-        self._session = requests.session()
         self._connected = True
 
         self._verify = self._get_verify(hostname_verification, trust_store_path)
@@ -81,6 +79,8 @@ class Client(base.Client):
         self._cert_folder = None
 
         self._hsfs_post_init(project, engine)
+
+        super().__init__()
 
     def _hsfs_post_init(self, project, engine):
         self._project_name = project
@@ -145,9 +145,10 @@ class Client(base.Client):
 
     def download_certs(self, project):
         res = self._materialize_certs(project)
-        self._write_pem_file(res["caChain"], self._get_ca_chain_path())
-        self._write_pem_file(res["clientCert"], self._get_client_cert_path())
-        self._write_pem_file(res["clientKey"], self._get_client_key_path())
+
+        self._get_ca_chain_path().write_text(res["caChain"])
+        self._get_client_cert_path().write_text(res["clientCert"])
+        self._get_client_key_path().write_text(res["clientKey"])
         return res
 
     def _materialize_certs(self, project):
@@ -256,32 +257,9 @@ class Client(base.Client):
         _logger.debug("Getting key store path: %s", self._key_store_path)
         return self._key_store_path
 
-    def _get_ca_chain_path(self, project_name=None) -> str:
-        if project_name is None:
-            project_name = self._project_name
-        path = os.path.join(
-            self._cert_folder_base, self._host, project_name, "ca_chain.pem"
-        )
-        _logger.debug(f"Getting ca chain path {path}")
-        return path
-
-    def _get_client_cert_path(self, project_name=None) -> str:
-        if project_name is None:
-            project_name = self._project_name
-        path = os.path.join(
-            self._cert_folder_base, self._host, project_name, "client_cert.pem"
-        )
-        _logger.debug(f"Getting client cert path {path}")
-        return path
-
-    def _get_client_key_path(self, project_name=None) -> str:
-        if project_name is None:
-            project_name = self._project_name
-        path = os.path.join(
-            self._cert_folder_base, self._host, project_name, "client_key.pem"
-        )
-        _logger.debug(f"Getting client key path {path}")
-        return path
+    def _get_certs_path(self, project) -> Path:
+        """Get the path to the certificates directory."""
+        return Path(self._cert_folder_base, self._host, project)
 
     def _get_project_info(self, project_name):
         """Makes a REST call to hopsworks to get all metadata of a project for the provided project.

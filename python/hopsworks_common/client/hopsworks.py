@@ -14,10 +14,9 @@
 #   limitations under the License.
 #
 
-import os
+import time
 from pathlib import Path
 
-import requests
 from hopsworks_common.client import auth, base
 
 
@@ -70,15 +69,36 @@ class Client(base.Client):
         except FileNotFoundError:
             self._auth = auth.ApiKeyAuth(self._read_apikey())
         self._verify = self._get_verify(hostname_verification, trust_store_path)
-        self._session = requests.session()
 
         self._connected = True
 
         credentials = self._get_credentials(self._project_id)
 
-        self._write_pem_file(credentials["caChain"], self._get_ca_chain_path())
-        self._write_pem_file(credentials["clientCert"], self._get_client_cert_path())
-        self._write_pem_file(credentials["clientKey"], self._get_client_key_path())
+        self._get_ca_chain_path().write_text(credentials["caChain"])
+        self._get_client_cert_path().write_text(credentials["clientCert"])
+        self._get_client_key_path().write_text(credentials["clientKey"])
+
+        super().__init__()
+
+    def _send_request(self, request, send_kwargs, wait=1, retries=1):
+        """Hopsworks specific implementation of sending a request.
+
+        In case the token is expired, refresh the JWT token and retry the request;
+        this takes a long, which is the reason why it is only done internally.
+        """
+        prepared = self._session.prepare_request(request)
+        response = self._session.send(prepared, **send_kwargs)
+
+        if response.status_code == 401 and retries < self.TOKEN_EXPIRED_MAX_RETRIES:
+            # Sleep the waited time before re-issuing the request
+            time.sleep(self.TOKEN_EXPIRED_RETRY_INTERVAL * wait)
+            # Update the token
+            self._auth = auth.BearerAuth(self._read_jwt())
+            # Update request with the new token
+            request.auth = self._auth
+            return self._send_request(request, send_kwargs, wait * 2, retries + 1)
+
+        return response
 
     def _get_hopsworks_rest_endpoint(self):
         """Get the hopsworks REST endpoint for making requests to the REST API."""
@@ -98,14 +118,9 @@ class Client(base.Client):
             self._write_ca_chain(ks, ts, ca_chain_path)
         return str(ca_chain_path)
 
-    def _get_ca_chain_path(self, project_name=None) -> str:
-        return os.path.join("/tmp", "ca_chain.pem")
-
-    def _get_client_cert_path(self, project_name=None) -> str:
-        return os.path.join("/tmp", "client_cert.pem")
-
-    def _get_client_key_path(self, project_name=None) -> str:
-        return os.path.join("/tmp", "client_key.pem")
+    def _get_certs_path(self, project) -> Path:
+        """Get the path to the certificates directory."""
+        return Path(self.CERT_FOLDER)
 
     def _get_jks_trust_store_path(self):
         """
@@ -180,3 +195,16 @@ class Client(base.Client):
     @property
     def host(self):
         return self._host
+
+    def _read_jwt(self):
+        """Retrieve jwt from local container."""
+        return self._read_file(self.TOKEN_FILE)
+
+    def _read_apikey(self):
+        """Retrieve apikey from local container."""
+        return self._read_file(self.APIKEY_FILE)
+
+    def _read_file(self, secret_file):
+        """Retrieve secret from local container."""
+        with open(os.path.join(self._secrets_dir, secret_file), "r") as secret:
+            return secret.read()

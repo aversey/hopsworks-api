@@ -19,10 +19,26 @@ from __future__ import annotations
 from hopsworks_common.client import base
 
 
-def get() -> base.Client:
+# A shortcut (mostly for typing in other modules)
+Client = base.Client
+
+
+def get() -> Client:
+    """Get the current client instance.
+
+    # Returns
+        The current client instance.
+    # Raises
+        `Exception`: If the client is not initialized."""
     if not base._client:
         raise Exception("Couldn't find client. Try reconnecting to Hopsworks.")
     return base._client
+
+
+def close() -> None:
+    """Close the current client instance."""
+    if base._client:
+        base._client._close()
 
 
 # The rest is legacy from hsml client, it probably should be refactored
