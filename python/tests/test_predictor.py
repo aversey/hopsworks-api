@@ -25,7 +25,7 @@ from hsml import (
     transformer,
     util,
 )
-from hsml.constants import MODEL, PREDICTOR, RESOURCES
+from hsml.constants import HOSTS, MODEL, PREDICTOR, RESOURCES
 
 
 SERVING_RESOURCE_LIMITS = {"cores": 2, "memory": 1024, "gpus": 2}
@@ -703,7 +703,8 @@ class TestPredictor:
         mocker.patch(
             "hsml.client.is_scale_to_zero_required", return_value=force_scale_to_zero
         )
-        mocker.patch("hsml.client.is_saas_connection", return_value=is_saas_connection)
+        mock_client_get = mocker.patch("hsml.client.get")
+        mock_client_get.return_value.host = HOSTS.APP_HOST if is_saas_connection else ""
         mocker.patch(
             "hsml.client.is_kserve_installed", return_value=is_kserve_installed
         )

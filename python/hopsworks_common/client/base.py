@@ -21,10 +21,12 @@ import os
 import textwrap
 import time
 from pathlib import Path
+from typing import Optional
 
 import furl
 import requests
 import urllib3
+from hopsworks_common import client
 from hopsworks_common.client import auth, exceptions
 from hopsworks_common.decorators import connected
 
@@ -39,6 +41,9 @@ urllib3.disable_warnings(urllib3.exceptions.SecurityWarning)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
+_client: Optional[Client] = None
+
+
 class Client:
     TOKEN_FILE = "token.jwt"
     TOKEN_EXPIRED_RETRY_INTERVAL = 0.6
@@ -48,6 +53,15 @@ class Client:
     REST_ENDPOINT = "REST_ENDPOINT"
     DEFAULT_DATABRICKS_ROOT_VIRTUALENV_ENV = "DEFAULT_DATABRICKS_ROOT_VIRTUALENV_ENV"
     HOPSWORKS_PUBLIC_HOST = "HOPSWORKS_PUBLIC_HOST"
+
+    def __new__(cls, *args, **kwargs):
+        global _client
+        if _client:
+            _client.stop()
+        print(cls)
+        _client = object.__new__(cls)
+        _client.__init__(*args, **kwargs)
+        return client._client
 
     def _get_verify(self, verify, trust_store_path):
         """Get verification method for sending HTTP requests to Hopsworks.

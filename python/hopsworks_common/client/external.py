@@ -37,6 +37,7 @@ _logger = logging.getLogger(__name__)
 class Client(base.Client):
     def __init__(
         self,
+        *,
         host,
         port,
         project,

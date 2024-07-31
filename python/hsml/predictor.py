@@ -20,6 +20,7 @@ import humps
 from hsml import client, deployment, util
 from hsml.constants import (
     ARTIFACT_VERSION,
+    HOSTS,
     INFERENCE_ENDPOINTS,
     MODEL,
     PREDICTOR,
@@ -146,7 +147,7 @@ class Predictor(DeployableComponent):
     @classmethod
     def _validate_serving_tool(cls, serving_tool):
         if serving_tool is not None:
-            if client.is_saas_connection():
+            if client.get().host == HOSTS.APP_HOST:
                 # only kserve supported in saasy hopsworks
                 if serving_tool != PREDICTOR.SERVING_TOOL_KSERVE:
                     raise ValueError(

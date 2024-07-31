@@ -27,6 +27,11 @@ except ImportError:
     pass
 
 
+def is_enabled() -> bool:
+    """Checks if the client is running inside a Hopsworks instance."""
+    return base.Client.REST_ENDPOINT in os.environ
+
+
 class Client(base.Client):
     REQUESTS_VERIFY = "REQUESTS_VERIFY"
     DOMAIN_CA_TRUSTSTORE_PEM = "DOMAIN_CA_TRUSTSTORE_PEM"

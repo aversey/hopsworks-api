@@ -106,6 +106,10 @@ class DataValidationException(FeatureStoreException):
         super().__init__(message)
 
 
+class ClientReinitError(Exception):
+    """Raised when a client cannot be initialized since it is already initalized."""
+
+
 class ExternalClientError(TypeError):
     """Raised when external client cannot be initialized due to missing arguments."""
 

@@ -19,9 +19,8 @@ from hopsworks_common.client import (
     base,
     exceptions,
     external,
-    get_instance,
+    get,
     hopsworks,
-    init,
     online_store_rest_client,
     stop,
 )
@@ -32,9 +31,8 @@ __all__ = [
     base,
     exceptions,
     external,
-    get_instance,
+    get,
     hopsworks,
-    init,
     online_store_rest_client,
     stop,
 ]

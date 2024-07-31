@@ -16,9 +16,11 @@
 
 from hopsworks_common.client.hopsworks import (
     Client,
+    is_enabled,
 )
 
 
 __all__ = [
     Client,
+    is_enabled,
 ]

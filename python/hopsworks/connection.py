@@ -160,10 +160,6 @@ class Connection:
         # Returns
             `Project`. A project handle object to perform operations on.
         """
-
-        if not name:
-            name = client.get_instance()._project_name
-
         return self._project_api._get_project(name)
 
     @connected
@@ -173,7 +169,6 @@ class Connection:
         # Returns
             `List[Project]`: List of Project objects
         """
-
         return self._project_api._get_projects()
 
     @connected
@@ -238,21 +233,20 @@ class Connection:
         self._connected = True
         try:
             # init client
-            if client.base.Client.REST_ENDPOINT not in os.environ:
-                client.init(
-                    "external",
-                    self._host,
-                    self._port,
-                    self._project,
-                    None,
-                    self._hostname_verification,
-                    self._trust_store_path,
-                    self._cert_folder,
-                    self._api_key_file,
-                    self._api_key_value,
-                )
+            if client.hopsworks.is_enabled():
+                client.hopsworks.Client()
             else:
-                client.init("hopsworks")
+                client.external.Client(
+                    host=self._host,
+                    port=self._port,
+                    project=self._project,
+                    engine=None,
+                    hostname_verification=self._hostname_verification,
+                    trust_store_path=self._trust_store_path,
+                    cert_folder=self._cert_folder,
+                    api_key_file=self._api_key_file,
+                    api_key_value=self._api_key_value,
+                )
 
             self._project_api = project_api.ProjectApi()
             self._secret_api = secret_api.SecretsApi()

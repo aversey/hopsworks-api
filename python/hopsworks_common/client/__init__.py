@@ -16,66 +16,16 @@
 
 from __future__ import annotations
 
-from typing import Literal, Optional, Union
-
-from hopsworks_common.client import external, hopsworks, istio
-from hopsworks_common.constants import HOSTS
+from hopsworks_common.client import base
 
 
-_client: Union[hopsworks.Client, external.Client, None] = None
-
-
-def init(
-    client_type: Union[Literal["hopsworks"], Literal["external"]],
-    host: Optional[str] = None,
-    port: Optional[int] = None,
-    project: Optional[str] = None,
-    engine: Optional[str] = None,
-    hostname_verification: Optional[bool] = None,
-    trust_store_path: Optional[str] = None,
-    cert_folder: Optional[str] = None,
-    api_key_file: Optional[str] = None,
-    api_key_value: Optional[str] = None,
-) -> None:
-    global _client
-    if not _client:
-        if client_type == "hopsworks":
-            _client = hopsworks.Client()
-        elif client_type == "external":
-            _client = external.Client(
-                host,
-                port,
-                project,
-                engine,
-                hostname_verification,
-                trust_store_path,
-                cert_folder,
-                api_key_file,
-                api_key_value,
-            )
-    elif isinstance(_client, external.Client) and not _client._project_name:
-        _client._hsfs_post_init(project, engine)
-
-
-def get_instance() -> Union[hopsworks.Client, external.Client]:
-    global _client
-    if not _client:
+def get() -> base.Client:
+    if not base._client:
         raise Exception("Couldn't find client. Try reconnecting to Hopsworks.")
-    return _client
+    return base._client
 
 
-def stop() -> None:
-    global _client
-    if _client:
-        _client._close()
-    _client = None
-    if istio._client:
-        istio._client._close()
-    istio._client = None
-
-
-def is_saas_connection() -> bool:
-    return get_instance()._host == HOSTS.APP_HOST
+# The rest is legacy from hsml client, it probably should be refactored
 
 
 _kserve_installed = None
