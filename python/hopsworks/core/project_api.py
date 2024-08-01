@@ -43,11 +43,11 @@ class ProjectApi:
         # Raises
             `RestAPIError`: If unable to get the projects
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
         ]
-        project_team_json = _client._send_request("GET", path_params)
+        project_team_json = _client.send_request("GET", path_params)
         projects = []
         for project_team in project_team_json:
             projects.append(self._get_project(project_team["project"]["name"]))
@@ -63,13 +63,13 @@ class ProjectApi:
         # Raises
             `RestAPIError`: If unable to get the project
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             "getProjectInfo",
             name,
         ]
-        project_json = _client._send_request("GET", path_params)
+        project_json = _client.send_request("GET", path_params)
         return project.Project.from_response_json(project_json)
 
     def _create_project(
@@ -86,7 +86,7 @@ class ProjectApi:
         # Raises
             `RestAPIError`: If unable to create the project
         """
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = ["project"]
         query_params = {"projectName": name}
@@ -98,7 +98,7 @@ class ProjectApi:
             "description": description,
             "featureStoreTopic": feature_store_topic,
         }
-        _client._send_request(
+        _client.send_request(
             "POST",
             path_params,
             headers=headers,
@@ -112,10 +112,10 @@ class ProjectApi:
         return project
 
     def get_client(self):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
             "client",
         ]
-        return _client._send_request("GET", path_params, stream=True)
+        return _client.send_request("GET", path_params, stream=True)

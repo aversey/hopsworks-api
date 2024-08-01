@@ -55,7 +55,7 @@ class EnvironmentEngine:
             return False
 
     def _poll_commands_library(self, environment_name, library_name):
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = [
             "project",
@@ -72,7 +72,7 @@ class EnvironmentEngine:
 
         try:
             return library.Library.from_response_json(
-                _client._send_request(
+                _client.send_request(
                     "GET", path_params, headers=headers, query_params=query_params
                 ),
                 None,
@@ -86,7 +86,7 @@ class EnvironmentEngine:
                 return None
 
     def _poll_commands_environment(self, environment_name):
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = [
             "project",
@@ -100,7 +100,7 @@ class EnvironmentEngine:
         headers = {"content-type": "application/json"}
 
         return environment.Environment.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "GET", path_params, headers=headers, query_params=query_params
             ),
             None,

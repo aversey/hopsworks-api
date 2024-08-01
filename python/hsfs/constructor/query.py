@@ -102,7 +102,7 @@ class Query:
 
             if engine.get_instance().is_flyingduck_query_supported(self, read_options):
                 sql_query = self._to_string(fs_query, online, asof=True)
-                sql_query = arrow_flight_client.get_instance().create_query_object(
+                sql_query = arrow_flight_client.get().create_query_object(
                     self, sql_query, fs_query.on_demand_fg_aliases
                 )
             else:

@@ -46,7 +46,7 @@ class TestBaseClient:
         spy_retry_token_expired = mocker.spy(client, "_retry_token_expired")
 
         # Act
-        client._send_request("GET", path_params)
+        client.send_request("GET", path_params)
 
         # Assert
         assert spy_retry_token_expired.call_count == 0
@@ -76,7 +76,7 @@ class TestBaseClient:
 
         # Act
         with pytest.raises(RestAPIError):
-            client._send_request("GET", path_params)
+            client.send_request("GET", path_params)
 
         # Assert
         assert spy_retry_token_expired.call_count == 10
@@ -113,7 +113,7 @@ class TestBaseClient:
         spy_retry_token_expired = mocker.spy(client, "_retry_token_expired")
 
         # Act
-        client._send_request("GET", path_params)
+        client.send_request("GET", path_params)
 
         # Assert
         assert spy_retry_token_expired.call_count == 5

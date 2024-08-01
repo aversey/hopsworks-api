@@ -33,7 +33,7 @@ class ModelApi:
         :return: updated metadata object of the model
         :rtype: Model
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -44,7 +44,7 @@ class ModelApi:
         ]
         headers = {"content-type": "application/json"}
         return model_instance.update_from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "PUT",
                 path_params,
                 headers=headers,
@@ -63,7 +63,7 @@ class ModelApi:
         :return: model metadata object
         :rtype: Model
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -74,7 +74,7 @@ class ModelApi:
         ]
         query_params = {"expand": "trainingdatasets"}
 
-        model_json = _client._send_request("GET", path_params, query_params)
+        model_json = _client.send_request("GET", path_params, query_params)
         model_meta = model.Model.from_response_json(model_json)
 
         model_meta.shared_registry_project_name = shared_registry_project_name
@@ -101,7 +101,7 @@ class ModelApi:
         :rtype: Model
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -123,7 +123,7 @@ class ModelApi:
             query_params["sort_by"] = metric + ":" + direction
             query_params["limit"] = "1"
 
-        model_json = _client._send_request("GET", path_params, query_params)
+        model_json = _client.send_request("GET", path_params, query_params)
         models_meta = model.Model.from_response_json(model_json)
 
         for model_meta in models_meta:
@@ -137,7 +137,7 @@ class ModelApi:
         :param model_instance: metadata object of model to delete
         :type model_instance: Model
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -146,7 +146,7 @@ class ModelApi:
             "models",
             model_instance.id,
         ]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def set_tag(self, model_instance, name, value: Union[str, dict]):
         """Attach a name/value tag to a model.
@@ -161,7 +161,7 @@ class ModelApi:
         :param value: value of the tag to be added
         :type value: str or dict
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -174,7 +174,7 @@ class ModelApi:
         ]
         headers = {"content-type": "application/json"}
         json_value = json.dumps(value)
-        _client._send_request("PUT", path_params, headers=headers, data=json_value)
+        _client.send_request("PUT", path_params, headers=headers, data=json_value)
 
     def delete_tag(self, model_instance, name):
         """Delete a tag.
@@ -186,7 +186,7 @@ class ModelApi:
         :param name: name of the tag to be removed
         :type name: str
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -197,7 +197,7 @@ class ModelApi:
             "tags",
             name,
         ]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def get_tags(self, model_instance, name: str = None):
         """Get the tags.
@@ -211,7 +211,7 @@ class ModelApi:
         :return: dict of tag name/values
         :rtype: dict
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -228,7 +228,7 @@ class ModelApi:
         return {
             tag._name: json.loads(tag._value)
             for tag in tag.Tag.from_response_json(
-                _client._send_request("GET", path_params)
+                _client.send_request("GET", path_params)
             )
         }
 
@@ -243,7 +243,7 @@ class ModelApi:
         # Returns
             `ExplicitProvenance.Links`:  the feature view used to generate this model
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -259,7 +259,7 @@ class ModelApi:
             "upstreamLvls": 2,
             "downstreamLvls": 0,
         }
-        links_json = _client._send_request("GET", path_params, query_params)
+        links_json = _client.send_request("GET", path_params, query_params)
         return explicit_provenance.Links.from_response_json(
             links_json,
             explicit_provenance.Links.Direction.UPSTREAM,
@@ -277,7 +277,7 @@ class ModelApi:
         # Returns
             `ExplicitProvenance.Links`:  the training dataset used to generate this model
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -293,7 +293,7 @@ class ModelApi:
             "upstreamLvls": 1,
             "downstreamLvls": 0,
         }
-        links_json = _client._send_request("GET", path_params, query_params)
+        links_json = _client.send_request("GET", path_params, query_params)
         return explicit_provenance.Links.from_response_json(
             links_json,
             explicit_provenance.Links.Direction.UPSTREAM,

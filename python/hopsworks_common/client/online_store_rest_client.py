@@ -229,12 +229,12 @@ class OnlineStoreRestClientSingleton:
         url = furl(self._get_rondb_rest_server_endpoint())
         _logger.debug(f"Default RonDB Rest Server host and port: {url.host}:{url.port}")
         _logger.debug(
-            f"Using CA Certs from Hopsworks Client: {client.get_instance()._get_ca_chain_path()}"
+            f"Using CA Certs from Hopsworks Client: {client.get()._get_ca_chain_path()}"
         )
         return {
             self.HOST: url.host,
             self.PORT: url.port,
-            self.CA_CERTS: client.get_instance()._get_ca_chain_path(),
+            self.CA_CERTS: client.get()._get_ca_chain_path(),
         }
 
     def _get_rondb_rest_server_endpoint(self) -> str:
@@ -248,7 +248,7 @@ class OnlineStoreRestClientSingleton:
         Returns:
             str: RonDB Rest Server endpoint with default port.
         """
-        if client.get_instance()._is_external():
+        if client.get()._is_external():
             _logger.debug(
                 "External Online Store REST Client : Retrieving RonDB Rest Server endpoint via loadbalancer."
             )
@@ -257,7 +257,7 @@ class OnlineStoreRestClientSingleton:
                 _logger.debug(
                     "External Online Store REST Client : Loadbalancer external domain is not set. Using client host as endpoint."
                 )
-                external_domain = client.get_instance().host
+                external_domain = client.get().host
             default_url = f"https://{external_domain}:{self._DEFAULT_ONLINE_STORE_REST_CLIENT_PORT}"
             _logger.debug(
                 f"External Online Store REST Client : Default RonDB Rest Server endpoint: {default_url}"
@@ -303,7 +303,7 @@ class OnlineStoreRestClientSingleton:
     def _check_hopsworks_connection(self) -> None:
         _logger.debug("Checking Hopsworks connection.")
         assert (
-            client.get_instance() is not None and client.get_instance()._connected
+            client.get() is not None and client.get()._connected
         ), """Hopsworks Client is not connected. Please connect to Hopsworks cluster
             via hopsworks.login or hsfs.connection before initialising the Online Store REST Client.
             """
@@ -316,16 +316,14 @@ class OnlineStoreRestClientSingleton:
         The api key determines the permissions of the user making the request for access to a given Feature Store.
         """
         _logger.debug("Setting authentication for Online Store REST Client.")
-        if client.get_instance()._is_external():
+        if client.get()._is_external():
             assert hasattr(
-                client.get_instance()._auth, "_token"
+                client.get()._auth, "_token"
             ), "External client must use API Key authentication. Contact your system administrator."
             _logger.debug(
                 "External Online Store REST Client : Setting authentication using Hopsworks Client API Key."
             )
-            self._auth = client.auth.OnlineStoreKeyAuth(
-                client.get_instance()._auth._token
-            )
+            self._auth = client.auth.OnlineStoreKeyAuth(client.get()._auth._token)
         elif isinstance(optional_config, dict) and optional_config.get(
             self.API_KEY, False
         ):

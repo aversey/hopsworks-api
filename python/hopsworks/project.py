@@ -132,7 +132,7 @@ class Project:
         """
         from hsfs import connection
 
-        _client = client.get_instance()
+        _client = client.get()
         if type(_client) is Client:  # If external client
             if _client._host == constants.HOSTS.APP_HOST and engine is None:
                 engine = "python"
@@ -167,7 +167,7 @@ class Project:
         """
         from hsml import connection
 
-        _client = client.get_instance()
+        _client = client.get()
         if type(_client) is Client:  # If external client
             return connection(
                 host=_client._host,
@@ -197,7 +197,7 @@ class Project:
         """
         from hsml import connection
 
-        _client = client.get_instance()
+        _client = client.get()
         if type(_client) is Client:  # If external client
             return connection(
                 host=_client._host,
@@ -214,7 +214,7 @@ class Project:
         # Returns
             `KafkaApi`: The Kafka Api handle
         """
-        _client = client.get_instance()
+        _client = client.get()
         if type(_client) is Client:
             _client.download_certs(self.name)
         return self._kafka_api
@@ -225,7 +225,7 @@ class Project:
         # Returns
             `OpenSearchApi`: The OpenSearch Api handle
         """
-        _client = client.get_instance()
+        _client = client.get()
         if type(_client) is Client:
             _client.download_certs(self.name)
         return self._opensearch_api

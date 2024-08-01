@@ -21,10 +21,10 @@ from hopsworks_common import client
 
 class ProjectApi:
     def get_client(self):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
             "client",
         ]
-        return _client._send_request("GET", path_params, stream=True)
+        return _client.send_request("GET", path_params, stream=True)

@@ -152,8 +152,8 @@ class OpenSearchClientSingleton:
             logging.getLogger("opensearchpy").setLevel(logging.WARNING)
             self._opensearch_client = OpenSearch(
                 **OpenSearchApi(
-                    client.get_instance()._project_id,
-                    client.get_instance()._project_name,
+                    client.get()._project_id,
+                    client.get()._project_name,
                 ).get_default_py_config()
             )
 

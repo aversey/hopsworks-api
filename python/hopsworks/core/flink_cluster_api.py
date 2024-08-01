@@ -83,7 +83,7 @@ class FlinkClusterApi:
             return self._create_cluster(name, config)
 
     def _create_cluster(self, name: str, config: dict):
-        _client = client.get_instance()
+        _client = client.get()
 
         config = util.validate_job_conf(config, self._project_name)
 
@@ -91,7 +91,7 @@ class FlinkClusterApi:
 
         headers = {"content-type": "application/json"}
         flink_job = job.Job.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "PUT", path_params, headers=headers, data=json.dumps(config)
             ),
             self._project_id,
@@ -123,7 +123,7 @@ class FlinkClusterApi:
         # Raises
             `RestAPIError`: If unable to get the flink cluster object
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -132,7 +132,7 @@ class FlinkClusterApi:
         ]
         query_params = {"expand": ["creator"]}
         flink_job = job.Job.from_response_json(
-            _client._send_request("GET", path_params, query_params=query_params),
+            _client.send_request("GET", path_params, query_params=query_params),
             self._project_id,
             self._project_name,
         )
@@ -167,10 +167,10 @@ class FlinkClusterApi:
             `RestAPIError`: If unable to get the jobs from the execution
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["hopsworks-api", "flinkmaster", execution.app_id, "jobs", job_id]
         headers = {"content-type": "application/json"}
-        return _client._send_request(
+        return _client.send_request(
             "GET", path_params, headers=headers, with_base_path_params=False
         )
 
@@ -198,10 +198,10 @@ class FlinkClusterApi:
             `RestAPIError`: If unable to get the jobs from the execution
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["hopsworks-api", "flinkmaster", execution.app_id, "jobs"]
         headers = {"content-type": "application/json"}
-        return _client._send_request(
+        return _client.send_request(
             "GET", path_params, headers=headers, with_base_path_params=False
         )["jobs"]
 
@@ -226,10 +226,10 @@ class FlinkClusterApi:
         # Raises
             `RestAPIError`: If unable to stop the execution
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["hopsworks-api", "flinkmaster", execution.app_id, "cluster"]
         headers = {"content-type": "application/json"}
-        _client._send_request(
+        _client.send_request(
             "DELETE", path_params, headers=headers, with_base_path_params=False
         )
 
@@ -256,7 +256,7 @@ class FlinkClusterApi:
         # Raises
             `RestAPIError`: If unable to stop the job
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "hopsworks-api",
             "flinkmaster",
@@ -265,7 +265,7 @@ class FlinkClusterApi:
             job_id,
         ]
         headers = {"content-type": "application/json"}
-        return _client._send_request(
+        return _client.send_request(
             "PATCH", path_params, headers=headers, with_base_path_params=False
         )
 
@@ -292,10 +292,10 @@ class FlinkClusterApi:
             `RestAPIError`: If unable to get jars from the execution
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["hopsworks-api", "flinkmaster", execution.app_id, "jars"]
         headers = {"content-type": "application/json"}
-        response = _client._send_request(
+        response = _client.send_request(
             "GET", path_params, headers=headers, with_base_path_params=False
         )
         return response["files"]
@@ -323,7 +323,7 @@ class FlinkClusterApi:
             `RestAPIError`: If unable to upload jar file
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "hopsworks-api",
             "flinkmaster",
@@ -338,7 +338,7 @@ class FlinkClusterApi:
                 "application/x-java-archive",
             )
         }
-        _client._send_request(
+        _client.send_request(
             "POST", path_params, files=files, with_base_path_params=False
         )
         print("Flink Jar uploaded.")
@@ -375,7 +375,7 @@ class FlinkClusterApi:
             `RestAPIError`: If unable to submit the job.
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         # Submit execution
         if job_arguments:
             path_params = [
@@ -397,7 +397,7 @@ class FlinkClusterApi:
             ]
 
         headers = {"content-type": "application/json"}
-        response = _client._send_request(
+        response = _client.send_request(
             "POST", path_params, headers=headers, with_base_path_params=False
         )
 
@@ -431,7 +431,7 @@ class FlinkClusterApi:
         # Raises
             `RestAPIError`: If unable to get the jobs from the execution
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "hopsworks-api",
             "flinkmaster",
@@ -439,8 +439,6 @@ class FlinkClusterApi:
             "jobs",
             job_id,
         ]
-        response = _client._send_request(
-            "GET", path_params, with_base_path_params=False
-        )
+        response = _client.send_request("GET", path_params, with_base_path_params=False)
 
         return response["state"]

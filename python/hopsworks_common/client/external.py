@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import base64
 import logging
+import os
 from pathlib import Path
 
 from hopsworks_common.client import auth, base, exceptions
@@ -37,18 +38,21 @@ class Client(base.Client):
     def __init__(
         self,
         *,
-        host,
-        port,
-        project,
-        engine,
-        hostname_verification,
-        trust_store_path,
-        cert_folder,
-        api_key_file,
-        api_key_value,
+        host=None,
+        port=None,
+        project=None,
+        engine=None,
+        hostname_verification=None,
+        trust_store_path=None,
+        cert_folder=None,
+        api_key_file=None,
+        api_key_value=None,
+        **kwargs,
     ):
         """Initializes a client in an external environment such as AWS Sagemaker."""
         _logger.info("Initializing external client")
+        if kwargs:
+            _logger.warning("Unknown arguments: %s", set(kwargs))
         if not host:
             raise exceptions.ExternalClientError("host")
 
@@ -77,10 +81,11 @@ class Client(base.Client):
         self._cert_key = None
         self._cert_folder_base = cert_folder
         self._cert_folder = None
-
-        self._hsfs_post_init(project, engine)
+        self._certs_path = Path(cert_folder, self._host)
 
         super().__init__()
+
+        self._hsfs_post_init(project, engine)
 
     def _hsfs_post_init(self, project, engine):
         self._project_name = project
@@ -146,9 +151,9 @@ class Client(base.Client):
     def download_certs(self, project):
         res = self._materialize_certs(project)
 
-        self._get_ca_chain_path().write_text(res["caChain"])
-        self._get_client_cert_path().write_text(res["clientCert"])
-        self._get_client_key_path().write_text(res["clientKey"])
+        self.ca_chain_path(project).write_text(res["caChain"])
+        self.client_cert_path(project).write_text(res["clientCert"])
+        self.client_key_path(project).write_text(res["clientKey"])
         return res
 
     def _materialize_certs(self, project):
@@ -233,9 +238,9 @@ class Client(base.Client):
         self._cleanup_file(self._get_jks_key_store_path())
         self._cleanup_file(self._get_jks_trust_store_path())
         self._cleanup_file(os.path.join(self._cert_folder, "material_passwd"))
-        self._cleanup_file(self._get_ca_chain_path())
-        self._cleanup_file(self._get_client_cert_path())
-        self._cleanup_file(self._get_client_key_path())
+        self._cleanup_file(self.ca_chain_path())
+        self._cleanup_file(self.client_cert_path())
+        self._cleanup_file(self.client_key_path())
 
         try:
             # delete project level
@@ -257,10 +262,6 @@ class Client(base.Client):
         _logger.debug("Getting key store path: %s", self._key_store_path)
         return self._key_store_path
 
-    def _get_certs_path(self, project) -> Path:
-        """Get the path to the certificates directory."""
-        return Path(self._cert_folder_base, self._host, project)
-
     def _get_project_info(self, project_name):
         """Makes a REST call to hopsworks to get all metadata of a project for the provided project.
 
@@ -270,7 +271,7 @@ class Client(base.Client):
         :rtype: dict
         """
         _logger.debug("Getting project info for project: %s", project_name)
-        return self._send_request("GET", ["project", "getProjectInfo", project_name])
+        return self.send_request("GET", ["project", "getProjectInfo", project_name])
 
     def _write_b64_cert_to_bytes(self, b64_string, path):
         """Converts b64 encoded certificate to bytes file .

@@ -23,9 +23,9 @@ from hopsworks_common import client
 
 class ServicesApi:
     def get_service(self, service: str) -> Dict[str, Any]:
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "services",
             service,
         ]
-        return _client._send_request("GET", path_params)["items"][0]
+        return _client.send_request("GET", path_params)["items"][0]

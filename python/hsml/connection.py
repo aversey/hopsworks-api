@@ -201,7 +201,7 @@ class Connection:
         """
         from hsml import client
 
-        client.stop()
+        client.close()
         self._model_api = None
         self._connected = False
         print("Connection closed.")

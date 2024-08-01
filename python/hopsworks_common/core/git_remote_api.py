@@ -25,7 +25,7 @@ class GitRemoteApi:
         self._project_name = project_name
 
     def _get(self, repo_id, name: str):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -37,7 +37,7 @@ class GitRemoteApi:
         ]
 
         remote = git_remote.GitRemote.from_response_json(
-            _client._send_request("GET", path_params),
+            _client.send_request("GET", path_params),
             self._project_id,
             self._project_name,
         )
@@ -45,7 +45,7 @@ class GitRemoteApi:
         return remote
 
     def _get_remotes(self, repo_id):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -56,7 +56,7 @@ class GitRemoteApi:
         ]
 
         remotes = git_remote.GitRemote.from_response_json(
-            _client._send_request("GET", path_params),
+            _client.send_request("GET", path_params),
             self._project_id,
             self._project_name,
         )
@@ -65,7 +65,7 @@ class GitRemoteApi:
         return remotes
 
     def _add(self, repo_id, name: str, url: str):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -84,7 +84,7 @@ class GitRemoteApi:
 
         headers = {"content-type": "application/json"}
         git_op = git_op_execution.GitOpExecution.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST", path_params, headers=headers, query_params=query_params
             ),
             self._project_id,
@@ -94,7 +94,7 @@ class GitRemoteApi:
         return self._get(repo_id, name)
 
     def _delete(self, repo_id, name: str):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -112,7 +112,7 @@ class GitRemoteApi:
 
         headers = {"content-type": "application/json"}
         git_op = git_op_execution.GitOpExecution.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST", path_params, headers=headers, query_params=query_params
             ),
             self._project_id,

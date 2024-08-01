@@ -37,7 +37,7 @@ class ModelServingApi:
         :rtype: ModelServing
         """
 
-        _client = client.get_instance()
+        _client = client.get()
 
         # Validate that there is a Models dataset in the connected project
         if not self._dataset_api.path_exists("Models"):
@@ -84,7 +84,7 @@ class ModelServingApi:
 
             # setup istio client
             inference_endpoints = self._serving_api.get_inference_endpoints()
-            if isinstance(client.get_instance(), client.hopsworks.Client):
+            if isinstance(client.get(), client.hopsworks.Client):
                 # if internal, get node port
                 endpoint = get_endpoint_by_type(
                     inference_endpoints, INFERENCE_ENDPOINTS.ENDPOINT_TYPE_NODE
@@ -106,7 +106,7 @@ class ModelServingApi:
                 )
                 if endpoint is not None:
                     # if load balancer (external ip) available
-                    _client = client.get_instance()
+                    _client = client.get()
                     client.istio.init(
                         endpoint.get_any_host(),
                         endpoint.get_port(INFERENCE_ENDPOINTS.PORT_NAME_HTTP).number,
@@ -120,7 +120,7 @@ class ModelServingApi:
                 )
                 if endpoint is not None:
                     # if node port available
-                    _client = client.get_instance()
+                    _client = client.get()
                     host = _client.host
                     port = endpoint.get_port(INFERENCE_ENDPOINTS.PORT_NAME_HTTP).number
                     if self._is_host_port_open(host, port):

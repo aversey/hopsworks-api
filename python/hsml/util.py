@@ -273,8 +273,8 @@ def get_hostname_replaced_url(sub_path: str):
     :param sub_path: url sub-path after base url
     :return: href url
     """
-    href = urljoin(client.get_instance()._base_url, sub_path)
-    url_parsed = client.get_instance()._replace_public_host(urlparse(href))
+    href = urljoin(client.get()._base_url, sub_path)
+    url_parsed = client.get()._replace_public_host(urlparse(href))
     return url_parsed.geturl()
 
 

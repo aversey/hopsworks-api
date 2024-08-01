@@ -280,7 +280,7 @@ class Model:
     def get_url(self):
         path = (
             "/p/"
-            + str(client.get_instance()._project_id)
+            + str(client.get()._project_id)
             + "/models/"
             + str(self.name)
             + "/"

@@ -200,7 +200,7 @@ def get_kafka_config(
     if write_options is None:
         write_options = {}
     external = not (
-        isinstance(client.get_instance(), hopsworks.Client)
+        isinstance(client.get(), hopsworks.Client)
         or write_options.get("internal_kafka", False)
     )
 

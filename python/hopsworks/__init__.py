@@ -321,7 +321,7 @@ def logout():
     if _is_connection_active():
         _hw_connection.close()
 
-    client.stop()
+    client.close()
     _project_api = None
     _secrets_api = None
     _hw_connection = Connection.connection

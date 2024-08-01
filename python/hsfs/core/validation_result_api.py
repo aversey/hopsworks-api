@@ -45,7 +45,7 @@ class ValidationResultApi:
         :return: validation report
         :rtype: Union[List[ValidationResult], ValidationResult]
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -60,5 +60,5 @@ class ValidationResultApi:
         headers = {"content-type": "application/json"}
 
         return ge_validation_result.ValidationResult.from_response_json(
-            _client._send_request("GET", path_params, query_params, headers=headers)
+            _client.send_request("GET", path_params, query_params, headers=headers)
         )

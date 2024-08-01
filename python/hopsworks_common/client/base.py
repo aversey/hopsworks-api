@@ -163,17 +163,17 @@ class Client:
     # region Certificates
     # The following functions are used to manage certificates
 
-    def ca_chain_path(self, project, prefix: str = "") -> Path:
+    def ca_chain_path(self, prefix: str = "") -> Path:
         """Get the path to the CA chain file."""
-        return self._get_certs_path(project).joinpath(prefix + "ca_chain.pem")
+        return self._certs_path.joinpath(prefix, "ca_chain.pem")
 
-    def client_cert_path(self, project, prefix: str = "") -> Path:
+    def client_cert_path(self, prefix: str = "") -> Path:
         """Get the path to the client certificate file."""
-        raise self._get_certs_path(project).joinpath(prefix + "client_cert.pem")
+        return self._certs_path.joinpath(prefix, "client_cert.pem")
 
-    def client_key_path(self, project, prefix: str = "") -> Path:
+    def client_key_path(self, prefix: str = "") -> Path:
         """Get the path to the client key file."""
-        raise self._get_certs_path(project).joinpath(prefix + "client_key.pem")
+        return self._certs_path.joinpath(prefix, "client_key.pem")
 
     # region Private Utils
     # The folllowing functions are utilites shared by the inherited clients
@@ -225,4 +225,4 @@ class Client:
         :return: JSON response with credentials
         :rtype: dict
         """
-        return self._send_request("GET", ["project", project_id, "credentials"])
+        return self.send_request("GET", ["project", project_id, "credentials"])

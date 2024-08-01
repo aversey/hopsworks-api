@@ -55,7 +55,7 @@ class JobsApi:
         # Raises
             `RestAPIError`: If unable to create the job
         """
-        _client = client.get_instance()
+        _client = client.get()
 
         config = util.validate_job_conf(config, self._project_name)
 
@@ -63,7 +63,7 @@ class JobsApi:
 
         headers = {"content-type": "application/json"}
         created_job = job.Job.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "PUT", path_params, headers=headers, data=json.dumps(config)
             ),
             self._project_id,
@@ -82,7 +82,7 @@ class JobsApi:
         # Raises
             `RestAPIError`: If unable to get the job
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -91,7 +91,7 @@ class JobsApi:
         ]
         query_params = {"expand": ["creator"]}
         return job.Job.from_response_json(
-            _client._send_request("GET", path_params, query_params=query_params),
+            _client.send_request("GET", path_params, query_params=query_params),
             self._project_id,
             self._project_name,
         )
@@ -104,7 +104,7 @@ class JobsApi:
         # Raises
             `RestAPIError`: If unable to get the jobs
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -112,7 +112,7 @@ class JobsApi:
         ]
         query_params = {"expand": ["creator"]}
         return job.Job.from_response_json(
-            _client._send_request("GET", path_params, query_params=query_params),
+            _client.send_request("GET", path_params, query_params=query_params),
             self._project_id,
             self._project_name,
         )
@@ -143,7 +143,7 @@ class JobsApi:
         # Raises
             `RestAPIError`: If unable to get the job configuration
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -153,21 +153,21 @@ class JobsApi:
         ]
 
         headers = {"content-type": "application/json"}
-        return _client._send_request("GET", path_params, headers=headers)
+        return _client.send_request("GET", path_params, headers=headers)
 
     def _delete(self, job):
         """Delete the job and all executions.
         :param job: metadata object of job to delete
         :type job: Job
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
             "jobs",
             str(job.name),
         ]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def _update_job(self, name: str, config: dict):
         """Update the job.
@@ -178,7 +178,7 @@ class JobsApi:
         :return: The updated Job object
         :rtype: Job
         """
-        _client = client.get_instance()
+        _client = client.get()
 
         config = util.validate_job_conf(config, self._project_name)
 
@@ -186,7 +186,7 @@ class JobsApi:
 
         headers = {"content-type": "application/json"}
         return job.Job.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "PUT", path_params, headers=headers, data=json.dumps(config)
             ),
             self._project_id,
@@ -194,22 +194,22 @@ class JobsApi:
         )
 
     def _schedule_job(self, name, schedule_config):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", self._project_id, "jobs", name, "schedule", "v2"]
         headers = {"content-type": "application/json"}
         method = "PUT" if schedule_config["id"] else "POST"
 
         return job_schedule.JobSchedule.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 method, path_params, headers=headers, data=json.dumps(schedule_config)
             )
         )
 
     def _delete_schedule_job(self, name):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", self._project_id, "jobs", name, "schedule", "v2"]
 
-        return _client._send_request(
+        return _client.send_request(
             "DELETE",
             path_params,
         )

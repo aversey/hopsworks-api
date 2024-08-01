@@ -23,7 +23,7 @@ from hsfs import client, storage_connector
 class StorageConnectorApi:
     def _get(self, feature_store_id: int, name: str) -> Dict[str, Any]:
         """Returning response dict instead of initialized object."""
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -33,7 +33,7 @@ class StorageConnectorApi:
             name,
         ]
         query_params = {"temporaryCredentials": True}
-        return _client._send_request("GET", path_params, query_params=query_params)
+        return _client.send_request("GET", path_params, query_params=query_params)
 
     def get(
         self, feature_store_id: int, name: str
@@ -68,7 +68,7 @@ class StorageConnectorApi:
     def get_online_connector(
         self, feature_store_id: int
     ) -> storage_connector.OnlineStorageConnector:
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -79,13 +79,13 @@ class StorageConnectorApi:
         ]
 
         return storage_connector.StorageConnector.from_response_json(
-            _client._send_request("GET", path_params)
+            _client.send_request("GET", path_params)
         )
 
     def get_kafka_connector(
         self, feature_store_id: int, external: bool = False
     ) -> storage_connector.KafkaConnector:
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -98,7 +98,7 @@ class StorageConnectorApi:
         query_params = {"external": external}
 
         return storage_connector.StorageConnector.from_response_json(
-            _client._send_request("GET", path_params, query_params=query_params)
+            _client.send_request("GET", path_params, query_params=query_params)
         )
 
     def get_feature_groups_provenance(self, storage_connector_instance):
@@ -115,7 +115,7 @@ class StorageConnectorApi:
             `ExplicitProvenance.Links`: the feature groups generated using this
             storage connector
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -131,7 +131,7 @@ class StorageConnectorApi:
             "upstreamLvls": 0,
             "downstreamLvls": 1,
         }
-        links_json = _client._send_request("GET", path_params, query_params)
+        links_json = _client.send_request("GET", path_params, query_params)
         from hsfs.core import explicit_provenance
 
         return explicit_provenance.Links.from_response_json(

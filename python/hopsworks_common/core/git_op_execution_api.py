@@ -27,7 +27,7 @@ class GitOpExecutionApi:
         self._project_name = project_name
 
     def _get_execution(self, repo_id, execution_id):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -40,7 +40,7 @@ class GitOpExecutionApi:
         query_params = {"expand": "repository"}
 
         return git_op_execution.GitOpExecution.from_response_json(
-            _client._send_request("GET", path_params, query_params=query_params),
+            _client.send_request("GET", path_params, query_params=query_params),
             self._project_id,
             self._project_name,
         )

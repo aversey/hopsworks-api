@@ -55,11 +55,11 @@ class OpenSearchApi:
         self._variable_api: VariableApi = VariableApi()
 
     def _get_opensearch_url(self) -> str:
-        if isinstance(client.get_instance(), client.external.Client):
+        if isinstance(client.get(), client.external.Client):
             external_domain = self._variable_api.get_loadbalancer_external_domain()
             if external_domain == "":
                 # fallback to use hostname of head node
-                external_domain = client.get_instance().host
+                external_domain = client.get().host
             return f"https://{external_domain}:9200"
         else:
             service_discovery_domain = self._variable_api.get_service_discovery_domain()
@@ -111,7 +111,7 @@ class OpenSearchApi:
             OPENSEARCH_CONFIG.USE_SSL: True,
             OPENSEARCH_CONFIG.VERIFY_CERTS: True,
             OPENSEARCH_CONFIG.SSL_ASSERT_HOSTNAME: False,
-            OPENSEARCH_CONFIG.CA_CERTS: client.get_instance()._get_ca_chain_path(),
+            OPENSEARCH_CONFIG.CA_CERTS: client.get()._get_ca_chain_path(),
         }
 
     def _get_authorization_token(self) -> str:
@@ -123,8 +123,8 @@ class OpenSearchApi:
             `RestAPIError`: If unable to get the token
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["elastic", "jwt", self._project_id]
 
         headers = {"content-type": "application/json"}
-        return _client._send_request("GET", path_params, headers=headers)["token"]
+        return _client.send_request("GET", path_params, headers=headers)["token"]

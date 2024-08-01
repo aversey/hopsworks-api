@@ -160,7 +160,7 @@ class ArrowFlightClient:
         else:
             self._disabled_for_session: bool = False
 
-        self._client = client.get_instance()
+        self._client = client.get()
         self._variable_api: VariableApi = VariableApi()
 
         try:

@@ -38,10 +38,10 @@ class VariableApi:
             `RestAPIError`: If unable to get the variable
         """
 
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = ["variables", variable]
-        domain = _client._send_request("GET", path_params)
+        domain = _client.send_request("GET", path_params)
 
         return domain["successMessage"]
 
@@ -59,7 +59,7 @@ class VariableApi:
         _client = client.get()
 
         path_params = ["variables", "versions"]
-        resp = _client._send_request("GET", path_params)
+        resp = _client.send_request("GET", path_params)
 
         for entry in resp:
             if entry["software"] == software:

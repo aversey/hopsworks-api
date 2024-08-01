@@ -62,7 +62,7 @@ class EnvironmentApi:
         # Raises
             `RestAPIError`: If unable to create the environment
         """
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = [
             "project",
@@ -77,7 +77,7 @@ class EnvironmentApi:
             "baseImage": {"name": base_environment_name, "description": description},
         }
         env = environment.Environment.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST", path_params, headers=headers, data=json.dumps(data)
             ),
             self._project_id,
@@ -93,13 +93,13 @@ class EnvironmentApi:
         """
         Get all available python environments in the project
         """
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = ["project", self._project_id, "python", "environments"]
         query_params = {"expand": ["libraries", "commands"]}
         headers = {"content-type": "application/json"}
         return environment.Environment.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "GET", path_params, query_params=query_params, headers=headers
             ),
             self._project_id,
@@ -127,13 +127,13 @@ class EnvironmentApi:
         # Raises
             `RestAPIError`: If unable to get the environment
         """
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = ["project", self._project_id, "python", "environments", name]
         query_params = {"expand": ["libraries", "commands"]}
         headers = {"content-type": "application/json"}
         return environment.Environment.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "GET", path_params, query_params=query_params, headers=headers
             ),
             self._project_id,
@@ -145,7 +145,7 @@ class EnvironmentApi:
         :param name: name of environment to delete
         :type environment: Environment
         """
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = [
             "project",
@@ -155,4 +155,4 @@ class EnvironmentApi:
             name,
         ]
         headers = {"content-type": "application/json"}
-        (_client._send_request("DELETE", path_params, headers=headers),)
+        (_client.send_request("DELETE", path_params, headers=headers),)

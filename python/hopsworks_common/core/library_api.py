@@ -41,7 +41,7 @@ class LibraryApi:
             `RestAPIError`: If unable to install library
         """
 
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = [
             "project",
@@ -55,7 +55,7 @@ class LibraryApi:
 
         headers = {"content-type": "application/json"}
         library_rest = library.Library.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST", path_params, headers=headers, data=json.dumps(library_spec)
             ),
             environment=self,

@@ -72,7 +72,7 @@ class DatasetApi:
         # Raises
             `RestAPIError`: If unable to download the file
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -110,7 +110,7 @@ class DatasetApi:
                 )
 
         file_size = int(self._get(path)["attributes"]["size"])
-        with _client._send_request(
+        with _client.send_request(
             "GET", path_params, query_params=query_params, stream=True
         ) as response:
             with open(local_path, "wb") as f:
@@ -308,11 +308,11 @@ class DatasetApi:
         }
 
     def _upload_request(self, params, path, file_name, chunk):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", self._project_id, "dataset", "upload", path]
 
         # Flow configuration params are sent as form data
-        _client._send_request(
+        _client.send_request(
             "POST", path_params, data=params, files={"file": (file_name, chunk)}
         )
 
@@ -324,10 +324,10 @@ class DatasetApi:
         :return: dataset metadata
         :rtype: dict
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", self._project_id, "dataset", path]
         headers = {"content-type": "application/json"}
-        return _client._send_request("GET", path_params, headers=headers)
+        return _client.send_request("GET", path_params, headers=headers)
 
     def exists(self, path: str):
         """Check if a file exists in the Hopsworks Filesystem.
@@ -353,9 +353,9 @@ class DatasetApi:
         # Raises
             `RestAPIError`: If unable to remove the path
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", self._project_id, "dataset", path]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def mkdir(self, path: str):
         """Create a directory in the Hopsworks Filesystem.
@@ -378,7 +378,7 @@ class DatasetApi:
         # Raises
             `RestAPIError`: If unable to create the directory
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", self._project_id, "dataset", path]
         query_params = {
             "action": "create",
@@ -387,7 +387,7 @@ class DatasetApi:
             "type": "DATASET",
         }
         headers = {"content-type": "application/json"}
-        return _client._send_request(
+        return _client.send_request(
             "POST", path_params, headers=headers, query_params=query_params
         )["attributes"]["path"]
 
@@ -422,13 +422,13 @@ class DatasetApi:
                     )
                 )
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", self._project_id, "dataset", source_path]
         query_params = {
             "action": "copy",
             "destination_path": destination_path,
         }
-        _client._send_request("POST", path_params, query_params=query_params)
+        _client.send_request("POST", path_params, query_params=query_params)
 
     def move(self, source_path: str, destination_path: str, overwrite: bool = False):
         """Move a file or directory in the Hopsworks Filesystem.
@@ -462,13 +462,13 @@ class DatasetApi:
                     )
                 )
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", self._project_id, "dataset", source_path]
         query_params = {
             "action": "move",
             "destination_path": destination_path,
         }
-        _client._send_request("POST", path_params, query_params=query_params)
+        _client.send_request("POST", path_params, query_params=query_params)
 
     def upload_feature_group(self, feature_group, path, dataframe):
         # Convert the dataframe into PARQUET for upload
@@ -498,7 +498,7 @@ class DatasetApi:
             chunk_number += 1
 
     def list_files(self, path, offset, limit):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -512,12 +512,12 @@ class DatasetApi:
             "sort_by": "ID:asc",
         }
 
-        inode_lst = _client._send_request("GET", path_params, query_params)
+        inode_lst = _client.send_request("GET", path_params, query_params)
 
         return inode_lst["count"], inode.Inode.from_response_json(inode_lst)
 
     def read_content(self, path: str, dataset_type: str = "DATASET"):
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = [
             "project",
@@ -532,4 +532,4 @@ class DatasetApi:
             "type": dataset_type,
         }
 
-        return _client._send_request("GET", path_params, query_params, stream=True)
+        return _client.send_request("GET", path_params, query_params, stream=True)

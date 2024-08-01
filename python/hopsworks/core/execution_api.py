@@ -25,15 +25,15 @@ class ExecutionsApi:
         self._project_id = project_id
 
     def _start(self, job, args: str = None):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", self._project_id, "jobs", job.name, "executions"]
 
         return execution.Execution.from_response_json(
-            _client._send_request("POST", path_params, data=args), self._project_id, job
+            _client.send_request("POST", path_params, data=args), self._project_id, job
         )
 
     def _get(self, job, id):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -45,20 +45,20 @@ class ExecutionsApi:
 
         headers = {"content-type": "application/json"}
         return execution.Execution.from_response_json(
-            _client._send_request("GET", path_params, headers=headers),
+            _client.send_request("GET", path_params, headers=headers),
             self._project_id,
             job,
         )
 
     def _get_all(self, job):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", self._project_id, "jobs", job.name, "executions"]
 
         query_params = {"sort_by": "submissiontime:desc"}
 
         headers = {"content-type": "application/json"}
         return execution.Execution.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "GET", path_params, headers=headers, query_params=query_params
             ),
             self._project_id,
@@ -66,7 +66,7 @@ class ExecutionsApi:
         )
 
     def _delete(self, job_name, id):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -75,10 +75,10 @@ class ExecutionsApi:
             "executions",
             id,
         ]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def _stop(self, job_name: str, id: int) -> None:
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -88,7 +88,7 @@ class ExecutionsApi:
             id,
             "status",
         ]
-        _client._send_request(
+        _client.send_request(
             "PUT",
             path_params=path_params,
             data={"state": "stopped"},

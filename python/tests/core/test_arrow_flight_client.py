@@ -30,15 +30,15 @@ from hsfs.storage_connector import HopsFSConnector, StorageConnector
 class TestArrowFlightClient:
     @pytest.fixture(autouse=True)
     def run_around_tests(self, mocker):
-        mocker.patch("hsfs.client.get_instance")
-        arrow_flight_client.get_instance()._enabled_on_cluster = True
-        arrow_flight_client.get_instance()._disabled_for_session = False
+        mocker.patch("hsfs.client.get")
+        arrow_flight_client.get()._enabled_on_cluster = True
+        arrow_flight_client.get()._disabled_for_session = False
         yield
-        arrow_flight_client.get_instance()._enabled_on_cluster = False
-        arrow_flight_client.get_instance()._disabled_for_session = True
+        arrow_flight_client.get()._enabled_on_cluster = False
+        arrow_flight_client.get()._disabled_for_session = True
 
     def _arrange_engine_mocks(self, mocker, backend_fixtures):
-        mocker.patch("hsfs.client.get_instance")
+        mocker.patch("hsfs.client.get")
         mocker.patch("hsfs.engine.get_type", return_value="python")
         python_engine = python.Engine()
         mocker.patch("hsfs.engine.get_instance", return_value=python_engine)
@@ -203,7 +203,7 @@ class TestArrowFlightClient:
         )
 
         # Act
-        query_object = arrow_flight_client.get_instance().create_query_object(
+        query_object = arrow_flight_client.get().create_query_object(
             query, "SELECT * FROM..."
         )
 
@@ -274,7 +274,7 @@ class TestArrowFlightClient:
         )
 
         # Act
-        query_object = arrow_flight_client.get_instance().create_query_object(
+        query_object = arrow_flight_client.get().create_query_object(
             query, "SELECT * FROM..."
         )
 
@@ -312,7 +312,7 @@ class TestArrowFlightClient:
         query = test_fg1.select_all().filter(Feature("intt") > 500)
 
         # Act
-        query_object = arrow_flight_client.get_instance().create_query_object(
+        query_object = arrow_flight_client.get().create_query_object(
             query, "SELECT * FROM..."
         )
 
@@ -350,7 +350,7 @@ class TestArrowFlightClient:
         query = test_fg1.select_except(["intt"]).filter(Feature("intt") > 500)
 
         # Act
-        query_object = arrow_flight_client.get_instance().create_query_object(
+        query_object = arrow_flight_client.get().create_query_object(
             query, "SELECT * FROM..."
         )
 
@@ -398,7 +398,7 @@ class TestArrowFlightClient:
         query = test_fg1.filter(Feature("c_acctbal") > 500)
 
         # Act
-        query_object = arrow_flight_client.get_instance().create_query_object(
+        query_object = arrow_flight_client.get().create_query_object(
             query, "SELECT * FROM..."
         )
 

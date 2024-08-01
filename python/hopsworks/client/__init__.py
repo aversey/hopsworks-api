@@ -17,22 +17,22 @@
 from hopsworks_common.client import (
     auth,
     base,
+    close,
     exceptions,
     external,
     get,
     hopsworks,
     online_store_rest_client,
-    stop,
 )
 
 
 __all__ = [
     auth,
     base,
+    close,
     exceptions,
     external,
     get,
     hopsworks,
     online_store_rest_client,
-    stop,
 ]

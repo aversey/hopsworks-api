@@ -46,14 +46,14 @@ class ServingApi:
         :rtype: Deployment
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
             "serving",
             str(id),
         ]
-        deployment_json = _client._send_request("GET", path_params)
+        deployment_json = _client.send_request("GET", path_params)
         deployment_instance = deployment.Deployment.from_response_json(deployment_json)
         deployment_instance.model_registry_id = _client._project_id
         return deployment_instance
@@ -67,10 +67,10 @@ class ServingApi:
         :rtype: Deployment
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "serving"]
         query_params = {"name": name}
-        deployment_json = _client._send_request(
+        deployment_json = _client.send_request(
             "GET", path_params, query_params=query_params
         )
         deployment_instance = deployment.Deployment.from_response_json(deployment_json)
@@ -84,13 +84,13 @@ class ServingApi:
         :rtype: List[Deployment]
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "serving"]
         query_params = {
             "model": model_name,
             "status": status.capitalize() if status is not None else None,
         }
-        deployments_json = _client._send_request(
+        deployments_json = _client.send_request(
             "GET", path_params, query_params=query_params
         )
         deployment_instances = deployment.Deployment.from_response_json(
@@ -107,9 +107,9 @@ class ServingApi:
         :rtype: List[InferenceEndpoint]
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "inference", "endpoints"]
-        endpoints_json = _client._send_request("GET", path_params)
+        endpoints_json = _client.send_request("GET", path_params)
         return inference_endpoint.InferenceEndpoint.from_response_json(endpoints_json)
 
     def put(self, deployment_instance):
@@ -121,7 +121,7 @@ class ServingApi:
         :rtype: Deployment
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "serving"]
         headers = {"content-type": "application/json"}
 
@@ -129,7 +129,7 @@ class ServingApi:
             deployment_instance.artifact_version = -1
 
         deployment_instance = deployment_instance.update_from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "PUT",
                 path_params,
                 headers=headers,
@@ -146,7 +146,7 @@ class ServingApi:
         :type action: str
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -154,7 +154,7 @@ class ServingApi:
             deployment_instance.id,
         ]
         query_params = {"action": action}
-        return _client._send_request("POST", path_params, query_params=query_params)
+        return _client.send_request("POST", path_params, query_params=query_params)
 
     def delete(self, deployment_instance):
         """Delete the deployment and metadata.
@@ -163,14 +163,14 @@ class ServingApi:
         :type deployment_instance: Deployment
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
             "serving",
             deployment_instance.id,
         ]
-        return _client._send_request("DELETE", path_params)
+        return _client.send_request("DELETE", path_params)
 
     def get_state(self, deployment_instance):
         """Get the state of a given deployment
@@ -181,14 +181,14 @@ class ServingApi:
         :rtype: PredictorState
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
             "serving",
             str(deployment_instance.id),
         ]
-        deployment_json = _client._send_request("GET", path_params)
+        deployment_json = _client.send_request("GET", path_params)
         return predictor_state.PredictorState.from_response_json(deployment_json)
 
     def reset_changes(self, deployment_instance):
@@ -200,10 +200,10 @@ class ServingApi:
         :rtype: Deployment
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "serving"]
         query_params = {"name": deployment_instance.name}
-        deployment_json = _client._send_request(
+        deployment_json = _client.send_request(
             "GET", path_params, query_params=query_params
         )
         deployment_aux = deployment_instance.update_from_response_json(deployment_json)
@@ -248,7 +248,7 @@ class ServingApi:
         headers = {"content-type": "application/json"}
         if through_hopsworks:
             # use Hopsworks client
-            _client = client.get_instance()
+            _client = client.get()
             path_params = self._get_hopsworks_inference_path(
                 _client._project_id, deployment_instance
             )
@@ -265,13 +265,13 @@ class ServingApi:
                 )
             else:
                 # fallback to Hopsworks client
-                _client = client.get_instance()
+                _client = client.get()
                 path_params = self._get_hopsworks_inference_path(
                     _client._project_id, deployment_instance
                 )
 
         # send inference request
-        return _client._send_request(
+        return _client.send_request(
             "POST", path_params, headers=headers, data=json.dumps(data)
         )
 
@@ -317,9 +317,9 @@ class ServingApi:
         :rtype: bool
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["variables", "kube_kserve_installed"]
-        kserve_installed = _client._send_request("GET", path_params)
+        kserve_installed = _client.send_request("GET", path_params)
         return (
             "successMessage" in kserve_installed
             and kserve_installed["successMessage"] == "true"
@@ -328,16 +328,16 @@ class ServingApi:
     def get_resource_limits(self):
         """Get resource limits for model serving"""
 
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = ["variables", "kube_serving_max_cores_allocation"]
-        max_cores = _client._send_request("GET", path_params)
+        max_cores = _client.send_request("GET", path_params)
 
         path_params = ["variables", "kube_serving_max_memory_allocation"]
-        max_memory = _client._send_request("GET", path_params)
+        max_memory = _client.send_request("GET", path_params)
 
         path_params = ["variables", "kube_serving_max_gpus_allocation"]
-        max_gpus = _client._send_request("GET", path_params)
+        max_gpus = _client.send_request("GET", path_params)
 
         return {
             "cores": float(max_cores["successMessage"]),
@@ -348,13 +348,13 @@ class ServingApi:
     def get_num_instances_limits(self):
         """Get number of instances limits for model serving"""
 
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = ["variables", "kube_serving_min_num_instances"]
-        min_instances = _client._send_request("GET", path_params)
+        min_instances = _client.send_request("GET", path_params)
 
         path_params = ["variables", "kube_serving_max_num_instances"]
-        max_instances = _client._send_request("GET", path_params)
+        max_instances = _client.send_request("GET", path_params)
 
         return [
             int(min_instances["successMessage"]),
@@ -364,10 +364,10 @@ class ServingApi:
     def get_knative_domain(self):
         """Get the domain used by knative"""
 
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = ["variables", "kube_knative_domain_name"]
-        domain = _client._send_request("GET", path_params)
+        domain = _client.send_request("GET", path_params)
 
         return domain["successMessage"]
 
@@ -384,7 +384,7 @@ class ServingApi:
         :rtype: DeployableComponentLogs
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -394,7 +394,7 @@ class ServingApi:
         ]
         query_params = {"component": component, "tail": tail}
         return deployable_component_logs.DeployableComponentLogs.from_response_json(
-            _client._send_request("GET", path_params, query_params=query_params)
+            _client.send_request("GET", path_params, query_params=query_params)
         )
 
     def _get_inference_request_host_header(

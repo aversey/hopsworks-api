@@ -45,7 +45,7 @@ class TestKafkaEngine:
 
     def test_kafka_produce_buffer_error(self, mocker):
         # Arrange
-        mocker.patch("hsfs.client.get_instance")
+        mocker.patch("hsfs.client.get")
         mock_print = mocker.patch("builtins.print")
 
         producer = mocker.Mock()
@@ -150,7 +150,7 @@ class TestKafkaEngine:
 
         mocker.patch("hsfs.core.kafka_engine.isinstance", return_value=True)
 
-        mock_client = mocker.patch("hsfs.client.get_instance")
+        mock_client = mocker.patch("hsfs.client.get")
         mock_client.return_value._write_pem.return_value = (
             "test_ssl_ca_location",
             "test_ssl_certificate_location",
@@ -193,7 +193,7 @@ class TestKafkaEngine:
 
         mocker.patch("hsfs.engine.python.isinstance", return_value=False)
 
-        mock_client = mocker.patch("hsfs.client.get_instance")
+        mock_client = mocker.patch("hsfs.client.get")
         mock_client.return_value._write_pem.return_value = (
             "test_ssl_ca_location",
             "test_ssl_certificate_location",
@@ -236,7 +236,7 @@ class TestKafkaEngine:
 
         mocker.patch("hsfs.engine.python.isinstance", return_value=True)
 
-        mock_client = mocker.patch("hsfs.client.get_instance")
+        mock_client = mocker.patch("hsfs.client.get")
         mock_client.return_value._write_pem.return_value = (
             "test_ssl_ca_location",
             "test_ssl_certificate_location",
@@ -282,7 +282,7 @@ class TestKafkaEngine:
 
         mocker.patch("hsfs.engine.python.isinstance", return_value=False)
 
-        mock_client = mocker.patch("hsfs.client.get_instance")
+        mock_client = mocker.patch("hsfs.client.get")
         mock_client.return_value._write_pem.return_value = (
             "test_ssl_ca_location",
             "test_ssl_certificate_location",
@@ -405,7 +405,7 @@ class TestKafkaEngine:
 
     def test_spark_get_kafka_config(self, mocker, backend_fixtures):
         # Arrange
-        mocker.patch("hsfs.client.get_instance")
+        mocker.patch("hsfs.client.get")
         mock_engine_get_instance = mocker.patch("hsfs.engine.get_instance")
         mock_engine_get_instance.return_value.add_file.return_value = (
             "result_from_add_file"
@@ -447,7 +447,7 @@ class TestKafkaEngine:
 
     def test_spark_get_kafka_config_external_client(self, mocker, backend_fixtures):
         # Arrange
-        mocker.patch("hsfs.client.get_instance")
+        mocker.patch("hsfs.client.get")
         mock_engine_get_instance = mocker.patch("hsfs.engine.get_instance")
         mock_engine_get_instance.return_value.add_file.return_value = (
             "result_from_add_file"
@@ -487,7 +487,7 @@ class TestKafkaEngine:
 
     def test_spark_get_kafka_config_internal_kafka(self, mocker, backend_fixtures):
         # Arrange
-        mocker.patch("hsfs.client.get_instance")
+        mocker.patch("hsfs.client.get")
         mock_engine_get_instance = mocker.patch("hsfs.engine.get_instance")
         mock_engine_get_instance.return_value.add_file.return_value = (
             "result_from_add_file"

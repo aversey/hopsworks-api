@@ -43,7 +43,7 @@ class ExpectationSuiteApi:
         :return: the created expectation suite
         :rtype: ExpectationSuite
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -64,7 +64,7 @@ class ExpectationSuiteApi:
         headers = {"content-type": "application/json"}
         payload = expectation_suite.json()
         return es.ExpectationSuite.from_response_json(
-            _client._send_request(method, path_params, headers=headers, data=payload)
+            _client.send_request(method, path_params, headers=headers, data=payload)
         )
 
     def update(self, expectation_suite: "es.ExpectationSuite") -> "es.ExpectationSuite":
@@ -75,7 +75,7 @@ class ExpectationSuiteApi:
         :return: the updated expectation suite
         :rtype: ExpectationSuite
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -99,7 +99,7 @@ class ExpectationSuiteApi:
             del path_params[-1]
 
         return es.ExpectationSuite.from_response_json(
-            _client._send_request(method, path_params, headers=headers, data=payload)
+            _client.send_request(method, path_params, headers=headers, data=payload)
         )
 
     def update_metadata(
@@ -112,7 +112,7 @@ class ExpectationSuiteApi:
         :return: the expectation suite with updated metadata.
         :rtype: ExpectationSuite
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -138,12 +138,12 @@ class ExpectationSuiteApi:
             del path_params[-1]
 
         return es.ExpectationSuite.from_response_json(
-            _client._send_request(method, path_params, headers=headers, data=payload)
+            _client.send_request(method, path_params, headers=headers, data=payload)
         )
 
     def delete(self, expectation_suite_id: int) -> None:
         """Delete the expectation suite attached to a Feature Group."""
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -161,7 +161,7 @@ class ExpectationSuiteApi:
         if major == "3" and minor == "0":
             del path_params[-1]
 
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def get(self) -> Optional["es.ExpectationSuite"]:
         """Get the expectation suite attached to a Feature Group.
@@ -169,7 +169,7 @@ class ExpectationSuiteApi:
         :return: fetched expectation suite attached to the FeatureG Group
         :rtype: ExpectationSuite || None
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -181,5 +181,5 @@ class ExpectationSuiteApi:
         ]
 
         return es.ExpectationSuite.from_response_json(
-            _client._send_request("GET", path_params)
+            _client.send_request("GET", path_params)
         )

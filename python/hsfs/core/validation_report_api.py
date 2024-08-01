@@ -44,7 +44,7 @@ class ValidationReportApi:
         :return: persisted validation report
         :rtype: `ValidationReport`
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -66,12 +66,12 @@ class ValidationReportApi:
         payload = validation_report.json()
 
         return ValidationReport.from_response_json(
-            _client._send_request("PUT", path_params, headers=headers, data=payload)
+            _client.send_request("PUT", path_params, headers=headers, data=payload)
         )
 
     def delete(self, validation_report_id: int) -> None:
         """Delete the validation report attached to a featuregroup."""
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -83,7 +83,7 @@ class ValidationReportApi:
             validation_report_id,
         ]
 
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def get_last(self) -> ValidationReport:
         """Gets the latest Validation Report of a featuregroup.
@@ -91,7 +91,7 @@ class ValidationReportApi:
         :return: latest validation report
         :rtype: `ValidationReport`
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -110,7 +110,7 @@ class ValidationReportApi:
         }
 
         return ValidationReport.from_response_json(
-            _client._send_request("GET", path_params, query_params, headers=headers)
+            _client.send_request("GET", path_params, query_params, headers=headers)
         )
 
     def get_all(self) -> Union[List[ValidationReport], ValidationReport]:
@@ -119,7 +119,7 @@ class ValidationReportApi:
         :return: validation report
         :rtype: Union[List[ValidationReport], ValidationReport]
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -137,5 +137,5 @@ class ValidationReportApi:
         }
 
         return ValidationReport.from_response_json(
-            _client._send_request("GET", path_params, query_params, headers=headers)
+            _client.send_request("GET", path_params, query_params, headers=headers)
         )

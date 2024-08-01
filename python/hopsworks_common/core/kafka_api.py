@@ -66,7 +66,7 @@ class KafkaApi:
         # Raises
             `RestAPIError`: If unable to create the topic
         """
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = ["project", self._project_id, "kafka", "topics"]
         data = {
@@ -79,7 +79,7 @@ class KafkaApi:
 
         headers = {"content-type": "application/json"}
         return kafka_topic.KafkaTopic.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST", path_params, headers=headers, data=json.dumps(data)
             ),
             self._project_id,
@@ -123,7 +123,7 @@ class KafkaApi:
         # Raises
             `RestAPIError`: If unable to create the schema
         """
-        _client = client.get_instance()
+        _client = client.get()
 
         path_params = [
             "project",
@@ -136,7 +136,7 @@ class KafkaApi:
 
         headers = {"content-type": "application/json"}
         schema = kafka_schema.KafkaSchema.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST",
                 path_params,
                 headers=headers,
@@ -174,11 +174,11 @@ class KafkaApi:
         # Raises
             `RestAPIError`: If unable to get the topics
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", self._project_id, "kafka", "topics"]
 
         return kafka_topic.KafkaTopic.from_response_json(
-            _client._send_request("GET", path_params),
+            _client.send_request("GET", path_params),
             self._project_id,
             self._project_name,
         )
@@ -188,7 +188,7 @@ class KafkaApi:
         :param name: name of the topic
         :type name: str
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -196,7 +196,7 @@ class KafkaApi:
             "topics",
             name,
         ]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def _delete_subject_version(self, subject: str, version: int):
         """Delete the schema.
@@ -205,7 +205,7 @@ class KafkaApi:
         :param version: version of the subject
         :type version: int
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -215,7 +215,7 @@ class KafkaApi:
             "versions",
             str(version),
         ]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def get_subjects(self):
         """Get all subjects.
@@ -244,7 +244,7 @@ class KafkaApi:
         # Raises
             `RestAPIError`: If unable to get the schemas
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -254,7 +254,7 @@ class KafkaApi:
             "versions",
         ]
 
-        versions = _client._send_request("GET", path_params)
+        versions = _client.send_request("GET", path_params)
 
         schemas = []
         for version in versions:
@@ -291,7 +291,7 @@ class KafkaApi:
         :param version: version of the subject
         :type version: int
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -303,13 +303,13 @@ class KafkaApi:
         ]
 
         return kafka_schema.KafkaSchema.from_response_json(
-            _client._send_request("GET", path_params),
+            _client.send_request("GET", path_params),
             self._project_id,
             self._project_name,
         )
 
     def _get_broker_endpoints(self, externalListeners: bool = False):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             self._project_id,
@@ -318,7 +318,7 @@ class KafkaApi:
         ]
         query_params = {"external": externalListeners}
         headers = {"content-type": "application/json"}
-        return _client._send_request(
+        return _client.send_request(
             "GET", path_params, query_params=query_params, headers=headers
         )["brokers"]
 
@@ -356,20 +356,20 @@ class KafkaApi:
 
         config = {
             constants.KAFKA_SSL_CONFIG.SECURITY_PROTOCOL_CONFIG: self._get_security_protocol(),
-            constants.KAFKA_SSL_CONFIG.SSL_CA_LOCATION_CONFIG: client.get_instance()._get_ca_chain_path(
+            constants.KAFKA_SSL_CONFIG.SSL_CA_LOCATION_CONFIG: client.get()._get_ca_chain_path(
                 self._project_name
             ),
-            constants.KAFKA_SSL_CONFIG.SSL_CERTIFICATE_LOCATION_CONFIG: client.get_instance()._get_client_cert_path(
+            constants.KAFKA_SSL_CONFIG.SSL_CERTIFICATE_LOCATION_CONFIG: client.get()._get_client_cert_path(
                 self._project_name
             ),
-            constants.KAFKA_SSL_CONFIG.SSL_PRIVATE_KEY_LOCATION_CONFIG: client.get_instance()._get_client_key_path(
+            constants.KAFKA_SSL_CONFIG.SSL_PRIVATE_KEY_LOCATION_CONFIG: client.get()._get_client_key_path(
                 self._project_name
             ),
             constants.KAFKA_CONSUMER_CONFIG.CLIENT_ID_CONFIG: socket.gethostname(),
             constants.KAFKA_CONSUMER_CONFIG.GROUP_ID_CONFIG: "my-group-id",
             constants.KAFKA_SSL_CONFIG.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG: "none",
         }
-        _client = client.get_instance()
+        _client = client.get()
         if type(_client) is Client:
             config[constants.KAFKA_PRODUCER_CONFIG.BOOTSTRAP_SERVERS_CONFIG] = ",".join(
                 [
@@ -393,7 +393,7 @@ class KafkaApi:
         subject: str,
         version: Union[str, int] = "latest",
     ) -> Dict[str, Any]:
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -406,4 +406,4 @@ class KafkaApi:
             version,
         ]
         headers = {"content-type": "application/json"}
-        return _client._send_request("GET", path_params, headers=headers)
+        return _client.send_request("GET", path_params, headers=headers)

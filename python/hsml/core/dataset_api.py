@@ -212,11 +212,11 @@ class DatasetApi:
         }
 
     def _upload_request(self, params, path, file_name, chunk):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "dataset", "upload", path]
 
         # Flow configuration params are sent as form data
-        _client._send_request(
+        _client.send_request(
             "POST", path_params, data=params, files={"file": (file_name, chunk)}
         )
 
@@ -228,7 +228,7 @@ class DatasetApi:
         :type local_path: str
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -239,7 +239,7 @@ class DatasetApi:
         ]
         query_params = {"type": "DATASET"}
 
-        with _client._send_request(
+        with _client.send_request(
             "GET", path_params, query_params=query_params, stream=True
         ) as response:
             with open(local_path, "wb") as f:
@@ -259,10 +259,10 @@ class DatasetApi:
         :return: dataset metadata
         :rtype: dict
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "dataset", remote_path]
         headers = {"content-type": "application/json"}
-        return _client._send_request("GET", path_params, headers=headers)
+        return _client.send_request("GET", path_params, headers=headers)
 
     def path_exists(self, remote_path):
         """Check if a path exists in datasets.
@@ -288,11 +288,11 @@ class DatasetApi:
         :param limit: max number of returned files
         :type limit: int
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "dataset", remote_path]
         query_params = {"action": "listing", "sort_by": sort_by, "limit": limit}
         headers = {"content-type": "application/json"}
-        return _client._send_request(
+        return _client.send_request(
             "GET", path_params, headers=headers, query_params=query_params
         )
 
@@ -304,11 +304,11 @@ class DatasetApi:
         :param permissions: permissions string, for example u+x
         :type permissions: str
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "dataset", remote_path]
         headers = {"content-type": "application/json"}
         query_params = {"action": "PERMISSION", "permissions": permissions}
-        return _client._send_request(
+        return _client.send_request(
             "PUT", path_params, headers=headers, query_params=query_params
         )
 
@@ -318,7 +318,7 @@ class DatasetApi:
         :param remote_path: path to create
         :type remote_path: str
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "dataset", remote_path]
         query_params = {
             "action": "create",
@@ -327,7 +327,7 @@ class DatasetApi:
             "type": "DATASET",
         }
         headers = {"content-type": "application/json"}
-        return _client._send_request(
+        return _client.send_request(
             "POST", path_params, headers=headers, query_params=query_params
         )
 
@@ -337,9 +337,9 @@ class DatasetApi:
         :param remote_path: path to remove
         :type remote_path: str
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "dataset", remote_path]
-        return _client._send_request("DELETE", path_params)
+        return _client.send_request("DELETE", path_params)
 
     def _archive(
         self,
@@ -363,7 +363,7 @@ class DatasetApi:
         :type action: str
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "dataset", remote_path]
 
         query_params = {"action": action}
@@ -374,7 +374,7 @@ class DatasetApi:
 
         headers = {"content-type": "application/json"}
 
-        _client._send_request(
+        _client.send_request(
             "POST", path_params, headers=headers, query_params=query_params
         )
 
@@ -465,13 +465,13 @@ class DatasetApi:
         :type destination_path: str
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "dataset", source_path]
 
         query_params = {"action": "move", "destination_path": destination_path}
         headers = {"content-type": "application/json"}
 
-        _client._send_request(
+        _client.send_request(
             "POST", path_params, headers=headers, query_params=query_params
         )
 
@@ -487,13 +487,13 @@ class DatasetApi:
         :type destination_path: str
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["project", _client._project_id, "dataset", source_path]
 
         query_params = {"action": "copy", "destination_path": destination_path}
         headers = {"content-type": "application/json"}
 
-        _client._send_request(
+        _client.send_request(
             "POST", path_params, headers=headers, query_params=query_params
         )
 
@@ -510,7 +510,7 @@ class DatasetApi:
         :param value: value of the tag to be added
         :type value: str
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -522,7 +522,7 @@ class DatasetApi:
         ]
         headers = {"content-type": "application/json"}
         json_value = json.dumps(value)
-        _client._send_request("PUT", path_params, headers=headers, data=json_value)
+        _client.send_request("PUT", path_params, headers=headers, data=json_value)
 
     def delete(self, path, name):
         """Delete a tag.
@@ -534,7 +534,7 @@ class DatasetApi:
         :param name: name of the tag to be removed
         :type name: str
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -544,7 +544,7 @@ class DatasetApi:
             name,
             path,
         ]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def get_tags(self, path, name: str = None):
         """Get the tags.
@@ -558,7 +558,7 @@ class DatasetApi:
         :return: dict of tag name/values
         :rtype: dict
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -577,6 +577,6 @@ class DatasetApi:
         return {
             tag._name: json.loads(tag._value)
             for tag in tag.Tag.from_response_json(
-                _client._send_request("GET", path_params)
+                _client.send_request("GET", path_params)
             )
         }

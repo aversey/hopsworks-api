@@ -14,6 +14,7 @@
 #   limitations under the License.
 #
 
+import os
 import time
 from pathlib import Path
 
@@ -74,9 +75,9 @@ class Client(base.Client):
 
         credentials = self._get_credentials(self._project_id)
 
-        self._get_ca_chain_path().write_text(credentials["caChain"])
-        self._get_client_cert_path().write_text(credentials["clientCert"])
-        self._get_client_key_path().write_text(credentials["clientKey"])
+        self.ca_chain_path().write_text(credentials["caChain"])
+        self.client_cert_path().write_text(credentials["clientCert"])
+        self.client_key_path().write_text(credentials["clientKey"])
 
         super().__init__()
 

@@ -1144,15 +1144,11 @@ class KafkaConnector(StorageConnector):
         # this option is not set and so the `not self._external_kafka` would return true
         # overwriting the user specified certificates
         if self._external_kafka is False:
-            self._ssl_truststore_location = (
-                client.get_instance()._get_jks_trust_store_path()
-            )
-            self._ssl_truststore_password = client.get_instance()._cert_key
-            self._ssl_keystore_location = (
-                client.get_instance()._get_jks_key_store_path()
-            )
-            self._ssl_keystore_password = client.get_instance()._cert_key
-            self._ssl_key_password = client.get_instance()._cert_key
+            self._ssl_truststore_location = client.get()._get_jks_trust_store_path()
+            self._ssl_truststore_password = client.get()._cert_key
+            self._ssl_keystore_location = client.get()._get_jks_key_store_path()
+            self._ssl_keystore_password = client.get()._cert_key
+            self._ssl_key_password = client.get()._cert_key
 
         if self._ssl_truststore_location is not None:
             config["ssl.truststore.location"] = self._ssl_truststore_location

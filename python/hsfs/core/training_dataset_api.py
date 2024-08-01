@@ -29,7 +29,7 @@ class TrainingDatasetApi:
     def post(
         self, training_dataset_instance: training_dataset.TrainingDataset
     ) -> training_dataset.TrainingDataset:
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -39,7 +39,7 @@ class TrainingDatasetApi:
         ]
         headers = {"content-type": "application/json"}
         return training_dataset_instance.update_from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST",
                 path_params,
                 headers=headers,
@@ -52,7 +52,7 @@ class TrainingDatasetApi:
     ) -> Union[
         training_dataset.TrainingDataset, List[training_dataset.TrainingDataset]
     ]:
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -63,7 +63,7 @@ class TrainingDatasetApi:
         ]
         query_params = None if version is None else {"version": version}
         td_list = training_dataset.TrainingDataset.from_response_json(
-            _client._send_request("GET", path_params, query_params),
+            _client.send_request("GET", path_params, query_params),
         )
         if version is not None:
             return td_list[0]
@@ -76,7 +76,7 @@ class TrainingDatasetApi:
         with_label: bool,
         is_hive_query: bool,
     ) -> fs_query.FsQuery:
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -89,7 +89,7 @@ class TrainingDatasetApi:
         query_params = {"withLabel": with_label, "hiveQuery": is_hive_query}
 
         return fs_query.FsQuery.from_response_json(
-            _client._send_request("GET", path_params, query_params)
+            _client.send_request("GET", path_params, query_params)
         )
 
     def compute(
@@ -103,7 +103,7 @@ class TrainingDatasetApi:
             training_dataset_instance (training_dataset): the metadata instance of the training dataset
             app_options ([type]): the configuration for the training dataset job application
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -115,7 +115,7 @@ class TrainingDatasetApi:
         ]
         headers = {"content-type": "application/json"}
         return job.Job.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST", path_params, headers=headers, data=td_app_conf.json()
             )
         )
@@ -145,7 +145,7 @@ class TrainingDatasetApi:
         # Returns
             FeatureGroup. The updated feature group metadata object.
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -157,7 +157,7 @@ class TrainingDatasetApi:
         headers = {"content-type": "application/json"}
         query_params = {query_parameter: True}
         return training_dataset_instance.update_from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "PUT",
                 path_params,
                 query_params,
@@ -174,7 +174,7 @@ class TrainingDatasetApi:
             training_dataset_instance (training_dataset): the metadata instance of the training dataset
             batch: boolean. Weather to retrieve batch serving vector or not
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -187,14 +187,14 @@ class TrainingDatasetApi:
         headers = {"content-type": "application/json"}
         query_params = {"batch": batch}
         return serving_prepared_statement.ServingPreparedStatement.from_response_json(
-            _client._send_request("GET", path_params, query_params, headers=headers)
+            _client.send_request("GET", path_params, query_params, headers=headers)
         )
 
     def delete(
         self, training_dataset_instance: training_dataset.TrainingDataset
     ) -> None:
         """Delete the training dataset and materialized files in HopsFS."""
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -204,4 +204,4 @@ class TrainingDatasetApi:
             training_dataset_instance.id,
         ]
         headers = {"content-type": "application/json"}
-        _client._send_request("DELETE", path_params, headers=headers)
+        _client.send_request("DELETE", path_params, headers=headers)

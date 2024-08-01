@@ -36,13 +36,13 @@ class SecretsApi:
         # Raises
             `RestAPIError`: If unable to get the secrets
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "users",
             "secrets",
         ]
         return secret.Secret.from_response_json(
-            _client._send_request("GET", path_params)
+            _client.send_request("GET", path_params)
         )
 
     def get_secret(self, name: str, owner: str = None) -> secret.Secret:
@@ -56,7 +56,7 @@ class SecretsApi:
         # Raises
             `RestAPIError`: If unable to get the secret
         """
-        _client = client.get_instance()
+        _client = client.get()
         query_params = None
         if owner is None:
             path_params = [
@@ -73,7 +73,7 @@ class SecretsApi:
             ]
 
         return secret.Secret.from_response_json(
-            _client._send_request("GET", path_params, query_params=query_params)
+            _client.send_request("GET", path_params, query_params=query_params)
         )[0]
 
     def get(self, name: str, owner: str = None) -> str:
@@ -128,7 +128,7 @@ class SecretsApi:
         # Raises
             `RestAPIError`: If unable to create the secret
         """
-        _client = client.get_instance()
+        _client = client.get()
 
         secret_config = {"name": name, "secret": value}
 
@@ -146,7 +146,7 @@ class SecretsApi:
 
         headers = {"content-type": "application/json"}
 
-        _client._send_request(
+        _client.send_request(
             "POST", path_params, headers=headers, data=json.dumps(secret_config)
         )
 
@@ -159,10 +159,10 @@ class SecretsApi:
         :param name: name of the secret
         :type name: Secret
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "users",
             "secrets",
             name,
         ]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)

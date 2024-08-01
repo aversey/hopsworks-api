@@ -37,7 +37,7 @@ class TransformationFunctionApi:
         transformation_function_instance: TransformationFunction, required
             metadata object of transformation function.
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -47,7 +47,7 @@ class TransformationFunctionApi:
         ]
         headers = {"content-type": "application/json"}
         return transformation_function.TransformationFunction.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST",
                 path_params,
                 headers=headers,
@@ -69,7 +69,7 @@ class TransformationFunctionApi:
         version: TransformationFunction version, optional
             version of transformation function.
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -83,11 +83,11 @@ class TransformationFunctionApi:
             if version:
                 query_params["version"] = version
             return transformation_function.TransformationFunction.from_response_json(
-                _client._send_request("GET", path_params, query_params)
+                _client.send_request("GET", path_params, query_params)
             )
         else:
             return transformation_function.TransformationFunction.from_response_json(
-                _client._send_request("GET", path_params)
+                _client.send_request("GET", path_params)
             )
 
     def delete(
@@ -99,7 +99,7 @@ class TransformationFunctionApi:
         transformation_function_instance: TransformationFunction, required
             metadata object of transformation function.
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -109,4 +109,4 @@ class TransformationFunctionApi:
             transformation_function_instance.id,
         ]
         headers = {"content-type": "application/json"}
-        _client._send_request("DELETE", path_params, headers=headers)
+        _client.send_request("DELETE", path_params, headers=headers)

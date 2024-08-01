@@ -31,7 +31,7 @@ class ModelRegistryApi:
         :return: the model registry metadata
         :rtype: ModelRegistry
         """
-        _client = client.get_instance()
+        _client = client.get()
 
         model_registry_id = _client._project_id
         shared_registry_project_name = None
@@ -39,7 +39,7 @@ class ModelRegistryApi:
         # In the case of shared model registry, validate that there is Models dataset shared to the connected project from the set project name
         if project is not None:
             path_params = ["project", _client._project_id, "modelregistries"]
-            model_registries = _client._send_request("GET", path_params)
+            model_registries = _client.send_request("GET", path_params)
             for registry in model_registries["items"]:
                 if registry["name"] == project:
                     model_registry_id = registry["id"]

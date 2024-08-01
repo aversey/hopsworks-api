@@ -39,7 +39,7 @@ class CodeApi:
         code_type,
         databricks_cluster_id=None,
     ):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -58,6 +58,6 @@ class CodeApi:
             "databricksClusterId": databricks_cluster_id,
         }
 
-        _client._send_request(
+        _client.send_request(
             "POST", path_params, query_params, headers=headers, data=code.json()
         )

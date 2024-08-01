@@ -901,7 +901,7 @@ class TrainingDataset(TrainingDatasetBase):
     # Rewrite the td location if it is TD root directory
     @classmethod
     def _rewrite_location(cls, td_json):
-        _client = client.get_instance()
+        _client = client.get()
         if "location" in td_json:
             if td_json["location"].endswith(
                 f"/Projects/{_client._project_name}/{_client._project_name}_Training_Datasets"

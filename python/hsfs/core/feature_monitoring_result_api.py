@@ -62,7 +62,7 @@ class FeatureMonitoringResultApi:
         :return: the created feature monitoring result
         :rtype: FeatureMonitoringResult
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
         )
@@ -70,7 +70,7 @@ class FeatureMonitoringResultApi:
         headers = {"content-type": "application/json"}
         payload = fm_result.json()
         return FeatureMonitoringResult.from_response_json(
-            _client._send_request("POST", path_params, headers=headers, data=payload)
+            _client.send_request("POST", path_params, headers=headers, data=payload)
         )
 
     def delete(
@@ -78,13 +78,13 @@ class FeatureMonitoringResultApi:
         result_id: int,
     ) -> None:
         """Delete the Feature Monitoring result attached to a Feature."""
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
         )
         path_params.append(result_id)
 
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def get_by_config_id(
         self,
@@ -100,7 +100,7 @@ class FeatureMonitoringResultApi:
         :return: fetched feature monitoring results attached to the Feature Group
         :rtype: List[FeatureMonitoringResult]
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
         )
@@ -109,7 +109,7 @@ class FeatureMonitoringResultApi:
         headers = {"content-type": "application/json"}
 
         return FeatureMonitoringResult.from_response_json(
-            _client._send_request("GET", path_params, query_params, headers=headers)
+            _client.send_request("GET", path_params, query_params, headers=headers)
         )
 
     def get_by_id(
@@ -123,14 +123,14 @@ class FeatureMonitoringResultApi:
         :return: fetched feature monitoring result attached to the Feature Group
         :rtype: FeatureMonitoringResult || None
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
         )
         path_params.append(result_id)
 
         return FeatureMonitoringResult.from_response_json(
-            _client._send_request("GET", path_params)
+            _client.send_request("GET", path_params)
         )
 
     def build_path_params(

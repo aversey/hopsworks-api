@@ -1756,7 +1756,7 @@ class FeatureStore:
     def _reset_hopsworks_feature_query_service_client(self):
         """Reset Hopsworks feature query service for the current session."""
         arrow_flight_client.close()
-        arrow_flight_client.get_instance()
+        arrow_flight_client.get()
 
     @property
     def id(self) -> int:

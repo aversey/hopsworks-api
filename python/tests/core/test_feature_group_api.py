@@ -34,7 +34,7 @@ class TestFeatureGroupApi:
         client_mock = Mock()
         client_mock.configure_mock(**{"_send_request.side_effect": side_effects})
         mocker.patch(
-            "hsfs.client.get_instance",
+            "hsfs.client.get",
             return_value=client_mock,
         )
         mocker.patch("hsfs.engine.get_instance")

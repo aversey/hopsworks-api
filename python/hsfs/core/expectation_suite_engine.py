@@ -101,7 +101,7 @@ class ExpectationSuiteEngine:
         """Build url to land on Hopsworks UI page which summarizes validation results"""
         sub_path = (
             "/p/"
-            + str(client.get_instance()._project_id)
+            + str(client.get()._project_id)
             + "/fs/"
             + str(self._feature_store_id)
             + "/fg/"

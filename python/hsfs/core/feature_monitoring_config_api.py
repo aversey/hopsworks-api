@@ -61,7 +61,7 @@ class FeatureMonitoringConfigApi:
         :return: the created feature monitoring configuration
         :rtype: FeatureMonitoringConfiguration
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
         )
@@ -69,7 +69,7 @@ class FeatureMonitoringConfigApi:
         headers = {"content-type": "application/json"}
         payload = fm_config.json()
         return fmc.FeatureMonitoringConfig.from_response_json(
-            _client._send_request("POST", path_params, headers=headers, data=payload)
+            _client.send_request("POST", path_params, headers=headers, data=payload)
         )
 
     def update(
@@ -82,7 +82,7 @@ class FeatureMonitoringConfigApi:
         :return: the updated feature monitoring configuration
         :rtype: FeatureMonitoringConfig
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
             config_id=fm_config._id,
@@ -92,7 +92,7 @@ class FeatureMonitoringConfigApi:
         payload = fm_config.json()
 
         return fmc.FeatureMonitoringConfig.from_response_json(
-            _client._send_request("PUT", path_params, headers=headers, data=payload)
+            _client.send_request("PUT", path_params, headers=headers, data=payload)
         )
 
     def delete(
@@ -105,13 +105,13 @@ class FeatureMonitoringConfigApi:
         :return: fetched feature monitoring configuration attached to the Feature Group
         :rtype: FeatureMonitoringConfig || None
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
             config_id=config_id,
         )
 
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def get_by_id(
         self,
@@ -123,14 +123,14 @@ class FeatureMonitoringConfigApi:
         :return: fetched feature monitoring configuration attached to the Feature Group
         :rtype: FeatureMonitoringConfig || None
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
             config_id=config_id,
         )
 
         return fmc.FeatureMonitoringConfig.from_response_json(
-            _client._send_request("GET", path_params)
+            _client.send_request("GET", path_params)
         )
 
     def get_by_feature_name(
@@ -143,14 +143,14 @@ class FeatureMonitoringConfigApi:
         :return: fetched feature monitoring configuration attached to the Feature Group
         :rtype: List[FeatureMonitoringConfig] || None
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
             feature_name=feature_name,
         )
 
         return fmc.FeatureMonitoringConfig.from_response_json(
-            _client._send_request("GET", path_params)
+            _client.send_request("GET", path_params)
         )
 
     def get_by_name(
@@ -163,14 +163,14 @@ class FeatureMonitoringConfigApi:
         :return: fetched feature monitoring configuration attached to the Feature Group
         :rtype: FeatureMonitoringConfig || None
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
             name=name,
         )
 
         return fmc.FeatureMonitoringConfig.from_response_json(
-            _client._send_request("GET", path_params)
+            _client.send_request("GET", path_params)
         )
 
     def get_by_entity(self) -> List[fmc.FeatureMonitoringConfig]:
@@ -180,14 +180,14 @@ class FeatureMonitoringConfigApi:
         :return: fetched feature monitoring configuration attached to the Feature Group
         :rtype: List[FeatureMonitoringConfig] || None
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
             entity=True,
         )
 
         return fmc.FeatureMonitoringConfig.from_response_json(
-            _client._send_request("GET", path_params)
+            _client.send_request("GET", path_params)
         )
 
     def setup_feature_monitoring_job(
@@ -200,13 +200,13 @@ class FeatureMonitoringConfigApi:
         :return: Job object for the feature monitoring job
         :rtype: Job
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
         )
         path_params.extend(["setup", config_name])
 
-        return Job.from_response_json(_client._send_request("POST", path_params))
+        return Job.from_response_json(_client.send_request("POST", path_params))
 
     def trigger_feature_monitoring_job(
         self,
@@ -218,14 +218,14 @@ class FeatureMonitoringConfigApi:
         :return: Job attached to the monitoring configuration
         :rtype: Job
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.build_path_params(
             project_id=_client._project_id,
             config_id=config_id,
         )
         path_params.append("trigger")
 
-        return Job.from_response_json(_client._send_request("POST", path_params))
+        return Job.from_response_json(_client.send_request("POST", path_params))
 
     def build_path_params(
         self,

@@ -17,6 +17,7 @@
 from hopsworks_common.client import (
     auth,
     base,
+    close,
     exceptions,
     external,
     get,
@@ -32,13 +33,13 @@ from hopsworks_common.client import (
     set_kserve_installed,
     set_serving_num_instances_limits,
     set_serving_resource_limits,
-    stop,
 )
 
 
 __all__ = [
     auth,
     base,
+    close,
     exceptions,
     external,
     get,
@@ -54,5 +55,4 @@ __all__ = [
     set_kserve_installed,
     set_serving_num_instances_limits,
     set_serving_resource_limits,
-    stop,
 ]

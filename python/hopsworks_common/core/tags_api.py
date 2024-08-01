@@ -47,13 +47,13 @@ class TagsApi:
         :param value: value of the tag to be added
         :type value: str
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.get_path(metadata_instance, training_dataset_version) + [
             name
         ]
         headers = {"content-type": "application/json"}
         json_value = json.dumps(value)
-        _client._send_request("PUT", path_params, headers=headers, data=json_value)
+        _client.send_request("PUT", path_params, headers=headers, data=json_value)
 
     def delete(self, metadata_instance, name, training_dataset_version=None):
         """Delete a tag from a training dataset or feature group.
@@ -66,12 +66,12 @@ class TagsApi:
         :param name: name of the tag to be removed
         :type name: str
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.get_path(metadata_instance, training_dataset_version) + [
             name
         ]
 
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def get(self, metadata_instance, name: str = None, training_dataset_version=None):
         """Get the tags of a training dataset or feature group.
@@ -86,7 +86,7 @@ class TagsApi:
         :return: dict of tag name/values
         :rtype: dict
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.get_path(metadata_instance, training_dataset_version)
 
         if name is not None:
@@ -95,12 +95,12 @@ class TagsApi:
         return {
             tag._name: json.loads(tag._value)
             for tag in tag.Tag.from_response_json(
-                _client._send_request("GET", path_params)
+                _client.send_request("GET", path_params)
             )
         }
 
     def get_path(self, metadata_instance, training_dataset_version=None):
-        _client = client.get_instance()
+        _client = client.get()
         if hasattr(metadata_instance, "training_data"):
             # Only FeatureView has training_data method
             path = [

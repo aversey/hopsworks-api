@@ -43,12 +43,12 @@ class StatisticsApi:
         stats: statistics.Statistics,
         training_dataset_version: Optional[int],
     ) -> Optional[statistics.Statistics]:
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.get_path(metadata_instance, training_dataset_version)
 
         headers = {"content-type": "application/json"}
         stats = statistics.Statistics.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST", path_params, headers=headers, data=stats.json()
             )
         )
@@ -89,7 +89,7 @@ class StatisticsApi:
         :type training_dataset_version: int
         """
         # get statistics by entity + filters + sorts, including the feature descriptive statistics
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.get_path(metadata_instance, training_dataset_version)
 
         # single statistics
@@ -113,7 +113,7 @@ class StatisticsApi:
 
         # response is either a single item or not found exception
         stats = statistics.Statistics.from_response_json(
-            _client._send_request("GET", path_params, query_params, headers=headers)
+            _client.send_request("GET", path_params, query_params, headers=headers)
         )
         return self._extract_single_stats(stats)
 
@@ -152,7 +152,7 @@ class StatisticsApi:
         :type training_dataset_version: int
         """
         # get all statistics by entity + filters + sorts, without the feature descriptive statistics
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.get_path(metadata_instance, training_dataset_version)
 
         # multiple statistics
@@ -175,7 +175,7 @@ class StatisticsApi:
         )
 
         return statistics.Statistics.from_response_json(
-            _client._send_request("GET", path_params, query_params, headers=headers)
+            _client.send_request("GET", path_params, query_params, headers=headers)
         )
 
     def compute(
@@ -194,11 +194,11 @@ class StatisticsApi:
         :param training_dataset_version: version of the training dataset metadata object
         :type training_dataset_version: int
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self.get_path(metadata_instance, training_dataset_version) + [
             "compute"
         ]
-        return job.Job.from_response_json(_client._send_request("POST", path_params))
+        return job.Job.from_response_json(_client.send_request("POST", path_params))
 
     def get_path(
         self,
@@ -216,7 +216,7 @@ class StatisticsApi:
         :param training_dataset_version: version of the training dataset metadata object
         :type training_dataset_version: int
         """
-        _client = client.get_instance()
+        _client = client.get()
         if isinstance(metadata_instance, feature_view.FeatureView):
             path = [
                 "project",

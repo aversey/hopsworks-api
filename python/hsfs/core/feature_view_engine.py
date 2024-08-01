@@ -871,7 +871,7 @@ class FeatureViewEngine:
 
     def _check_feature_group_accessibility(self, feature_view_obj):
         if engine.get_type() in ["python", "hive"]:
-            if arrow_flight_client.get_instance().is_enabled():
+            if arrow_flight_client.get().is_enabled():
                 if not arrow_flight_client.supports(
                     feature_view_obj.query.featuregroups
                 ):
@@ -893,7 +893,7 @@ class FeatureViewEngine:
     def _get_feature_view_url(self, fv: "feature_view.FeatureView"):
         path = (
             "/p/"
-            + str(client.get_instance()._project_id)
+            + str(client.get()._project_id)
             + "/fs/"
             + str(fv.featurestore_id)
             + "/fv/"
@@ -994,11 +994,17 @@ class FeatureViewEngine:
         td_predictions = [feature for feature in fv.features if feature.label]
         td_predictions_names = set([feature.name for feature in td_predictions])
         if transformed:
-            td_features = [feature_name for feature_name in fv.transformed_features if feature_name not in td_predictions_names]
+            td_features = [
+                feature_name
+                for feature_name in fv.transformed_features
+                if feature_name not in td_predictions_names
+            ]
         else:
-            td_features = [feature.name for feature in
-                           fv.features if
-                           feature.name not in td_predictions_names]
+            td_features = [
+                feature.name
+                for feature in fv.features
+                if feature.name not in td_predictions_names
+            ]
         df = engine.get_instance().get_feature_logging_df(
             features_rows,
             fg=fg,
@@ -1109,8 +1115,10 @@ class FeatureViewEngine:
 
     def materialize_feature_logs(self, fv, wait, transform):
         if transform is None:
-            jobs = [self._get_logging_fg(fv, True).materialization_job,
-                    self._get_logging_fg(fv, False).materialization_job]
+            jobs = [
+                self._get_logging_fg(fv, True).materialization_job,
+                self._get_logging_fg(fv, False).materialization_job,
+            ]
         else:
             jobs = [self._get_logging_fg(fv, transform).materialization_job]
         for job in jobs:

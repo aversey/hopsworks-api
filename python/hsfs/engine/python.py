@@ -176,7 +176,7 @@ class Engine:
         if isinstance(sql_query, dict) and "query_string" in sql_query:
             result_df = util.run_with_loading_animation(
                 "Reading data from Hopsworks, using Hopsworks Feature Query Service",
-                arrow_flight_client.get_instance().read_query,
+                arrow_flight_client.get().read_query,
                 sql_query,
                 arrow_flight_config or {},
                 dataframe_type,
@@ -202,7 +202,7 @@ class Engine:
             self._mysql_online_fs_engine = util_sql.create_mysql_engine(
                 connector,
                 (
-                    isinstance(client.get_instance(), client.external.Client)
+                    isinstance(client.get(), client.external.Client)
                     if "external" not in read_options
                     else read_options["external"]
                 ),
@@ -333,7 +333,7 @@ class Engine:
                         data_format, read_options
                     ):
                         arrow_flight_config = read_options.get("arrow_flight_config")
-                        df = arrow_flight_client.get_instance().read_path(
+                        df = arrow_flight_client.get().read_path(
                             inode.path,
                             arrow_flight_config,
                             dataframe_type=dataframe_type,
@@ -1055,7 +1055,7 @@ class Engine:
             query_obj, _ = dataset._prep_read(False, user_write_options)
             response = util.run_with_loading_animation(
                 "Materializing data to Hopsworks, using Hopsworks Feature Query Service",
-                arrow_flight_client.get_instance().create_training_dataset,
+                arrow_flight_client.get().create_training_dataset,
                 feature_view_obj,
                 training_dataset,
                 query_obj,
@@ -1267,7 +1267,7 @@ class Engine:
         producer, headers, feature_writers, writer = kafka_engine.init_kafka_resources(
             feature_group,
             offline_write_options,
-            project_id=client.get_instance()._project_id,
+            project_id=client.get()._project_id,
         )
         if not feature_group._multi_part_insert:
             # set initial_check_point to the current offset
@@ -1448,9 +1448,7 @@ class Engine:
         training_dataset_version: Optional[int] = None,
         hsml_model=None,
     ) -> pd.DataFrame:
-        features = Engine._convert_feature_log_to_df(
-            features, td_features
-        )
+        features = Engine._convert_feature_log_to_df(features, td_features)
         if td_predictions:
             predictions = Engine._convert_feature_log_to_df(
                 predictions, [f.name for f in td_predictions]

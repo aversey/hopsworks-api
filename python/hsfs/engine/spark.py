@@ -449,7 +449,7 @@ class Engine:
             .option(
                 "checkpointLocation",
                 "/Projects/"
-                + client.get_instance()._project_name
+                + client.get()._project_name
                 + "/Resources/"
                 + query_name
                 + "-checkpoint"
@@ -1016,7 +1016,7 @@ class Engine:
         file_name = os.path.basename(file)
 
         # for external clients, download the file
-        if isinstance(client.get_instance(), client.external.Client):
+        if isinstance(client.get(), client.external.Client):
             tmp_file = os.path.join(SparkFiles.getRootDirectory(), file_name)
             print("Reading key file from storage connector.")
             response = self._dataset_api.read_content(file, util.get_dataset_type(file))

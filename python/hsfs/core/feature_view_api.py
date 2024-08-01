@@ -48,7 +48,7 @@ class FeatureViewApi:
 
     def __init__(self, feature_store_id: int) -> None:
         self._feature_store_id = feature_store_id
-        self._client = client.get_instance()
+        self._client = client.get()
         self._base_path = [
             "project",
             self._client._project_id,
@@ -62,7 +62,7 @@ class FeatureViewApi:
     ) -> feature_view.FeatureView:
         headers = {"content-type": "application/json"}
         return feature_view_obj.update_from_response_json(
-            self._client._send_request(
+            self._client.send_request(
                 self._POST,
                 self._base_path,
                 headers=headers,
@@ -72,7 +72,7 @@ class FeatureViewApi:
 
     def update(self, feature_view_obj: feature_view.FeatureView) -> None:
         headers = {"content-type": "application/json"}
-        self._client._send_request(
+        self._client.send_request(
             self._PUT,
             self._base_path
             + [feature_view_obj.name, self._VERSION, feature_view_obj.version],
@@ -98,7 +98,7 @@ class FeatureViewApi:
         try:
             return [
                 feature_view.FeatureView.from_response_json(fv)
-                for fv in self._client._send_request(
+                for fv in self._client.send_request(
                     self._GET,
                     path,
                     {"expand": ["query", "features", "transformationfunctions"]},
@@ -132,7 +132,7 @@ class FeatureViewApi:
         path = self._base_path + [name, self._VERSION, version]
         try:
             return feature_view.FeatureView.from_response_json(
-                self._client._send_request(
+                self._client.send_request(
                     self._GET,
                     path,
                     {"expand": ["query", "features", "transformationfunctions"]},
@@ -150,11 +150,11 @@ class FeatureViewApi:
 
     def delete_by_name(self, name: str) -> None:
         path = self._base_path + [name]
-        self._client._send_request(self._DELETE, path)
+        self._client.send_request(self._DELETE, path)
 
     def delete_by_name_version(self, name: str, version: int) -> None:
         path = self._base_path + [name, self._VERSION, version]
-        self._client._send_request(self._DELETE, path)
+        self._client.send_request(self._DELETE, path)
 
     def get_batch_query(
         self,
@@ -178,7 +178,7 @@ class FeatureViewApi:
             self._BATCH,
         ]
         return query.Query.from_response_json(
-            self._client._send_request(
+            self._client.send_request(
                 self._GET,
                 path,
                 {
@@ -210,7 +210,7 @@ class FeatureViewApi:
             "inference_helper_columns": inference_helper_columns,
         }
         return serving_prepared_statement.ServingPreparedStatement.from_response_json(
-            self._client._send_request("GET", path, query_params, headers=headers)
+            self._client.send_request("GET", path, query_params, headers=headers)
         )
 
     def create_training_dataset(
@@ -222,7 +222,7 @@ class FeatureViewApi:
         path = self.get_training_data_base_path(name, version)
         headers = {"content-type": "application/json"}
         return training_dataset_obj.update_from_response_json(
-            self._client._send_request(
+            self._client.send_request(
                 "POST", path, headers=headers, data=training_dataset_obj.json()
             )
         )
@@ -232,7 +232,7 @@ class FeatureViewApi:
     ) -> "training_dataset.TrainingDataset":
         path = self.get_training_data_base_path(name, version, training_dataset_version)
         return training_dataset.TrainingDataset.from_response_json_single(
-            self._client._send_request("GET", path)
+            self._client.send_request("GET", path)
         )
 
     def get_training_datasets(
@@ -240,7 +240,7 @@ class FeatureViewApi:
     ) -> List["training_dataset.TrainingDataset"]:
         path = self.get_training_data_base_path(name, version)
         return training_dataset.TrainingDataset.from_response_json(
-            self._client._send_request("GET", path)
+            self._client.send_request("GET", path)
         )
 
     def compute_training_dataset(
@@ -255,24 +255,24 @@ class FeatureViewApi:
         ) + [self._COMPUTE]
         headers = {"content-type": "application/json"}
         return job.Job.from_response_json(
-            self._client._send_request(
+            self._client.send_request(
                 "POST", path, headers=headers, data=td_app_conf.json()
             )
         )
 
     def delete_training_data(self, name: str, version: int) -> None:
         path = self.get_training_data_base_path(name, version)
-        return self._client._send_request("DELETE", path)
+        return self._client.send_request("DELETE", path)
 
     def delete_training_data_version(
         self, name: str, version: int, training_dataset_version: int
     ) -> None:
         path = self.get_training_data_base_path(name, version, training_dataset_version)
-        return self._client._send_request("DELETE", path)
+        return self._client.send_request("DELETE", path)
 
     def delete_training_dataset_only(self, name: str, version: int) -> None:
         path = self.get_training_data_base_path(name, version) + [self._DATA]
-        return self._client._send_request("DELETE", path)
+        return self._client.send_request("DELETE", path)
 
     def delete_training_dataset_only_version(
         self, name: str, version: int, training_dataset_version: int
@@ -281,7 +281,7 @@ class FeatureViewApi:
             name, version, training_dataset_version
         ) + [self._DATA]
 
-        return self._client._send_request("DELETE", path)
+        return self._client.send_request("DELETE", path)
 
     def get_training_data_base_path(
         self, name: str, version: int, training_data_version: Optional[int] = None
@@ -319,7 +319,7 @@ class FeatureViewApi:
             `ExplicitProvenance.Links`: the feature groups used to generated this
             feature view
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self._base_path + [
             name,
             self._VERSION,
@@ -332,7 +332,7 @@ class FeatureViewApi:
             "upstreamLvls": 1,
             "downstreamLvls": 0,
         }
-        links_json = _client._send_request("GET", path_params, query_params)
+        links_json = _client.send_request("GET", path_params, query_params)
         return explicit_provenance.Links.from_response_json(
             links_json,
             explicit_provenance.Links.Direction.UPSTREAM,
@@ -360,7 +360,7 @@ class FeatureViewApi:
             `ExplicitProvenance.Links`: the models generated using this feature
             group
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self._base_path + [
             feature_view_name,
             self._VERSION,
@@ -373,7 +373,7 @@ class FeatureViewApi:
             "upstreamLvls": 0,
             "downstreamLvls": 2,
         }
-        links_json = _client._send_request("GET", path_params, query_params)
+        links_json = _client.send_request("GET", path_params, query_params)
         return explicit_provenance.Links.from_response_json(
             links_json,
             explicit_provenance.Links.Direction.DOWNSTREAM,
@@ -386,21 +386,21 @@ class FeatureViewApi:
         feature_view_name: str,
         feature_view_version: int,
     ):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self._base_path + [
             feature_view_name,
             self._VERSION,
             feature_view_version,
             self._LOGGING,
         ]
-        _client._send_request("PUT", path_params, {})
+        _client.send_request("PUT", path_params, {})
 
     def pause_feature_logging(
         self,
         feature_view_name: str,
         feature_view_version: int,
     ):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self._base_path + [
             feature_view_name,
             self._VERSION,
@@ -408,14 +408,14 @@ class FeatureViewApi:
             self._LOGGING,
             self._PAUSE_LOGGING,
         ]
-        return _client._send_request("POST", path_params, {})
+        return _client.send_request("POST", path_params, {})
 
     def resume_feature_logging(
         self,
         feature_view_name: str,
         feature_view_version: int,
     ):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self._base_path + [
             feature_view_name,
             self._VERSION,
@@ -423,14 +423,14 @@ class FeatureViewApi:
             self._LOGGING,
             self._RESUME_LOGGING,
         ]
-        return _client._send_request("POST", path_params, {})
+        return _client.send_request("POST", path_params, {})
 
     def materialize_feature_logging(
         self,
         feature_view_name: str,
         feature_view_version: int,
     ):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self._base_path + [
             feature_view_name,
             self._VERSION,
@@ -438,7 +438,7 @@ class FeatureViewApi:
             self._LOGGING,
             self._MATERIALIZE_LOGGING,
         ]
-        jobs_json = _client._send_request("POST", path_params, {})
+        jobs_json = _client.send_request("POST", path_params, {})
         jobs = []
         if jobs_json.get("count", 0) > 1:
             for item in jobs_json["items"]:
@@ -452,14 +452,14 @@ class FeatureViewApi:
         feature_view_name: str,
         feature_view_version: int,
     ):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self._base_path + [
             feature_view_name,
             self._VERSION,
             feature_view_version,
             self._LOGGING,
         ]
-        return _client._send_request("GET", path_params, {})
+        return _client.send_request("GET", path_params, {})
 
     def delete_feature_logs(
         self,
@@ -467,7 +467,7 @@ class FeatureViewApi:
         feature_view_version: int,
         transformed: bool = None,
     ):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = self._base_path + [
             feature_view_name,
             self._VERSION,
@@ -479,4 +479,4 @@ class FeatureViewApi:
                 path_params += [self._TRANSFORMED_lOG]
             else:
                 path_params += [self._UNTRANSFORMED_LOG]
-        _client._send_request("DELETE", path_params, {})
+        _client.send_request("DELETE", path_params, {})

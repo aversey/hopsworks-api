@@ -241,12 +241,7 @@ class Deployment:
     def get_url(self):
         """Get url to the deployment in Hopsworks"""
 
-        path = (
-            "/p/"
-            + str(client.get_instance()._project_id)
-            + "/deployments/"
-            + str(self.id)
-        )
+        path = "/p/" + str(client.get()._project_id) + "/deployments/" + str(self.id)
         return util.get_hostname_replaced_url(path)
 
     def describe(self):

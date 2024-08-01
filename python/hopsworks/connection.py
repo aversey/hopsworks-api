@@ -229,7 +229,7 @@ class Connection:
             conn.connect()
             ```
         """
-        client.stop()
+        client.close()
         self._connected = True
         try:
             # init client
@@ -269,26 +269,14 @@ class Connection:
 
         Usage is recommended but optional.
         """
-        from hsfs import client as hsfs_client
         from hsfs import engine as hsfs_engine
-        from hsml import client as hsml_client
-
-        try:
-            hsfs_client.stop()
-        except:  # noqa: E722
-            pass
 
         try:
             hsfs_engine.stop()
         except:  # noqa: E722
             pass
 
-        try:
-            hsml_client.stop()
-        except:  # noqa: E722
-            pass
-
-        client.stop()
+        client.close()
         self._connected = False
 
         print("Connection closed.")

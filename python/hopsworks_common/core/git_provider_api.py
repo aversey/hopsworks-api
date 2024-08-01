@@ -32,11 +32,11 @@ class GitProviderApi:
         self._project_name = project_name
 
     def _get_providers(self):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["users", "git", "provider"]
 
         return git_provider.GitProvider.from_response_json(
-            _client._send_request("GET", path_params),
+            _client.send_request("GET", path_params),
             self._project_id,
             self._project_name,
         )
@@ -53,11 +53,11 @@ class GitProviderApi:
             )
 
     def _get_provider(self, provider: str):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["users", "git", "provider"]
 
         providers = git_provider.GitProvider.from_response_json(
-            _client._send_request("GET", path_params),
+            _client.send_request("GET", path_params),
             self._project_id,
             self._project_name,
         )
@@ -67,7 +67,7 @@ class GitProviderApi:
         raise GitException("No git provider configured for {}".format(provider))
 
     def _set_provider(self, provider: str, username: str, token: str):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["users", "git", "provider"]
 
         provider_config = {
@@ -78,7 +78,7 @@ class GitProviderApi:
 
         headers = {"content-type": "application/json"}
         return git_provider.GitProvider.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST", path_params, headers=headers, data=json.dumps(provider_config)
             ),
             self._project_id,
@@ -86,8 +86,8 @@ class GitProviderApi:
         )
 
     def _delete_provider(self, provider: str):
-        _client = client.get_instance()
+        _client = client.get()
         path_params = ["users", "secrets", "{}_token".format(provider.lower())]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
         path_params = ["users", "secrets", "{}_username".format(provider.lower())]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)

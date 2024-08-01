@@ -87,7 +87,7 @@ class HsmlModel:
 
         path_params = [
             "project",
-            client.get_instance()._project_id,
+            client.get()._project_id,
             "modelregistries",
             self.model_registry_id,
             "models",
@@ -95,9 +95,7 @@ class HsmlModel:
         ]
         query_params = {"expand": "trainingdatasets"}
 
-        model_json = client.get_instance()._send_request(
-            "GET", path_params, query_params
-        )
+        model_json = client.get()._send_request("GET", path_params, query_params)
         return Model.from_response_json(model_json)
 
     def json(self):

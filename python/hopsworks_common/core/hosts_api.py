@@ -23,8 +23,8 @@ from hopsworks_common import client
 
 class HostsApi:
     def get(self) -> List[Any]:
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "hosts",
         ]
-        return _client._send_request("GET", path_params)["items"]
+        return _client.send_request("GET", path_params)["items"]

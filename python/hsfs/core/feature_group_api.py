@@ -43,7 +43,7 @@ class FeatureGroupApi:
         :return: updated metadata object of the feature group
         :rtype: FeatureGroup
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -56,7 +56,7 @@ class FeatureGroupApi:
         }
         headers = {"content-type": "application/json"}
         feature_group_object = feature_group_instance.update_from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST",
                 path_params,
                 headers=headers,
@@ -88,7 +88,7 @@ class FeatureGroupApi:
         :return: feature group metadata object
         :rtype: FeatureGroup, SpineGroup, ExternalFeatureGroup, List[FeatureGroup], List[SpineGroup], List[ExternalFeatureGroup]
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -106,7 +106,7 @@ class FeatureGroupApi:
         fg_objs = []
         # In principle unique names are enforced across fg type and this should therefore
         # return only list of the same type. But it cost nothing to check in case this gets forgotten.
-        for fg_json in _client._send_request("GET", path_params, query_params):
+        for fg_json in _client.send_request("GET", path_params, query_params):
             if (
                 fg_json["type"] == FeatureGroupApi.BACKEND_FG_STREAM
                 or fg_json["type"] == FeatureGroupApi.BACKEND_FG_BATCH
@@ -156,7 +156,7 @@ class FeatureGroupApi:
         :return: feature group metadata object
         :rtype: FeatureGroup, SpineGroup, ExternalFeatureGroup
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -168,7 +168,7 @@ class FeatureGroupApi:
         query_params = {
             "expand": ["features", "expectationsuite", "transformationfunctions"]
         }
-        fg_json = _client._send_request("GET", path_params, query_params)
+        fg_json = _client.send_request("GET", path_params, query_params)
         if (
             fg_json["type"] == FeatureGroupApi.BACKEND_FG_STREAM
             or fg_json["type"] == FeatureGroupApi.BACKEND_FG_BATCH
@@ -192,7 +192,7 @@ class FeatureGroupApi:
             the content for
         :type feature_group_instance: FeatureGroup
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -202,7 +202,7 @@ class FeatureGroupApi:
             feature_group_instance.id,
             "clear",
         ]
-        _client._send_request("POST", path_params)
+        _client.send_request("POST", path_params)
 
     def delete(
         self,
@@ -217,7 +217,7 @@ class FeatureGroupApi:
         :param feature_group_instance: metadata object of feature group
         :type feature_group_instance: FeatureGroup
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -226,7 +226,7 @@ class FeatureGroupApi:
             "featuregroups",
             feature_group_instance.id,
         ]
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def update_metadata(
         self,
@@ -257,7 +257,7 @@ class FeatureGroupApi:
         # Returns
             FeatureGroup. The updated feature group metadata object.
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -269,7 +269,7 @@ class FeatureGroupApi:
         headers = {"content-type": "application/json"}
         query_params = {query_parameter: query_parameter_value}
         feature_group_object = feature_group_instance.update_from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "PUT",
                 path_params,
                 query_params,
@@ -294,7 +294,7 @@ class FeatureGroupApi:
         # Returns
             `FeatureGroupCommit`.
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -306,7 +306,7 @@ class FeatureGroupApi:
         ]
         headers = {"content-type": "application/json"}
         return feature_group_commit_instance.update_from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST",
                 path_params,
                 headers=headers,
@@ -330,7 +330,7 @@ class FeatureGroupApi:
         # Returns
             `FeatureGroupCommit`.
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -346,7 +346,7 @@ class FeatureGroupApi:
             query_params["filter_by"] = "commited_on_ltoeq:" + str(wallclock_timestamp)
 
         return feature_group_commit.FeatureGroupCommit.from_response_json(
-            _client._send_request("GET", path_params, query_params, headers=headers),
+            _client.send_request("GET", path_params, query_params, headers=headers),
         )
 
     def ingestion(
@@ -362,7 +362,7 @@ class FeatureGroupApi:
         ingestion_conf: the configuration for the ingestion job application
         """
 
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -375,7 +375,7 @@ class FeatureGroupApi:
 
         headers = {"content-type": "application/json"}
         return ingestion_job.IngestionJob.from_response_json(
-            _client._send_request(
+            _client.send_request(
                 "POST", path_params, headers=headers, data=ingestion_conf.json()
             ),
         )
@@ -399,7 +399,7 @@ class FeatureGroupApi:
             `ExplicitProvenance.Links`:  the feature groups used to generate this
             feature group
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -415,7 +415,7 @@ class FeatureGroupApi:
             "upstreamLvls": 1,
             "downstreamLvls": 0,
         }
-        links_json = _client._send_request("GET", path_params, query_params)
+        links_json = _client.send_request("GET", path_params, query_params)
         return explicit_provenance.Links.from_response_json(
             links_json,
             explicit_provenance.Links.Direction.UPSTREAM,
@@ -436,7 +436,7 @@ class FeatureGroupApi:
             `ExplicitProvenance.Links`: the storage connector used to generated this
             feature group
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -452,7 +452,7 @@ class FeatureGroupApi:
             "upstreamLvls": 1,
             "downstreamLvls": 0,
         }
-        links_json = _client._send_request("GET", path_params, query_params)
+        links_json = _client.send_request("GET", path_params, query_params)
         return explicit_provenance.Links.from_response_json(
             links_json,
             explicit_provenance.Links.Direction.UPSTREAM,
@@ -478,7 +478,7 @@ class FeatureGroupApi:
             `ExplicitProvenance.Links`: the feature views generated using this feature
             group
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -494,7 +494,7 @@ class FeatureGroupApi:
             "upstreamLvls": 0,
             "downstreamLvls": 1,
         }
-        links_json = _client._send_request("GET", path_params, query_params)
+        links_json = _client.send_request("GET", path_params, query_params)
         return explicit_provenance.Links.from_response_json(
             links_json,
             explicit_provenance.Links.Direction.DOWNSTREAM,
@@ -520,7 +520,7 @@ class FeatureGroupApi:
             `ExplicitProvenance.Links`: the feature groups generated using this
             feature group
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -536,7 +536,7 @@ class FeatureGroupApi:
             "upstreamLvls": 0,
             "downstreamLvls": 1,
         }
-        links_json = _client._send_request("GET", path_params, query_params)
+        links_json = _client.send_request("GET", path_params, query_params)
         return explicit_provenance.Links.from_response_json(
             links_json,
             explicit_provenance.Links.Direction.DOWNSTREAM,

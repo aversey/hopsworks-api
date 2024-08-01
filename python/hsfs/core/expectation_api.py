@@ -45,7 +45,7 @@ class ExpectationApi:
         :return: expectation
         :rtype: `GeExpectation`
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -61,7 +61,7 @@ class ExpectationApi:
         headers = {"content-type": "application/json"}
         payload = expectation.json()
         return GeExpectation.from_response_json(
-            _client._send_request("POST", path_params, headers=headers, data=payload)
+            _client.send_request("POST", path_params, headers=headers, data=payload)
         )
 
     def update(self, expectation: GeExpectation) -> GeExpectation:
@@ -72,7 +72,7 @@ class ExpectationApi:
         :return: expectation
         :rtype: `GeExpectation`
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -89,7 +89,7 @@ class ExpectationApi:
         headers = {"content-type": "application/json"}
         payload = expectation.json()
         return GeExpectation.from_response_json(
-            _client._send_request("PUT", path_params, headers=headers, data=payload)
+            _client.send_request("PUT", path_params, headers=headers, data=payload)
         )
 
     def delete(self, expectation_id: int) -> None:
@@ -97,7 +97,7 @@ class ExpectationApi:
         :param expectation_id: id of the Expectation to delete
         :type expectation_id: `int`
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -111,7 +111,7 @@ class ExpectationApi:
             expectation_id,
         ]
 
-        _client._send_request("DELETE", path_params)
+        _client.send_request("DELETE", path_params)
 
     def get(self, expectation_id: int) -> GeExpectation:
         """Get an expectation attached to a feature group.
@@ -119,7 +119,7 @@ class ExpectationApi:
         :return: expectation
         :rtype: `GeExpectation`
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -134,7 +134,7 @@ class ExpectationApi:
         ]
 
         return GeExpectation.from_response_json(
-            _client._send_request("GET", path_params)
+            _client.send_request("GET", path_params)
         )
 
     def get_expectations_by_suite_id(self) -> List[GeExpectation]:
@@ -143,7 +143,7 @@ class ExpectationApi:
         :return: expectation
         :rtype: `GeExpectation`
         """
-        _client = client.get_instance()
+        _client = client.get()
         path_params = [
             "project",
             _client._project_id,
@@ -157,5 +157,5 @@ class ExpectationApi:
         ]
 
         return GeExpectation.from_response_json(
-            _client._send_request("GET", path_params)
+            _client.send_request("GET", path_params)
         )
