@@ -14,7 +14,7 @@
 #   limitations under the License.
 #
 
-from hopsworks_common.client.base import (
+from hopsworks.platform.client.base import (
     Client,
 )
 

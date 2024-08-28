@@ -23,10 +23,10 @@ if TYPE_CHECKING:
     import pandas as pd
 
 
-from hsfs import engine, util, validation_report
-from hsfs import expectation_suite as es
-from hsfs import feature_group as fg_mod
-from hsfs.core.constants import HAS_GREAT_EXPECTATIONS
+from hopsworks.fs import engine, util, validation_report
+from hopsworks.fs import expectation_suite as es
+from hopsworks.fs import feature_group as fg_mod
+from hopsworks.fs.core.constants import HAS_GREAT_EXPECTATIONS
 
 
 class GreatExpectationEngine:

@@ -28,24 +28,24 @@ import avro.schema
 import numpy as np
 import pandas as pd
 import polars as pl
-from hopsworks_common import client
-from hsfs import (
+from hopsworks.fs import (
     feature_view,
     training_dataset,
     transformation_function,
 )
-from hsfs import (
+from hopsworks.fs import (
     serving_key as sk_mod,
 )
-from hsfs import training_dataset_feature as tdf_mod
-from hsfs.client import exceptions, online_store_rest_client
-from hsfs.core import (
+from hopsworks.fs import training_dataset_feature as tdf_mod
+from hopsworks.fs.client import exceptions, online_store_rest_client
+from hopsworks.fs.core import (
     online_store_rest_client_engine,
     online_store_sql_engine,
 )
-from hsfs.core import (
+from hopsworks.fs.core import (
     transformation_function_engine as tf_engine_mod,
 )
+from hopsworks.platform import client
 
 
 HAS_FASTAVRO = False

@@ -19,9 +19,9 @@ import json
 from io import BytesIO
 from typing import TYPE_CHECKING, Any, Callable, Dict, Literal, Optional, Tuple, Union
 
-from hopsworks_common import client
-from hsfs.core import storage_connector_api
-from hsfs.core.constants import HAS_AVRO, HAS_CONFLUENT_KAFKA, HAS_FAST_AVRO
+from hopsworks.fs.core import storage_connector_api
+from hopsworks.fs.core.constants import HAS_AVRO, HAS_CONFLUENT_KAFKA, HAS_FAST_AVRO
+from hopsworks.platform import client
 from tqdm import tqdm
 
 
@@ -37,7 +37,7 @@ elif HAS_AVRO:
 
 
 if TYPE_CHECKING:
-    from hsfs.feature_group import ExternalFeatureGroup, FeatureGroup
+    from hopsworks.fs.feature_group import ExternalFeatureGroup, FeatureGroup
 
 
 def init_kafka_consumer(

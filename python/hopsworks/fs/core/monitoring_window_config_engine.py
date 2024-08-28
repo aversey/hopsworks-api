@@ -19,12 +19,14 @@ import re
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple, TypeVar, Union
 
-from hopsworks_common.client.exceptions import RestAPIError
-from hsfs import feature_group, feature_view, util
-from hsfs.core import monitoring_window_config as mwc
-from hsfs.core import statistics_engine
-from hsfs.core.feature_descriptive_statistics import FeatureDescriptiveStatistics
-from hsfs.training_dataset_split import TrainingDatasetSplit
+from hopsworks.fs import feature_group, feature_view, util
+from hopsworks.fs.core import monitoring_window_config as mwc
+from hopsworks.fs.core import statistics_engine
+from hopsworks.fs.core.feature_descriptive_statistics import (
+    FeatureDescriptiveStatistics,
+)
+from hopsworks.fs.training_dataset_split import TrainingDatasetSplit
+from hopsworks.platform.client.exceptions import RestAPIError
 
 
 class MonitoringWindowConfigEngine:

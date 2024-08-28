@@ -17,8 +17,12 @@
 import json
 
 import humps
-from hopsworks_common import util
-from hopsworks_common.core import kafka_api
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import util
+from hopsworks.platform.core import kafka_api
+
+
+publish("hopsworks.kafka_schema", "hsfs.kafka_schema", "hsml.kafka_schema")
 
 
 class KafkaSchema:

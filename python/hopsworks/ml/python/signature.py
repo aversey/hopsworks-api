@@ -18,8 +18,8 @@ from typing import Optional, Union
 
 import numpy
 import pandas
-from hsml.model_schema import ModelSchema
-from hsml.python.model import Model
+from hopsworks.ml.model_schema import ModelSchema
+from hopsworks.ml.python.model import Model
 
 
 _mr = None

@@ -18,7 +18,7 @@ import os
 from pathlib import Path
 
 import requests
-from hopsworks_common.client import auth, base
+from hopsworks.platform.client import auth, base
 
 
 try:

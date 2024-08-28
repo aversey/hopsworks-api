@@ -14,7 +14,7 @@
 #   limitations under the License.
 #
 
-from hopsworks_common.core.constants import (
+from hopsworks.platform.core.constants import (
     HAS_AIOMYSQL,
     HAS_ARROW,
     HAS_AVRO,

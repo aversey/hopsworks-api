@@ -14,7 +14,7 @@
 #   limitations under the License.
 #
 
-from hopsworks_common.core.opensearch_api import (
+from hopsworks.platform.core.opensearch_api import (
     OPENSEARCH_CONFIG,
     OpenSearchApi,
 )

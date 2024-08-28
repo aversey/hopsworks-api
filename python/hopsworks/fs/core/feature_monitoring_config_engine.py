@@ -20,15 +20,20 @@ from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hsfs import feature_group, feature_view
-from hsfs.core import feature_monitoring_config as fmc
-from hsfs.core import feature_monitoring_config_api, monitoring_window_config_engine
-from hsfs.core import monitoring_window_config as mwc
-from hsfs.core.feature_monitoring_result import FeatureMonitoringResult
-from hsfs.core.feature_monitoring_result_engine import FeatureMonitoringResultEngine
-from hsfs.core.job import Job
-from hsfs.core.job_api import JobApi
+from hopsworks.fs import feature_group, feature_view
+from hopsworks.fs.core import feature_monitoring_config as fmc
+from hopsworks.fs.core import (
+    feature_monitoring_config_api,
+    monitoring_window_config_engine,
+)
+from hopsworks.fs.core import monitoring_window_config as mwc
+from hopsworks.fs.core.feature_monitoring_result import FeatureMonitoringResult
+from hopsworks.fs.core.feature_monitoring_result_engine import (
+    FeatureMonitoringResultEngine,
+)
+from hopsworks.fs.core.job import Job
+from hopsworks.fs.core.job_api import JobApi
+from hopsworks.platform.client.exceptions import FeatureStoreException
 
 
 class FeatureMonitoringConfigEngine:

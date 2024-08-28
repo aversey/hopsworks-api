@@ -18,14 +18,16 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Dict, List, Optional, Tuple, Union
 
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hsfs import util
-from hsfs.core import feature_monitoring_config as fmc
-from hsfs.core.feature_descriptive_statistics import FeatureDescriptiveStatistics
-from hsfs.core.feature_monitoring_config_api import FeatureMonitoringConfigApi
-from hsfs.core.feature_monitoring_result import FeatureMonitoringResult
-from hsfs.core.feature_monitoring_result_api import FeatureMonitoringResultApi
-from hsfs.core.job_api import JobApi
+from hopsworks.fs import util
+from hopsworks.fs.core import feature_monitoring_config as fmc
+from hopsworks.fs.core.feature_descriptive_statistics import (
+    FeatureDescriptiveStatistics,
+)
+from hopsworks.fs.core.feature_monitoring_config_api import FeatureMonitoringConfigApi
+from hopsworks.fs.core.feature_monitoring_result import FeatureMonitoringResult
+from hopsworks.fs.core.feature_monitoring_result_api import FeatureMonitoringResultApi
+from hopsworks.fs.core.job_api import JobApi
+from hopsworks.platform.client.exceptions import FeatureStoreException
 
 
 class FeatureMonitoringResultEngine:

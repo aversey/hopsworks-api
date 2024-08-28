@@ -21,19 +21,19 @@ from typing import Any, Dict, List, Optional, Set, TypeVar, Union
 import humps
 import numpy as np
 import pandas as pd
-from hopsworks_common import client
-from hopsworks_common.client.exceptions import RestAPIError
-from hsfs import engine, training_dataset_feature, util
-from hsfs.constructor import filter, query
-from hsfs.core import (
+from hopsworks.fs import engine, training_dataset_feature, util
+from hopsworks.fs.constructor import filter, query
+from hopsworks.fs.core import (
     statistics_engine,
     training_dataset_api,
     training_dataset_engine,
     vector_server,
 )
-from hsfs.statistics_config import StatisticsConfig
-from hsfs.storage_connector import HopsFSConnector, StorageConnector
-from hsfs.training_dataset_split import TrainingDatasetSplit
+from hopsworks.fs.statistics_config import StatisticsConfig
+from hopsworks.fs.storage_connector import HopsFSConnector, StorageConnector
+from hopsworks.fs.training_dataset_split import TrainingDatasetSplit
+from hopsworks.platform import client
+from hopsworks.platform.client.exceptions import RestAPIError
 
 
 class TrainingDatasetBase:

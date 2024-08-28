@@ -23,9 +23,9 @@ if TYPE_CHECKING:
     import great_expectations
 
 
-from hsfs import util
-from hsfs.core import validation_result_api
-from hsfs.ge_validation_result import ValidationResult
+from hopsworks.fs import util
+from hopsworks.fs.core import validation_result_api
+from hopsworks.fs.ge_validation_result import ValidationResult
 
 
 class ValidationResultEngine:

@@ -2,7 +2,7 @@ import json
 from typing import Any, Dict
 
 import humps
-from hsfs import feature_group, util
+from hopsworks.fs import feature_group, util
 
 
 class FeatureLogging:
@@ -18,7 +18,7 @@ class FeatureLogging:
 
     @classmethod
     def from_response_json(cls, json_dict: Dict[str, Any]) -> "FeatureLogging":
-        from hsfs.feature_group import FeatureGroup  # avoid circular import
+        from hopsworks.fs.feature_group import FeatureGroup  # avoid circular import
 
         json_decamelized = humps.decamelize(json_dict)
         transformed_features = json_decamelized.get("transformed_log_fg")

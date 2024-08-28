@@ -21,16 +21,16 @@ import warnings
 from typing import Any, Dict, Optional, Union
 
 import humps
-from hsml import client, util
-from hsml.constants import ARTIFACT_VERSION
-from hsml.constants import INFERENCE_ENDPOINTS as IE
-from hsml.core import explicit_provenance
-from hsml.engine import model_engine
-from hsml.inference_batcher import InferenceBatcher
-from hsml.inference_logger import InferenceLogger
-from hsml.predictor import Predictor
-from hsml.resources import PredictorResources
-from hsml.transformer import Transformer
+from hopsworks.ml import client, util
+from hopsworks.ml.constants import ARTIFACT_VERSION
+from hopsworks.ml.constants import INFERENCE_ENDPOINTS as IE
+from hopsworks.ml.core import explicit_provenance
+from hopsworks.ml.engine import model_engine
+from hopsworks.ml.inference_batcher import InferenceBatcher
+from hopsworks.ml.inference_logger import InferenceLogger
+from hopsworks.ml.predictor import Predictor
+from hopsworks.ml.resources import PredictorResources
+from hopsworks.ml.transformer import Transformer
 
 
 _logger = logging.getLogger(__name__)

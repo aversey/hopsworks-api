@@ -17,10 +17,14 @@
 import json
 
 import humps
-from hopsworks_common import client, constants, util
-from hopsworks_common.client.exceptions import JobExecutionException
-from hopsworks_common.core import execution_api
-from hopsworks_common.engine import execution_engine
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import client, constants, util
+from hopsworks.platform.client.exceptions import JobExecutionException
+from hopsworks.platform.core import execution_api
+from hopsworks.platform.engine import execution_engine
+
+
+publish("hopsworks.execution")
 
 
 class Execution:

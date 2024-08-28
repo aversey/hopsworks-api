@@ -21,8 +21,8 @@ import logging
 import os
 
 import requests
-from hopsworks_common.client import auth, base, exceptions
-from hopsworks_common.client.exceptions import FeatureStoreException
+from hopsworks.platform.client import auth, base, exceptions
+from hopsworks.platform.client.exceptions import FeatureStoreException
 
 
 try:

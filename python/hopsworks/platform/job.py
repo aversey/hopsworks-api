@@ -22,11 +22,15 @@ from datetime import datetime, timezone
 from typing import Literal
 
 import humps
-from hopsworks_common import client, util
-from hopsworks_common.client.exceptions import JobException
-from hopsworks_common.core import execution_api, job_api
-from hopsworks_common.engine import execution_engine
-from hopsworks_common.job_schedule import JobSchedule
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import client, util
+from hopsworks.platform.client.exceptions import JobException
+from hopsworks.platform.core import execution_api, job_api
+from hopsworks.platform.engine import execution_engine
+from hopsworks.platform.job_schedule import JobSchedule
+
+
+publish("hopsworks.job", "hsfs.job", "hsml.job")
 
 
 class Job:
@@ -258,7 +262,6 @@ class Job:
         """
         self._job_api._delete(self)
 
-
     def _is_materialization_running(self, args: str) -> bool:
         if self.name.endswith("offline_fg_materialization") or self.name.endswith(
             "offline_fg_backfill"
@@ -293,7 +296,6 @@ class Job:
             else:
                 return
             self._execution_engine.wait_until_finished(job=self, execution=execution)
-
 
     def schedule(
         self,

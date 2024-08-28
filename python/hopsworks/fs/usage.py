@@ -209,13 +209,13 @@ def _extract_method_name_line_and_file(e):
 
 
 def method_logger(func):
-    # Disable usage BEFORE import hsfs, return function itself
+    # Disable usage BEFORE import hopsworks.fs, return function itself
     if not _is_enabled:
         return func
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        # Disable usage AFTER import hsfs, return function itself
+        # Disable usage AFTER import hopsworks.fs, return function itself
         if not _is_enabled:
             return func(*args, **kwargs)
 

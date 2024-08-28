@@ -19,8 +19,8 @@ from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
 
 import numpy as np
 import pandas as pd
-from hsfs.core.job import Job
-from hsfs.validation_report import ValidationReport
+from hopsworks.fs.core.job import Job
+from hopsworks.fs.validation_report import ValidationReport
 
 
 class FeatureGroupWriter:
@@ -55,7 +55,7 @@ class FeatureGroupWriter:
             operation=operation,
             storage=storage,
             write_options={"start_offline_materialization": False, **write_options},
-            validation_options={"fetch_expectation_suite": False, **validation_options}
+            validation_options={"fetch_expectation_suite": False, **validation_options},
         )
 
     def __exit__(self, exc_type, exc_value, exc_tb):

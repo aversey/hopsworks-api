@@ -17,7 +17,7 @@ import json
 from typing import Optional
 
 import humps
-from hsml import util
+from hopsworks.ml import util
 
 
 class PredictorStateCondition:

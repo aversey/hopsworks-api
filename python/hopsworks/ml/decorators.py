@@ -14,7 +14,7 @@
 #   limitations under the License.
 #
 
-from hopsworks_common.decorators import (
+from hopsworks.platform.decorators import (
     HopsworksConnectionError,
     NoHopsworksConnectionError,
     connected,

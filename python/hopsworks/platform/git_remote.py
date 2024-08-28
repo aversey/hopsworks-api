@@ -17,8 +17,12 @@
 import json
 
 import humps
-from hopsworks_common import util
-from hopsworks_common.core import git_remote_api
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import util
+from hopsworks.platform.core import git_remote_api
+
+
+publish("hopsworks.git_remote", "hsfs.git_remote", "hsml.git_remote")
 
 
 class GitRemote:

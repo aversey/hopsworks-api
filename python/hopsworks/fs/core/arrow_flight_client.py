@@ -27,12 +27,12 @@ import polars as pl
 import pyarrow
 import pyarrow._flight
 import pyarrow.flight
-from hopsworks_common import client
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hsfs import feature_group, util
-from hsfs.constructor import query
-from hsfs.core.variable_api import VariableApi
-from hsfs.storage_connector import StorageConnector
+from hopsworks.fs import feature_group, util
+from hopsworks.fs.constructor import query
+from hopsworks.fs.core.variable_api import VariableApi
+from hopsworks.fs.storage_connector import StorageConnector
+from hopsworks.platform import client
+from hopsworks.platform.client.exceptions import FeatureStoreException
 from pyarrow.flight import FlightServerError
 from retrying import retry
 

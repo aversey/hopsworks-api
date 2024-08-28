@@ -16,8 +16,8 @@
 
 import warnings
 
-from hsml import util, version
-from hsml.connection import Connection
+from hopsworks.ml import util, version
+from hopsworks.ml.connection import Connection
 
 
 connection = Connection.connection

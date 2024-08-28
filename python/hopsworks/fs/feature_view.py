@@ -36,8 +36,7 @@ import humps
 import numpy as np
 import pandas as pd
 import polars as pl
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hsfs import (
+from hopsworks.fs import (
     feature_group,
     storage_connector,
     tag,
@@ -46,10 +45,10 @@ from hsfs import (
     usage,
     util,
 )
-from hsfs import serving_key as skm
-from hsfs.constructor import filter, query
-from hsfs.constructor.filter import Filter, Logic
-from hsfs.core import (
+from hopsworks.fs import serving_key as skm
+from hopsworks.fs.constructor import filter, query
+from hopsworks.fs.constructor.filter import Filter, Logic
+from hopsworks.fs.core import (
     explicit_provenance,
     feature_monitoring_config_engine,
     feature_monitoring_result_engine,
@@ -59,20 +58,24 @@ from hsfs.core import (
     transformation_function_engine,
     vector_server,
 )
-from hsfs.core import feature_monitoring_config as fmc
-from hsfs.core import feature_monitoring_result as fmr
-from hsfs.core.feature_logging import FeatureLogging
-from hsfs.core.feature_view_api import FeatureViewApi
-from hsfs.core.job import Job
-from hsfs.core.vector_db_client import VectorDbClient
-from hsfs.decorators import typechecked
-from hsfs.feature import Feature
-from hsfs.hopsworks_udf import HopsworksUdf
-from hsfs.statistics import Statistics
-from hsfs.statistics_config import StatisticsConfig
-from hsfs.training_dataset_split import TrainingDatasetSplit
-from hsfs.transformation_function import TransformationFunction, TransformationType
-from hsml.model import Model
+from hopsworks.fs.core import feature_monitoring_config as fmc
+from hopsworks.fs.core import feature_monitoring_result as fmr
+from hopsworks.fs.core.feature_logging import FeatureLogging
+from hopsworks.fs.core.feature_view_api import FeatureViewApi
+from hopsworks.fs.core.job import Job
+from hopsworks.fs.core.vector_db_client import VectorDbClient
+from hopsworks.fs.decorators import typechecked
+from hopsworks.fs.feature import Feature
+from hopsworks.fs.hopsworks_udf import HopsworksUdf
+from hopsworks.fs.statistics import Statistics
+from hopsworks.fs.statistics_config import StatisticsConfig
+from hopsworks.fs.training_dataset_split import TrainingDatasetSplit
+from hopsworks.fs.transformation_function import (
+    TransformationFunction,
+    TransformationType,
+)
+from hopsworks.ml.model import Model
+from hopsworks.platform.client.exceptions import FeatureStoreException
 
 
 _logger = logging.getLogger(__name__)
@@ -233,7 +236,7 @@ class FeatureView:
         !!! example
             ```python
             # delete a feature view and all associated metadata
-            from hsfs.feature_view import FeatureView
+            from hopsworks.fs.feature_view import FeatureView
 
             FeatureView.clean(
                 feature_store_id=1,

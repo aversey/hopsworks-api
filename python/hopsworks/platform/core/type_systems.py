@@ -22,7 +22,7 @@ import decimal
 from typing import TYPE_CHECKING, Literal, Union
 
 import pytz
-from hopsworks_common.core.constants import HAS_ARROW, HAS_PANDAS, HAS_POLARS
+from hopsworks.platform.core.constants import HAS_ARROW, HAS_PANDAS, HAS_POLARS
 
 
 if TYPE_CHECKING:

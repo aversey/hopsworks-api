@@ -14,4 +14,9 @@
 #   limitations under the License.
 #
 
+from hopsworks.internal.aliases import publish
+
+
+publish("hopsworks.version", "hsfs.version", "hsml.version")
+
 __version__ = "4.0.0.dev1"

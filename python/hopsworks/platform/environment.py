@@ -18,9 +18,13 @@ import os
 from typing import Optional
 
 import humps
-from hopsworks_common import client, command, util
-from hopsworks_common.core import environment_api, library_api
-from hopsworks_common.engine import environment_engine
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import client, command, util
+from hopsworks.platform.core import environment_api, library_api
+from hopsworks.platform.engine import environment_engine
+
+
+publish("hopsworks.environment")
 
 
 class Environment:

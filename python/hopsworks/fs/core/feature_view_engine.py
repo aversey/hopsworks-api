@@ -21,18 +21,16 @@ from typing import Any, Dict, List, Optional, TypeVar, Union
 
 import numpy as np
 import pandas as pd
-from hopsworks_common import client
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hsfs import (
+from hopsworks.fs import (
     engine,
     feature_group,
     feature_view,
     training_dataset_feature,
     util,
 )
-from hsfs.client import exceptions
-from hsfs.constructor.filter import Filter, Logic
-from hsfs.core import (
+from hopsworks.fs.client import exceptions
+from hopsworks.fs.constructor.filter import Filter, Logic
+from hopsworks.fs.core import (
     arrow_flight_client,
     feature_view_api,
     query_constructor_api,
@@ -40,9 +38,11 @@ from hsfs.core import (
     tags_api,
     training_dataset_engine,
 )
-from hsfs.core.feature_logging import FeatureLogging
-from hsfs.feature_view import FeatureView
-from hsfs.training_dataset_split import TrainingDatasetSplit
+from hopsworks.fs.core.feature_logging import FeatureLogging
+from hopsworks.fs.feature_view import FeatureView
+from hopsworks.fs.training_dataset_split import TrainingDatasetSplit
+from hopsworks.platform import client
+from hopsworks.platform.client.exceptions import FeatureStoreException
 
 
 class FeatureViewEngine:

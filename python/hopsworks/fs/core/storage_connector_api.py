@@ -17,8 +17,8 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from hopsworks_common import client
-from hsfs import storage_connector
+from hopsworks.fs import storage_connector
+from hopsworks.platform import client
 
 
 class StorageConnectorApi:
@@ -133,7 +133,7 @@ class StorageConnectorApi:
             "downstreamLvls": 1,
         }
         links_json = _client._send_request("GET", path_params, query_params)
-        from hsfs.core import explicit_provenance
+        from hopsworks.fs.core import explicit_provenance
 
         return explicit_provenance.Links.from_response_json(
             links_json,

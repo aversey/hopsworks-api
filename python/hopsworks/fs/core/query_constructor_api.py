@@ -15,8 +15,8 @@
 #
 from __future__ import annotations
 
-from hopsworks_common import client
-from hsfs.constructor import fs_query
+from hopsworks.fs.constructor import fs_query
+from hopsworks.platform import client
 
 
 class QueryConstructorApi:

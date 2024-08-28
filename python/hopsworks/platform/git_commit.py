@@ -17,7 +17,11 @@
 import json
 
 import humps
-from hopsworks_common import util
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import util
+
+
+publish("hopsworks.git_commit", "hsfs.git_commit", "hsml.git_commit")
 
 
 class GitCommit:

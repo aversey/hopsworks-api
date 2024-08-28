@@ -17,17 +17,17 @@
 import os
 from typing import Optional, Union
 
-from hsml import util
-from hsml.constants import ARTIFACT_VERSION, PREDICTOR_STATE
-from hsml.constants import INFERENCE_ENDPOINTS as IE
-from hsml.core import serving_api
-from hsml.deployment import Deployment
-from hsml.inference_batcher import InferenceBatcher
-from hsml.inference_logger import InferenceLogger
-from hsml.model import Model
-from hsml.predictor import Predictor
-from hsml.resources import PredictorResources
-from hsml.transformer import Transformer
+from hopsworks.ml import util
+from hopsworks.ml.constants import ARTIFACT_VERSION, PREDICTOR_STATE
+from hopsworks.ml.constants import INFERENCE_ENDPOINTS as IE
+from hopsworks.ml.core import serving_api
+from hopsworks.ml.deployment import Deployment
+from hopsworks.ml.inference_batcher import InferenceBatcher
+from hopsworks.ml.inference_logger import InferenceLogger
+from hopsworks.ml.model import Model
+from hopsworks.ml.predictor import Predictor
+from hopsworks.ml.resources import PredictorResources
+from hopsworks.ml.transformer import Transformer
 
 
 class ModelServing:
@@ -256,7 +256,7 @@ class ModelServing:
 
             # or
 
-            from hsml.transformer import Transformer
+            from hopsworks.ml.transformer import Transformer
 
             my_transformer = Transformer(script_file)
             ```

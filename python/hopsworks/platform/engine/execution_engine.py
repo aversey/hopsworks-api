@@ -19,8 +19,12 @@ import os
 import time
 import uuid
 
-from hopsworks_common.client.exceptions import JobExecutionException, RestAPIError
-from hopsworks_common.core import dataset_api, execution_api
+from hopsworks.platform.client.exceptions import JobExecutionException, RestAPIError
+from hopsworks.internal.aliases import publish
+from hopsworks.platform.core import dataset_api, execution_api
+
+
+publish("hopsworks.engine.environment_engine")
 
 
 class ExecutionEngine:

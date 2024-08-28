@@ -19,11 +19,10 @@ import json
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
-import hsfs
 import humps
-from hsfs import util
-from hsfs.constructor import filter
-from hsfs.decorators import typechecked
+from hopsworks.fs import util
+from hopsworks.fs.constructor import filter
+from hopsworks.fs.decorators import typechecked
 
 
 @typechecked

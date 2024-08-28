@@ -18,8 +18,8 @@ from abc import ABC, abstractmethod
 from typing import Optional, Union
 
 import humps
-from hsml import client, util
-from hsml.constants import RESOURCES, Default
+from hopsworks.ml import client, util
+from hopsworks.ml.constants import RESOURCES, Default
 
 
 class Resources:

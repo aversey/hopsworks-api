@@ -19,17 +19,17 @@ import importlib.util
 import os
 from typing import Any, Optional
 
-from hopsworks_common import client
-from hsfs import engine, feature_store, usage, util
-from hsfs.core import (
+from hopsworks.fs import engine, feature_store, usage, util
+from hopsworks.fs.core import (
     feature_store_api,
     hosts_api,
     project_api,
     services_api,
     variable_api,
 )
-from hsfs.core.opensearch import OpenSearchClientSingleton
-from hsfs.decorators import connected, not_connected
+from hopsworks.fs.core.opensearch import OpenSearchClientSingleton
+from hopsworks.fs.decorators import connected, not_connected
+from hopsworks.platform import client
 from requests.exceptions import ConnectionError
 
 
@@ -52,7 +52,7 @@ class Connection:
         module, so you don't have to import the `Connection` class manually:
 
         ```python
-        import hsfs
+        import hopsworks.fs
         conn = hsfs.connection()
         ```
 
@@ -66,7 +66,7 @@ class Connection:
         instantiating a connection:
 
         ```python hl_lines="6"
-            import hsfs
+            import hopsworks.fs
             conn = hsfs.connection(
                 'my_instance',                      # Hostname of your Feature Store instance
                 443,                                # Port to reach your Hopsworks instance, defaults to 443
@@ -158,7 +158,7 @@ class Connection:
         !!! example "How to get feature store instance"
 
             ```python
-            import hsfs
+            import hopsworks.fs
             conn = hsfs.connection()
             fs = conn.get_feature_store()
 
@@ -192,7 +192,7 @@ class Connection:
 
         !!! example
             ```python
-            import hsfs
+            import hopsworks.fs
             conn = hsfs.connection()
             conn.close()
             conn.connect()
@@ -264,7 +264,7 @@ class Connection:
 
         !!! example
             ```python
-            import hsfs
+            import hopsworks.fs
             conn = hsfs.connection()
             conn.close()
             ```

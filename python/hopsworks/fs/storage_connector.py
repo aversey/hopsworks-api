@@ -27,9 +27,9 @@ import humps
 import numpy as np
 import pandas as pd
 import polars as pl
-from hopsworks_common import client
-from hsfs import engine
-from hsfs.core import storage_connector_api
+from hopsworks.fs import engine
+from hopsworks.fs.core import storage_connector_api
+from hopsworks.platform import client
 
 
 _logger = logging.getLogger(__name__)

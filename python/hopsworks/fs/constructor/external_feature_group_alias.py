@@ -18,7 +18,7 @@ from __future__ import annotations
 from typing import Any, Dict, Union
 
 import humps
-from hsfs import feature_group
+from hopsworks.fs import feature_group
 
 
 class ExternalFeatureGroupAlias:

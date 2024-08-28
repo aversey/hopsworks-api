@@ -19,8 +19,8 @@ from typing import Optional, TypeVar, Union
 
 import numpy
 import pandas
-from hsml.utils.schema.columnar_schema import ColumnarSchema
-from hsml.utils.schema.tensor_schema import TensorSchema
+from hopsworks.ml.utils.schema.columnar_schema import ColumnarSchema
+from hopsworks.ml.utils.schema.tensor_schema import TensorSchema
 
 
 class Schema:

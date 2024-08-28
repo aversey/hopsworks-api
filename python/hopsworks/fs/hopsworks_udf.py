@@ -25,11 +25,13 @@ from datetime import date, datetime, time
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import humps
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hsfs import engine, util
-from hsfs.core.feature_descriptive_statistics import FeatureDescriptiveStatistics
-from hsfs.decorators import typechecked
-from hsfs.transformation_statistics import TransformationStatistics
+from hopsworks.fs import engine, util
+from hopsworks.fs.core.feature_descriptive_statistics import (
+    FeatureDescriptiveStatistics,
+)
+from hopsworks.fs.decorators import typechecked
+from hopsworks.fs.transformation_statistics import TransformationStatistics
+from hopsworks.platform.client.exceptions import FeatureStoreException
 
 
 def udf(

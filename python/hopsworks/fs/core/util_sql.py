@@ -19,8 +19,8 @@ import asyncio
 import re
 from typing import Any, Dict, Optional
 
-from hopsworks_common.core import variable_api
-from hsfs.core.constants import HAS_AIOMYSQL, HAS_SQLALCHEMY
+from hopsworks.fs.core.constants import HAS_AIOMYSQL, HAS_SQLALCHEMY
+from hopsworks.platform.core import variable_api
 
 
 if HAS_SQLALCHEMY:

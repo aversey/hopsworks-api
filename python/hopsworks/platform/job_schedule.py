@@ -18,7 +18,11 @@ import json
 from datetime import datetime, timezone
 
 import humps
-from hopsworks_common import util
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import util
+
+
+publish("hopsworks.job_schedule", "hsfs.job_schedule", "hsml.job_schedule")
 
 
 class JobSchedule:

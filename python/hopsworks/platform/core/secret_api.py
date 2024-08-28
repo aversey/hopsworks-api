@@ -17,9 +17,9 @@
 import getpass
 import json
 
-from hopsworks_common import client, secret, util
-from hopsworks_common.client.exceptions import RestAPIError
-from hopsworks_common.core import project_api
+from hopsworks.platform import client, secret, util
+from hopsworks.platform.client.exceptions import RestAPIError
+from hopsworks.platform.core import project_api
 
 
 class SecretsApi:

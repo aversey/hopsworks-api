@@ -14,7 +14,7 @@
 #   limitations under the License.
 #
 
-from hopsworks_common.constants import (
+from hopsworks.platform.constants import (
     ARTIFACT_VERSION,
     DEFAULT,
     DEPLOYABLE_COMPONENT,

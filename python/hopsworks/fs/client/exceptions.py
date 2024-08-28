@@ -14,7 +14,7 @@
 #   limitations under the License.
 #
 
-from hopsworks_common.client.exceptions import (
+from hopsworks.platform.client.exceptions import (
     DatasetException,
     DataValidationException,
     EnvironmentException,

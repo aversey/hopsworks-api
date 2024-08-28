@@ -20,13 +20,15 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
 import humps
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hsfs import util
-from hsfs.core import transformation_function_engine
-from hsfs.core.feature_descriptive_statistics import FeatureDescriptiveStatistics
-from hsfs.decorators import typechecked
-from hsfs.hopsworks_udf import HopsworksUdf
-from hsfs.transformation_statistics import TransformationStatistics
+from hopsworks.fs import util
+from hopsworks.fs.core import transformation_function_engine
+from hopsworks.fs.core.feature_descriptive_statistics import (
+    FeatureDescriptiveStatistics,
+)
+from hopsworks.fs.decorators import typechecked
+from hopsworks.fs.hopsworks_udf import HopsworksUdf
+from hopsworks.fs.transformation_statistics import TransformationStatistics
+from hopsworks.platform.client.exceptions import FeatureStoreException
 
 
 class TransformationType(Enum):

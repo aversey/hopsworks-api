@@ -17,8 +17,8 @@ import json
 from typing import Optional, Union
 
 import humps
-from hsml import client, deployment, util
-from hsml.constants import (
+from hopsworks.ml import client, deployment, util
+from hopsworks.ml.constants import (
     ARTIFACT_VERSION,
     INFERENCE_ENDPOINTS,
     MODEL,
@@ -26,12 +26,12 @@ from hsml.constants import (
     RESOURCES,
     Default,
 )
-from hsml.deployable_component import DeployableComponent
-from hsml.inference_batcher import InferenceBatcher
-from hsml.inference_logger import InferenceLogger
-from hsml.predictor_state import PredictorState
-from hsml.resources import PredictorResources
-from hsml.transformer import Transformer
+from hopsworks.ml.deployable_component import DeployableComponent
+from hopsworks.ml.inference_batcher import InferenceBatcher
+from hopsworks.ml.inference_logger import InferenceLogger
+from hopsworks.ml.predictor_state import PredictorState
+from hopsworks.ml.resources import PredictorResources
+from hopsworks.ml.transformer import Transformer
 
 
 class Predictor(DeployableComponent):

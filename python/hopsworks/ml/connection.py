@@ -16,7 +16,7 @@
 
 import os
 
-from hsml.decorators import connected, not_connected
+from hopsworks.ml.decorators import connected, not_connected
 from requests.exceptions import ConnectionError
 
 
@@ -36,7 +36,7 @@ class Connection:
         module, so you don't have to import the `Connection` class manually:
 
         ```python
-        import hsml
+        import hopsworks.ml
         conn = hsml.connection()
         ```
 
@@ -49,7 +49,7 @@ class Connection:
         instantiating a connection:
 
         ```python hl_lines="6"
-            import hsml
+            import hopsworks.ml
             conn = hsml.connection(
                 'my_instance',                      # DNS of your Hopsworks instance
                 443,                                # Port to reach your Hopsworks instance, defaults to 443
@@ -96,7 +96,7 @@ class Connection:
         api_key_file: str = None,
         api_key_value: str = None,
     ):
-        from hsml.core import model_api, model_registry_api, model_serving_api
+        from hopsworks.ml.core import model_api, model_registry_api, model_serving_api
 
         self._host = host
         self._port = port
@@ -156,14 +156,14 @@ class Connection:
 
         !!! example
             ```python
-            import hsml
+            import hopsworks.ml
             conn = hsml.connection()
             conn.close()
             conn.connect()
             ```
         """
-        from hsml import client
-        from hsml.core import model_api
+        from hopsworks.ml import client
+        from hopsworks.ml.core import model_api
 
         self._connected = True
         try:
@@ -199,7 +199,7 @@ class Connection:
 
         Usage is recommended but optional.
         """
-        from hsml import client
+        from hopsworks.ml import client
 
         client.stop()
         self._model_api = None

@@ -17,9 +17,9 @@ from __future__ import annotations
 
 import warnings
 
-from hsfs import engine, training_dataset_feature
-from hsfs.constructor import query
-from hsfs.core import (
+from hopsworks.fs import engine, training_dataset_feature
+from hopsworks.fs.constructor import query
+from hopsworks.fs.core import (
     tags_api,
     training_dataset_api,
 )

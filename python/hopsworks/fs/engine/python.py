@@ -39,7 +39,7 @@ from typing import (
     Union,
 )
 
-from hsfs.core.type_systems import (
+from hopsworks.fs.core.type_systems import (
     cast_column_to_offline_type,
     cast_column_to_online_type,
 )
@@ -49,23 +49,20 @@ if TYPE_CHECKING:
     import great_expectations
 
 import boto3
-import hsfs
 import numpy as np
 import pandas as pd
 import polars as pl
 import pyarrow as pa
 from botocore.response import StreamingBody
-from hopsworks_common import client
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hsfs import (
+from hopsworks.fs import (
     feature,
     feature_view,
     transformation_function,
     util,
 )
-from hsfs import storage_connector as sc
-from hsfs.constructor import query
-from hsfs.core import (
+from hopsworks.fs import storage_connector as sc
+from hopsworks.fs.constructor import query
+from hopsworks.fs.core import (
     arrow_flight_client,
     dataset_api,
     feature_group_api,
@@ -80,35 +77,37 @@ from hsfs.core import (
     training_dataset_job_conf,
     transformation_function_engine,
 )
-from hsfs.core.constants import (
+from hopsworks.fs.core.constants import (
     HAS_AIOMYSQL,
     HAS_ARROW,
     HAS_GREAT_EXPECTATIONS,
     HAS_PANDAS,
     HAS_SQLALCHEMY,
 )
-from hsfs.core.feature_view_engine import FeatureViewEngine
-from hsfs.core.vector_db_client import VectorDbClient
-from hsfs.decorators import uses_great_expectations
-from hsfs.feature_group import ExternalFeatureGroup, FeatureGroup
-from hsfs.training_dataset import TrainingDataset
-from hsfs.training_dataset_feature import TrainingDatasetFeature
-from hsfs.training_dataset_split import TrainingDatasetSplit
+from hopsworks.fs.core.feature_view_engine import FeatureViewEngine
+from hopsworks.fs.core.vector_db_client import VectorDbClient
+from hopsworks.fs.decorators import uses_great_expectations
+from hopsworks.fs.feature_group import ExternalFeatureGroup, FeatureGroup
+from hopsworks.fs.training_dataset import TrainingDataset
+from hopsworks.fs.training_dataset_feature import TrainingDatasetFeature
+from hopsworks.fs.training_dataset_split import TrainingDatasetSplit
+from hopsworks.platform import client
+from hopsworks.platform.client.exceptions import FeatureStoreException
 
 
 if HAS_GREAT_EXPECTATIONS:
     import great_expectations
 
 if HAS_ARROW:
-    from hsfs.core.type_systems import PYARROW_HOPSWORKS_DTYPE_MAPPING
+    from hopsworks.fs.core.type_systems import PYARROW_HOPSWORKS_DTYPE_MAPPING
 if HAS_AIOMYSQL and HAS_SQLALCHEMY:
-    from hsfs.core import util_sql
+    from hopsworks.fs.core import util_sql
 
 if HAS_SQLALCHEMY:
     from sqlalchemy import sql
 
 if HAS_PANDAS:
-    from hsfs.core.type_systems import convert_pandas_dtype_to_offline_type
+    from hopsworks.fs.core.type_systems import convert_pandas_dtype_to_offline_type
 
 _logger = logging.getLogger(__name__)
 

@@ -19,9 +19,9 @@ from __future__ import annotations
 import json
 from typing import Any, Dict, Union
 
-from hopsworks_common import client, execution, job, job_schedule, util
-from hopsworks_common.client.exceptions import RestAPIError
-from hopsworks_common.core import (
+from hopsworks.platform import client, execution, job, job_schedule, util
+from hopsworks.platform.client.exceptions import RestAPIError
+from hopsworks.platform.core import (
     ingestion_job_conf,
     job_configuration,
 )

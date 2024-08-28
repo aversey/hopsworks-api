@@ -15,8 +15,8 @@
 #
 
 import requests
-from hopsworks_common.client import auth
-from hopsworks_common.client.istio import base as istio
+from hopsworks.platform.client import auth
+from hopsworks.platform.client.istio import base as istio
 
 
 class Client(istio.Client):

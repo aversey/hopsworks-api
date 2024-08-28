@@ -23,15 +23,19 @@ from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
 import humps
 import numpy as np
 import pandas as pd
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hsfs import engine, storage_connector, util
-from hsfs import feature_group as fg_mod
-from hsfs.constructor import join
-from hsfs.constructor.filter import Filter, Logic
-from hsfs.constructor.fs_query import FsQuery
-from hsfs.core import arrow_flight_client, query_constructor_api, storage_connector_api
-from hsfs.decorators import typechecked
-from hsfs.feature import Feature
+from hopsworks.fs import engine, storage_connector, util
+from hopsworks.fs import feature_group as fg_mod
+from hopsworks.fs.constructor import join
+from hopsworks.fs.constructor.filter import Filter, Logic
+from hopsworks.fs.constructor.fs_query import FsQuery
+from hopsworks.fs.core import (
+    arrow_flight_client,
+    query_constructor_api,
+    storage_connector_api,
+)
+from hopsworks.fs.decorators import typechecked
+from hopsworks.fs.feature import Feature
+from hopsworks.platform.client.exceptions import FeatureStoreException
 
 
 @typechecked
@@ -416,7 +420,7 @@ class Query:
         !!! example
             ```python
 
-            from hsfs.feature import Feature
+            from hopsworks.fs.feature import Feature
 
             query.filter(Feature("weekly_sales") > 1000)
             query.filter(Feature("name").like("max%"))

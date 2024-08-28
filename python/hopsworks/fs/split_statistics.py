@@ -18,8 +18,10 @@ from __future__ import annotations
 import json
 
 import humps
-from hsfs import util
-from hsfs.core.feature_descriptive_statistics import FeatureDescriptiveStatistics
+from hopsworks.fs import util
+from hopsworks.fs.core.feature_descriptive_statistics import (
+    FeatureDescriptiveStatistics,
+)
 
 
 class SplitStatistics:

@@ -17,7 +17,7 @@
 import json
 
 import humps
-from hsml import util
+from hopsworks.ml import util
 
 
 class Tag:

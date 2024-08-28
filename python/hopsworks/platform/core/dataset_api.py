@@ -24,9 +24,9 @@ import shutil
 import time
 from concurrent.futures import ThreadPoolExecutor, wait
 
-from hopsworks_common import client, util
-from hopsworks_common.client.exceptions import DatasetException, RestAPIError
-from hopsworks_common.core import inode
+from hopsworks.platform import client, util
+from hopsworks.platform.client.exceptions import DatasetException, RestAPIError
+from hopsworks.platform.core import inode
 from tqdm.auto import tqdm
 
 

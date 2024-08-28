@@ -16,8 +16,8 @@
 
 from abc import abstractmethod
 
-from hopsworks_common.client import base
-from hopsworks_common.client.istio.grpc.inference_client import (
+from hopsworks.platform.client import base
+from hopsworks.platform.client.istio.grpc.inference_client import (
     GRPCInferenceServerClient,
 )
 

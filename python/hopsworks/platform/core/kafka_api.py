@@ -20,9 +20,9 @@ import json
 import socket
 from typing import Any, Dict, Union
 
-from hopsworks_common import client, constants, kafka_schema, kafka_topic
-from hopsworks_common.client.exceptions import KafkaException
-from hopsworks_common.client.external import Client
+from hopsworks.platform import client, constants, kafka_schema, kafka_topic
+from hopsworks.platform.client.exceptions import KafkaException
+from hopsworks.platform.client.external import Client
 
 
 class KafkaApi:

@@ -20,10 +20,12 @@ import warnings
 from datetime import date, datetime
 from typing import List, Optional, Union
 
-from hsfs import engine, split_statistics, statistics, util
-from hsfs.client import exceptions
-from hsfs.core import job, statistics_api
-from hsfs.core.feature_descriptive_statistics import FeatureDescriptiveStatistics
+from hopsworks.fs import engine, split_statistics, statistics, util
+from hopsworks.fs.client import exceptions
+from hopsworks.fs.core import job, statistics_api
+from hopsworks.fs.core.feature_descriptive_statistics import (
+    FeatureDescriptiveStatistics,
+)
 
 
 class StatisticsEngine:

@@ -17,9 +17,9 @@ from __future__ import annotations
 
 from typing import TypeVar, Union
 
-from hsfs.client import exceptions
-from hsfs.core import arrow_flight_client
-from hsfs.engine import spark, spark_no_metastore
+from hopsworks.fs.client import exceptions
+from hopsworks.fs.core import arrow_flight_client
+from hopsworks.fs.engine import spark, spark_no_metastore
 
 
 _engine = None
@@ -42,7 +42,7 @@ def init(engine_type: str) -> None:
             _engine = spark_no_metastore.Engine()
         elif engine_type in ["python", "training"]:
             try:
-                from hsfs.engine import python
+                from hopsworks.fs.engine import python
             except ImportError as err:
                 raise exceptions.FeatureStoreException(
                     "Trying to instantiate Python as engine, but 'python' extras are "

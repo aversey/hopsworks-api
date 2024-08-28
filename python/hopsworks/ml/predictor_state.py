@@ -16,8 +16,8 @@
 from typing import Optional
 
 import humps
-from hsml import util
-from hsml.predictor_state_condition import PredictorStateCondition
+from hopsworks.ml import util
+from hopsworks.ml.predictor_state_condition import PredictorStateCondition
 
 
 class PredictorState:

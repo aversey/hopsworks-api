@@ -17,8 +17,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from hsfs.core import expectation_api
-from hsfs.ge_expectation import GeExpectation
+from hopsworks.fs.core import expectation_api
+from hopsworks.fs.ge_expectation import GeExpectation
 
 
 class ExpectationEngine:

@@ -14,8 +14,8 @@
 #   limitations under the License.
 #
 
-from hopsworks_common import client, git_op_execution, git_remote
-from hopsworks_common.engine import git_engine
+from hopsworks.platform import client, git_op_execution, git_remote
+from hopsworks.platform.engine import git_engine
 
 
 class GitRemoteApi:

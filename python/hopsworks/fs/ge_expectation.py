@@ -23,9 +23,9 @@ if TYPE_CHECKING:
     import great_expectations
 
 import humps
-from hsfs import util
-from hsfs.core.constants import HAS_GREAT_EXPECTATIONS
-from hsfs.decorators import uses_great_expectations
+from hopsworks.fs import util
+from hopsworks.fs.core.constants import HAS_GREAT_EXPECTATIONS
+from hopsworks.fs.decorators import uses_great_expectations
 
 
 if HAS_GREAT_EXPECTATIONS:

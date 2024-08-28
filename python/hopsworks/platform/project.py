@@ -18,8 +18,9 @@ from __future__ import annotations
 import json
 
 import humps
-from hopsworks_common import client, constants, util
-from hopsworks_common.core import (
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import client, constants, util
+from hopsworks.platform.core import (
     dataset_api,
     environment_api,
     flink_cluster_api,
@@ -28,6 +29,9 @@ from hopsworks_common.core import (
     kafka_api,
     opensearch_api,
 )
+
+
+publish("hopsworks.project", "hsfs.project", "hsml.project")
 
 
 class Project:
@@ -127,7 +131,7 @@ class Project:
         # Raises
             `RestAPIError`: If unable to connect
         """
-        from hsfs import connection
+        from hopsworks.fs import connection
 
         _client = client.get_instance()
         if _client._is_external():
@@ -164,7 +168,7 @@ class Project:
         # Raises
             `RestAPIError`: If unable to connect
         """
-        from hsml import connection
+        from hopsworks.ml import connection
 
         _client = client.get_instance()
         if _client._is_external():
@@ -196,7 +200,7 @@ class Project:
         # Raises
             `RestAPIError`: If unable to connect
         """
-        from hsml import connection
+        from hopsworks.ml import connection
 
         _client = client.get_instance()
         if _client._is_external():

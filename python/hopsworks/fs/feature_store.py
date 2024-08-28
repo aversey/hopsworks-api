@@ -24,7 +24,7 @@ import humps
 import numpy as np
 import pandas as pd
 import polars as pl
-from hsfs import (
+from hopsworks.fs import (
     expectation_suite,
     feature,
     feature_group,
@@ -34,9 +34,9 @@ from hsfs import (
     usage,
     util,
 )
-from hsfs.client import exceptions
-from hsfs.constructor.query import Query
-from hsfs.core import (
+from hopsworks.fs.client import exceptions
+from hopsworks.fs.constructor.query import Query
+from hopsworks.fs.core import (
     arrow_flight_client,
     feature_group_api,
     feature_group_engine,
@@ -45,12 +45,12 @@ from hsfs.core import (
     training_dataset_api,
     transformation_function_engine,
 )
-from hsfs.decorators import typechecked
-from hsfs.embedding import EmbeddingIndex
-from hsfs.hopsworks_udf import HopsworksUdf
-from hsfs.online_config import OnlineConfig
-from hsfs.statistics_config import StatisticsConfig
-from hsfs.transformation_function import TransformationFunction
+from hopsworks.fs.decorators import typechecked
+from hopsworks.fs.embedding import EmbeddingIndex
+from hopsworks.fs.hopsworks_udf import HopsworksUdf
+from hopsworks.fs.online_config import OnlineConfig
+from hopsworks.fs.statistics_config import StatisticsConfig
+from hopsworks.fs.transformation_function import TransformationFunction
 
 
 @typechecked

@@ -19,8 +19,13 @@ from typing import Dict, List, Optional, Set, TypeVar, Union
 
 import pandas as pd
 import polars as pl
-from hsfs import feature_view, statistics, training_dataset, transformation_function
-from hsfs.core import transformation_function_api
+from hopsworks.fs import (
+    feature_view,
+    statistics,
+    training_dataset,
+    transformation_function,
+)
+from hopsworks.fs.core import transformation_function_api
 
 
 class TransformationFunctionEngine:

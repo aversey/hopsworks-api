@@ -15,18 +15,18 @@
 
 from typing import Dict, List, Optional, Union
 
-from hsml import client, util
-from hsml import predictor as predictor_mod
-from hsml.client.exceptions import ModelServingException
-from hsml.client.istio.utils.infer_type import InferInput
-from hsml.constants import DEPLOYABLE_COMPONENT, PREDICTOR_STATE
-from hsml.core import model_api, serving_api
-from hsml.engine import serving_engine
-from hsml.inference_batcher import InferenceBatcher
-from hsml.inference_logger import InferenceLogger
-from hsml.predictor_state import PredictorState
-from hsml.resources import Resources
-from hsml.transformer import Transformer
+from hopsworks.ml import client, util
+from hopsworks.ml import predictor as predictor_mod
+from hopsworks.ml.client.exceptions import ModelServingException
+from hopsworks.ml.client.istio.utils.infer_type import InferInput
+from hopsworks.ml.constants import DEPLOYABLE_COMPONENT, PREDICTOR_STATE
+from hopsworks.ml.core import model_api, serving_api
+from hopsworks.ml.engine import serving_engine
+from hopsworks.ml.inference_batcher import InferenceBatcher
+from hopsworks.ml.inference_logger import InferenceLogger
+from hopsworks.ml.predictor_state import PredictorState
+from hopsworks.ml.resources import Resources
+from hopsworks.ml.transformer import Transformer
 
 
 class Deployment:

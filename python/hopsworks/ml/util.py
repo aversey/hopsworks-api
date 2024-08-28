@@ -26,8 +26,8 @@ from urllib.parse import urljoin, urlparse
 import humps
 import numpy as np
 import pandas as pd
-from hsml import client
-from hsml.constants import MODEL, PREDICTOR, Default
+from hopsworks.ml import client
+from hopsworks.ml.constants import MODEL, PREDICTOR, Default
 from six import string_types
 
 
@@ -95,11 +95,11 @@ class NumpyEncoder(JSONEncoder):
 
 
 def set_model_class(model):
-    from hsml.model import Model as BaseModel
-    from hsml.python.model import Model as PyModel
-    from hsml.sklearn.model import Model as SkLearnModel
-    from hsml.tensorflow.model import Model as TFModel
-    from hsml.torch.model import Model as TorchModel
+    from hopsworks.ml.model import Model as BaseModel
+    from hopsworks.ml.python.model import Model as PyModel
+    from hopsworks.ml.sklearn.model import Model as SkLearnModel
+    from hopsworks.ml.tensorflow.model import Model as TFModel
+    from hopsworks.ml.torch.model import Model as TorchModel
 
     if "href" in model:
         _ = model.pop("href")
@@ -232,16 +232,16 @@ def validate_metrics(metrics):
 
 
 def get_predictor_for_model(model, **kwargs):
-    from hsml.model import Model as BaseModel
-    from hsml.predictor import Predictor as BasePredictor
-    from hsml.python.model import Model as PyModel
-    from hsml.python.predictor import Predictor as PyPredictor
-    from hsml.sklearn.model import Model as SkLearnModel
-    from hsml.sklearn.predictor import Predictor as SkLearnPredictor
-    from hsml.tensorflow.model import Model as TFModel
-    from hsml.tensorflow.predictor import Predictor as TFPredictor
-    from hsml.torch.model import Model as TorchModel
-    from hsml.torch.predictor import Predictor as TorchPredictor
+    from hopsworks.ml.model import Model as BaseModel
+    from hopsworks.ml.predictor import Predictor as BasePredictor
+    from hopsworks.ml.python.model import Model as PyModel
+    from hopsworks.ml.python.predictor import Predictor as PyPredictor
+    from hopsworks.ml.sklearn.model import Model as SkLearnModel
+    from hopsworks.ml.sklearn.predictor import Predictor as SkLearnPredictor
+    from hopsworks.ml.tensorflow.model import Model as TFModel
+    from hopsworks.ml.tensorflow.predictor import Predictor as TFPredictor
+    from hopsworks.ml.torch.model import Model as TorchModel
+    from hopsworks.ml.torch.predictor import Predictor as TorchPredictor
 
     if not isinstance(model, BaseModel):
         raise ValueError(
@@ -343,7 +343,7 @@ def feature_view_to_json(obj):
     import importlib.util
 
     if importlib.util.find_spec("hsfs"):
-        from hsfs import feature_view
+        from hopsworks.fs import feature_view
 
         if isinstance(obj, feature_view.FeatureView):
             import json

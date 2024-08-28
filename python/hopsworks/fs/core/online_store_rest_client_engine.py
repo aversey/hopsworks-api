@@ -19,9 +19,9 @@ import itertools
 import logging
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from hsfs import training_dataset_feature as td_feature_mod
-from hsfs import util
-from hsfs.core import online_store_rest_client_api
+from hopsworks.fs import training_dataset_feature as td_feature_mod
+from hopsworks.fs import util
+from hopsworks.fs.core import online_store_rest_client_api
 
 
 _logger = logging.getLogger(__name__)

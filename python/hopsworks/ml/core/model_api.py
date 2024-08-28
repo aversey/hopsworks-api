@@ -17,8 +17,8 @@
 import json
 from typing import Union
 
-from hsml import client, model, tag
-from hsml.core import explicit_provenance
+from hopsworks.ml import client, model, tag
+from hopsworks.ml.core import explicit_provenance
 
 
 class ModelApi:

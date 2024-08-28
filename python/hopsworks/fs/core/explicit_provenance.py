@@ -20,7 +20,13 @@ from enum import Enum
 from typing import Optional, Set
 
 import humps
-from hsfs import feature_group, feature_view, storage_connector, training_dataset, util
+from hopsworks.fs import (
+    feature_group,
+    feature_view,
+    storage_connector,
+    training_dataset,
+    util,
+)
 
 
 class Artifact:
@@ -261,8 +267,8 @@ class Links:
     def __parse_models(
         links_json: dict, training_dataset_version: Optional[int] = None
     ):
-        from hsml import model
-        from hsml.core import explicit_provenance as hsml_explicit_provenance
+        from hopsworks.ml import model
+        from hopsworks.ml.core import explicit_provenance as hsml_explicit_provenance
 
         links = Links()
         for link_json in links_json:
@@ -338,7 +344,7 @@ class Links:
                 )
             if not importlib.util.find_spec("hopsworks"):
                 raise Exception(
-                    "hopsworks is not installed in the environment - cannot switch from hsml connection to hsfs connection"
+                    "hopsworks is not installed in the environment - cannot switch from hopsworks.ml connection to hsfs connection"
                 )
 
             # make sure the hsml connection is initialized so that the model can actually be used after being returned
@@ -424,8 +430,10 @@ class ProvenanceEncoder(json.JSONEncoder):
             import importlib.util
 
             if importlib.util.find_spec("hsml"):
-                from hsml import model
-                from hsml.core import explicit_provenance as hsml_explicit_provenance
+                from hopsworks.ml import model
+                from hopsworks.ml.core import (
+                    explicit_provenance as hsml_explicit_provenance,
+                )
 
                 if isinstance(
                     obj,

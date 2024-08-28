@@ -17,11 +17,11 @@
 import importlib
 
 import pandas
-from hsml.utils.schema.column import Column
+from hopsworks.ml.utils.schema.column import Column
 
 
 try:
-    import hsfs
+    import hopsworks.fs
 except ImportError:
     pass
 

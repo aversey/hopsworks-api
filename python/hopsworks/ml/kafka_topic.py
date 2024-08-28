@@ -17,8 +17,8 @@ import json
 from typing import Optional
 
 import humps
-from hsml import util
-from hsml.constants import KAFKA_TOPIC
+from hopsworks.ml import util
+from hopsworks.ml.constants import KAFKA_TOPIC
 
 
 class KafkaTopic:

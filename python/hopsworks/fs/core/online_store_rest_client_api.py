@@ -18,9 +18,9 @@ import logging
 from datetime import date, datetime
 from typing import Any, Dict
 
-from hsfs import util
-from hsfs.client import exceptions, online_store_rest_client
-from hsfs.core.constants import HAS_NUMPY
+from hopsworks.fs import util
+from hopsworks.fs.client import exceptions, online_store_rest_client
+from hopsworks.fs.core.constants import HAS_NUMPY
 from requests import Response
 
 

@@ -35,13 +35,18 @@ from typing import (
 )
 from urllib.parse import urljoin, urlparse
 
-from hopsworks_common import client
-from hopsworks_common.client.exceptions import FeatureStoreException, JobException
-from hopsworks_common.git_file_status import GitFileStatus
+from hopsworks.platform import client
+from hopsworks.platform.client.exceptions import FeatureStoreException, JobException
+from hopsworks.platform.git_file_status import GitFileStatus
 
 
 if TYPE_CHECKING:
     import pandas as pd
+
+from hopsworks.internal.aliases import publish
+
+
+publish("hopsworks.util", "hsfs.util", "hsml.util")
 
 
 FEATURE_STORE_NAME_SUFFIX = "_featurestore"

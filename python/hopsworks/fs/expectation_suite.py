@@ -24,19 +24,19 @@ if TYPE_CHECKING:
     import great_expectations
 
 import humps
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hsfs import util
-from hsfs.core import expectation_suite_engine
-from hsfs.core.constants import (
+from hopsworks.fs import util
+from hopsworks.fs.core import expectation_suite_engine
+from hopsworks.fs.core.constants import (
     HAS_GREAT_EXPECTATIONS,
     initialise_expectation_suite_for_single_expectation_api_message,
 )
-from hsfs.core.expectation_engine import ExpectationEngine
-from hsfs.core.variable_api import VariableApi
+from hopsworks.fs.core.expectation_engine import ExpectationEngine
+from hopsworks.fs.core.variable_api import VariableApi
 
 # if great_expectations is not installed, we will default to using native Hopsworks class as return values
-from hsfs.decorators import uses_great_expectations
-from hsfs.ge_expectation import GeExpectation
+from hopsworks.fs.decorators import uses_great_expectations
+from hopsworks.fs.ge_expectation import GeExpectation
+from hopsworks.platform.client.exceptions import FeatureStoreException
 
 
 if HAS_GREAT_EXPECTATIONS:

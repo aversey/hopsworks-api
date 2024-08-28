@@ -17,9 +17,9 @@ from __future__ import annotations
 
 from typing import List, Optional, Union
 
-from hopsworks_common import client
-from hsfs.core import feature_monitoring_config as fmc
-from hsfs.core.job import Job
+from hopsworks.fs.core import feature_monitoring_config as fmc
+from hopsworks.fs.core.job import Job
+from hopsworks.platform import client
 
 
 class FeatureMonitoringConfigApi:

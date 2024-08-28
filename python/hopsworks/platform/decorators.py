@@ -19,10 +19,14 @@ from __future__ import annotations
 import functools
 import os
 
-from hopsworks_common.core.constants import (
+from hopsworks.internal.aliases import publish
+from hopsworks.platform.core.constants import (
     HAS_GREAT_EXPECTATIONS,
     great_expectations_not_installed_message,
 )
+
+
+publish("hopsworks.decorators", "hsfs.decorators", "hsml.decorators")
 
 
 def not_connected(fn):

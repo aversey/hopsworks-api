@@ -20,8 +20,10 @@ from datetime import date, datetime
 from typing import Optional, Union
 
 import humps
-from hsfs import util
-from hsfs.core.feature_descriptive_statistics import FeatureDescriptiveStatistics
+from hopsworks.fs import util
+from hopsworks.fs.core.feature_descriptive_statistics import (
+    FeatureDescriptiveStatistics,
+)
 
 
 class FeatureMonitoringResult:

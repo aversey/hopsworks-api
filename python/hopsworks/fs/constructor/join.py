@@ -18,9 +18,9 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
 import humps
-from hsfs import util
-from hsfs.constructor import query
-from hsfs.decorators import typechecked
+from hopsworks.fs import util
+from hopsworks.fs.constructor import query
+from hopsworks.fs.decorators import typechecked
 
 
 @typechecked

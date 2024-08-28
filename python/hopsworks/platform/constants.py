@@ -14,6 +14,11 @@
 #   limitations under the License.
 #
 
+from hopsworks.internal.aliases import publish
+
+
+publish("hopsworks.contants", "hsml.constants")
+
 
 class Default:
     """An object of this class is used in place of optional arguments in

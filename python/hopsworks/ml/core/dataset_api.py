@@ -21,8 +21,8 @@ import os
 import time
 from concurrent.futures import ThreadPoolExecutor, wait
 
-from hsml import client, tag
-from hsml.client.exceptions import RestAPIError
+from hopsworks.ml import client, tag
+from hopsworks.ml.client.exceptions import RestAPIError
 from tqdm.auto import tqdm
 
 

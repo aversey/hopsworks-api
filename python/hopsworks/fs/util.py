@@ -18,7 +18,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, List, Set, Union
 
-from hopsworks_common.util import (
+from hopsworks.fs import feature, serving_key
+from hopsworks.fs.core import feature_group_api
+from hopsworks.platform.util import (
     FEATURE_STORE_NAME_SUFFIX,
     VALID_EMBEDDING_TYPE,
     Encoder,
@@ -51,12 +53,10 @@ from hopsworks_common.util import (
     validate_job_conf,
     verify_attribute_key_names,
 )
-from hsfs import feature, serving_key
-from hsfs.core import feature_group_api
 
 
 if TYPE_CHECKING:
-    from hsfs.constructor import serving_prepared_statement
+    from hopsworks.fs.constructor import serving_prepared_statement
 
 
 def validate_feature(

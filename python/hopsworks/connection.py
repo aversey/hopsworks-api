@@ -20,9 +20,9 @@ import re
 import sys
 import warnings
 
-from hopsworks import client, version
-from hopsworks.core import project_api, secret_api, variable_api
-from hopsworks.decorators import connected, not_connected
+from hopsworks.platform import client, version
+from hopsworks.platform.core import project_api, secret_api, variable_api
+from hopsworks.platform.decorators import connected, not_connected
 from requests.exceptions import ConnectionError
 
 
@@ -319,9 +319,9 @@ class Connection:
 
         Usage is recommended but optional.
         """
-        from hsfs import client as hsfs_client
-        from hsfs import engine as hsfs_engine
-        from hsml import client as hsml_client
+        from hopsworks.fs import client as hsfs_client
+        from hopsworks.fs import engine as hsfs_engine
+        from hopsworks.ml import client as hsml_client
 
         try:
             hsfs_client.stop()

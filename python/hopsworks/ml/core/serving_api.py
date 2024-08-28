@@ -17,20 +17,20 @@
 import json
 from typing import Dict, List, Union
 
-from hsml import (
+from hopsworks.ml import (
     client,
     deployable_component_logs,
     deployment,
     inference_endpoint,
     predictor_state,
 )
-from hsml.client.istio.utils.infer_type import (
+from hopsworks.ml.client.istio.utils.infer_type import (
     InferInput,
     InferOutput,
     InferRequest,
 )
-from hsml.constants import ARTIFACT_VERSION
-from hsml.constants import INFERENCE_ENDPOINTS as IE
+from hopsworks.ml.constants import ARTIFACT_VERSION
+from hopsworks.ml.constants import INFERENCE_ENDPOINTS as IE
 
 
 class ServingApi:
@@ -275,8 +275,11 @@ class ServingApi:
 
         # send inference request
         return _client._send_request(
-            "POST", path_params, headers=headers, data=json.dumps(data),
-            with_base_path_params=with_base_path_params
+            "POST",
+            path_params,
+            headers=headers,
+            data=json.dumps(data),
+            with_base_path_params=with_base_path_params,
         )
 
     def _send_inference_request_via_grpc_protocol(

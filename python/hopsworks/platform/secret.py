@@ -17,8 +17,12 @@
 import json
 
 import humps
-from hopsworks_common import util
-from hopsworks_common.core import secret_api
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import util
+from hopsworks.platform.core import secret_api
+
+
+publish("hopsworks.secret", "hsfs.secret", "hsml.secret")
 
 
 class Secret:

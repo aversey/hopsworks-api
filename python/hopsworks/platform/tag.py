@@ -19,7 +19,11 @@ from __future__ import annotations
 import json
 
 import humps
-from hopsworks_common import util
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import util
+
+
+publish("hopsworks.tag", "hsfs.tag", "hsml.tag")
 
 
 class Tag:

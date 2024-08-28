@@ -17,7 +17,11 @@
 import json
 
 import humps
-from hopsworks_common import util
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import util
+
+
+publish("hopsworks.git_file_status", "hsfs.git_file_status", "hsml.git_file_status")
 
 
 class GitFileStatus:

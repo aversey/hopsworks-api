@@ -14,13 +14,13 @@
 #
 from __future__ import annotations
 
-from hopsworks_common.client.exceptions import (
+from hopsworks.fs import engine, util
+from hopsworks.fs import feature_group as fg
+from hopsworks.fs.core import feature_group_base_engine
+from hopsworks.platform.client.exceptions import (
     DataValidationException,
     FeatureStoreException,
 )
-from hsfs import engine, util
-from hsfs import feature_group as fg
-from hsfs.core import feature_group_base_engine
 
 
 class ExternalFeatureGroupEngine(feature_group_base_engine.FeatureGroupBaseEngine):

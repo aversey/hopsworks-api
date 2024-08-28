@@ -25,8 +25,8 @@ import warnings
 from datetime import date, datetime, timezone
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, TypeVar, Union
 
-from hsfs.core.feature_view_engine import FeatureViewEngine
-from hsfs.training_dataset_feature import TrainingDatasetFeature
+from hopsworks.fs.core.feature_view_engine import FeatureViewEngine
+from hopsworks.fs.training_dataset_feature import TrainingDatasetFeature
 
 
 if TYPE_CHECKING:
@@ -37,10 +37,10 @@ if TYPE_CHECKING:
 import numpy as np
 import pandas as pd
 import tzlocal
-from hsfs.constructor import query
+from hopsworks.fs.constructor import query
 
 # in case importing in %%local
-from hsfs.core.vector_db_client import VectorDbClient
+from hopsworks.fs.core.vector_db_client import VectorDbClient
 
 
 try:
@@ -85,9 +85,7 @@ try:
 except ImportError:
     pass
 
-from hopsworks_common import client
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hsfs import (
+from hopsworks.fs import (
     feature,
     feature_view,
     training_dataset,
@@ -95,18 +93,20 @@ from hsfs import (
     transformation_function,
     util,
 )
-from hsfs import feature_group as fg_mod
-from hsfs.core import (
+from hopsworks.fs import feature_group as fg_mod
+from hopsworks.fs.core import (
     dataset_api,
     delta_engine,
     hudi_engine,
     kafka_engine,
     transformation_function_engine,
 )
-from hsfs.core.constants import HAS_AVRO, HAS_GREAT_EXPECTATIONS
-from hsfs.decorators import uses_great_expectations
-from hsfs.storage_connector import StorageConnector
-from hsfs.training_dataset_split import TrainingDatasetSplit
+from hopsworks.fs.core.constants import HAS_AVRO, HAS_GREAT_EXPECTATIONS
+from hopsworks.fs.decorators import uses_great_expectations
+from hopsworks.fs.storage_connector import StorageConnector
+from hopsworks.fs.training_dataset_split import TrainingDatasetSplit
+from hopsworks.platform import client
+from hopsworks.platform.client.exceptions import FeatureStoreException
 
 
 if HAS_GREAT_EXPECTATIONS:

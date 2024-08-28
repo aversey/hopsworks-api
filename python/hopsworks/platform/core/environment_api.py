@@ -17,8 +17,8 @@
 import json
 from typing import List, Optional
 
-from hopsworks_common import client, environment
-from hopsworks_common.engine import environment_engine
+from hopsworks.platform import client, environment
+from hopsworks.platform.engine import environment_engine
 
 
 class EnvironmentApi:

@@ -19,9 +19,9 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from furl import furl
-from hopsworks_common import client
-from hopsworks_common.client.exceptions import FeatureStoreException
-from hopsworks_common.core.variable_api import VariableApi
+from hopsworks.platform import client
+from hopsworks.platform.client.exceptions import FeatureStoreException
+from hopsworks.platform.core.variable_api import VariableApi
 
 
 class OPENSEARCH_CONFIG:

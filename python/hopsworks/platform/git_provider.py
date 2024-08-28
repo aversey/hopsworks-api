@@ -17,8 +17,12 @@
 import json
 
 import humps
-from hopsworks_common import util
-from hopsworks_common.core import git_provider_api
+from hopsworks.internal.aliases import publish
+from hopsworks.platform import util
+from hopsworks.platform.core import git_provider_api
+
+
+publish("hopsworks.version", "hsfs.version", "hsml.version")
 
 
 class GitProvider:
